@@ -4704,6 +4704,9 @@ XSPK.xm=1;
 Fighter.prototype.tryExtra=function(lock){const i=this.bufXi;this.bufX=0;if(i==null)return false;this.xcd=this.xcd||[0,0];if(this.xcd[i]>0||this.eraseT>0)return false;
   const A=xMoves(this.hero)[i];if(!A)return false;this.aimAt(lock);this.set('special');this.fired=false;this._sndF=false;this.vf={};this.chgK=0;this.specVar='n';this.spPend=false;
   this.xmOn=true;this.xmA=A;this.xcd[i]=XM_CD[i];vName(this,A.name);return true;};
+// basic attacks (not variant moves) play 35% slower: wind-up, active and recovery all stretch
+const BASIC_SLOW=1.35;
+Object.keys(MOVES).forEach(k=>{if(isVarMove(k))return;const M=MOVES[k];if(M._slow)return;M._slow=1;['st','ac','rc'].forEach(p=>{if(typeof M[p]==='number')M[p]*=BASIC_SLOW;});});
 /* ================= ZONE / ORBS ================= */
 const ZONE={cx:0,cz:0,r:135,fx:0,fz:0,fr:135,tx:0,tz:0,tr:80,pi:0,st:'wait',t:0,dps:2};
 const ZPH=[{w:24,s:20,r:80,d:2},{w:18,s:18,r:50,d:4},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
