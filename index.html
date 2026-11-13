@@ -86,6 +86,7 @@ h3.big{font-family:'Bebas Neue';font-size:46px;letter-spacing:.12em;margin:4px 0
 .stc.done>b{color:#7dff8a}.stc.lock{opacity:.4;cursor:default}.stt{font:800 17px/1.1 system-ui,sans-serif;letter-spacing:.08em;color:#fff}.stl{font:600 11px/1.4 system-ui,sans-serif;letter-spacing:.1em;color:#a8b0c4;margin-top:3px}
 .stfail{text-align:center;padding:24px;background:rgba(30,8,10,.8);border:1px solid #ff4a3f}
 #cut{position:fixed;inset:0;z-index:60;display:none;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.25) 40%,rgba(0,0,0,.75));cursor:pointer}#cut.on{display:block}
+#cut.cine{background:none}#cut.cine::before,#cut.cine::after{content:'';position:absolute;left:0;right:0;height:9vh;background:#000}#cut.cine::before{top:0}#cut.cine::after{bottom:0}#cut.cine #cutBox{bottom:4vh;z-index:1;background:rgba(8,10,20,.82)}#cut.cine #cutImg{display:none!important}
 #cutBox{position:absolute;left:50%;bottom:6vh;transform:translateX(-50%);width:min(980px,94vw);display:flex;gap:18px;align-items:flex-end;padding:16px 20px;background:rgba(8,10,20,.9);border-top:3px solid var(--c,#fff);box-shadow:0 0 40px rgba(0,0,0,.6)}
 #cutBox.narr{justify-content:center;text-align:center;border-top-color:#55596a}#cutBox.narr #cutTxt{font-style:italic}
 #cutImg{flex:0 0 150px;height:184px;margin-top:-90px;display:flex;align-items:flex-end;justify-content:center}#cutImg img{width:150px;height:184px;object-fit:cover;filter:drop-shadow(0 0 14px rgba(0,0,0,.8))}
@@ -5195,6 +5196,7 @@ function playerIntent(dt){if(!ME)return;const I=ME.intent,k=keys;
 }
 const camLook=new V3(0,1,0),camT=new V3(),lookT=new V3();
 function updateCamera(dt){
+  if(window.__cineOn&&!inMatch())return;   // story cutscene is directing the camera
   if(!inMatch()){const a=game.time*.05;camT.set(Math.cos(a)*70,32+Math.sin(game.time*.2)*4,Math.sin(a)*70);lookT.set(0,6,0);}
   else{
     const F=ME&&!ME.dead?ME:specTarget();
@@ -5579,7 +5581,7 @@ $('bStartM').onclick=()=>{AU.ui();hostStartMatch();};
 $('bLeave').onclick=()=>{AU.ui();netShutdown();openSetup('on');};
 function togglePause(){if(game.phase==='over')return;paused=!paused;$('pauseNote').textContent=NET.role==='off'?'':'Online matches keep running while this menu is open.';showScreen(paused?'pause':null);
   if(paused&&document.pointerLockElement)document.exitPointerLock();}
-function endMatchCleanup(){STG.on=false;$('bossBar').classList.remove('on');if(PR.on)endPractice();paused=false;FS.forEach(f=>f.dispose());FS=[];AIS=[];ME=null;clearProjs();clearOrbs();resetProps();game.cine=null;
+function endMatchCleanup(){if(window.__story)__story.STG.on=false;$('bossBar').classList.remove('on');if(PR.on)endPractice();paused=false;FS.forEach(f=>f.dispose());FS=[];AIS=[];ME=null;clearProjs();clearOrbs();resetProps();game.cine=null;
   $('hud').classList.remove('on');$('hint').style.display='none';$('spec').style.display='none';$('storm').style.opacity=0;AU.stopMusic();AU.stopAmb();CUTS.length=0;TINT.target=0;if(document.pointerLockElement)document.exitPointerLock();}
 function leaveToTitle(){endMatchCleanup();game.phase='menu';showScreen('title');}
 function leaveMatch(){AU.ui();netShutdown();leaveToTitle();}
@@ -5621,7 +5623,7 @@ function step(draw){
     orbsAnimate();netTick(rdt);
   }
   pressed.clear();
-  updateFX(rdt*game.timeScale);updateScathe(rdt*game.timeScale);
+  updateFX(rdt*game.timeScale);updateScathe(rdt*game.timeScale);if(window.__cineOn&&!inMatch())cineUpdate(rdt);
   TINT.k=lerp(TINT.k,TINT.target,1-Math.exp(-3*rdt));TINT.target=0;sky.material.uniforms.tint.value=TINT.k;scene.fog.color.copy(FOG0).lerp(FOGR,TINT.k*.7);sun.color.copy(SUN0).lerp(SUNR,TINT.k*.8);
   if(PATS.waves)PATS.waves.offset.y-=rdt*.12;if(PATS.circuit)PATS.circuit.offset.x+=rdt*.04;if(PATS.veins)PATS.veins.offset.y+=rdt*.03;
   if(inMatch()&&ME&&!ME.dead&&!noStorm()){const dz=Math.abs(ZONE.r-Math.hypot(ME.pos.x-ZONE.cx,ME.pos.z-ZONE.cz));AU.zoneHum(clamp(1-dz/14,0,1));}else AU.zoneHum(0);
@@ -5828,79 +5830,110 @@ $('bCreate').onclick=()=>{AU.init();AU.ui();setupMode='off';openCreator();};
 const STORY_KEY='surge.story';
 // speakers who aren't fighters
 const NPC={narr:{name:'',css:'#cfd6e6'},paragon:{name:'PARAGON',css:'#ffd23f',em:'★'},principal:{name:'PRINCIPAL KODA',css:'#9ad8ff',em:'◆'},crowd:{name:'CROWD',css:'#ff9ad8',em:'✦'}};
-const SL=(s,t)=>[s,t];
+const SL=(s,t,o)=>[s,t,o||{}];
+// SL(speaker, line, staging): staging can set a pose, play an effect at a character (fx/at), bring characters in or out (enter/exit) and pick a shot (cam: wide/close)
 const STORY=[
- {t:'THE INHERITOR',loc:'Sector 7 Streets',pre:[
-   SL('narr','Sector 7. Eight in ten people are born with a power. Kai Mori was one of the two who were not.'),
-   SL('narr','He filled notebooks with every hero he ever saw, and dreamed of joining Aegis Academy anyway.'),
-   SL('paragon','Kid. I saw you run toward that collapsing bridge when everyone else ran away. You had no power, and you went anyway.'),
-   SL('paragon','My power, OVERPOWER, can be passed on. I have carried it a long time. I want you to carry it next.'),
-   SL('titan','Me? ...I won\'t waste it. I promise.'),
-   SL('narr','Ten months of training later: the Aegis Academy entrance exam. Wreck as many exam robots as you can.')],
+ {t:'THE INHERITOR',loc:'Sector 7 Streets',
+  sPre:{where:[0,-30],actors:[['titan',-1.6,0],['paragon',1.8,0,1]]},
+  pre:[
+   SL('narr','Sector 7. Eight in ten people are born with a power. Kai Mori was one of the two who were not.',{cam:'wide'}),
+   SL('narr','He filled notebooks with every hero he ever saw, and dreamed of joining Aegis Academy anyway.',{cam:'close',at:'titan'}),
+   SL('paragon','Kid. I saw you run toward that collapsing bridge when everyone else ran away. You had no power, and you went anyway.',{enter:['paragon'],fx:'aura',at:'paragon',pose:'point'}),
+   SL('paragon','My power, OVERPOWER, can be passed on. I have carried it a long time. I want you to carry it next.',{fx:'transfer',at:'titan',pose:'command'}),
+   SL('titan','Me? ...I won\'t waste it. I promise.',{pose:'charge',fx:'aura',at:'titan'}),
+   SL('narr','Ten months of training later: the Aegis Academy entrance exam. Wreck as many exam robots as you can.',{cam:'wide'})],
   stages:[{player:'titan',enemies:[{h:'bastion',name:'EXAM BOT α',take:1.4},{h:'bastion',name:'EXAM BOT β',take:1.4},{h:'bastion',name:'EXAM BOT γ',take:1.4}],diff:0,goal:'Destroy the exam robots'}],
-  post:[SL('principal','Exam complete. Applicant Kai Mori, codename TITAN: you passed.'),SL('titan','I... passed? I passed!'),SL('paragon','Told you. Welcome to Aegis, Titan.')]},
- {t:'BATTLE TRIAL',loc:'Aegis Academy · Training Ground',pre:[
-   SL('snare','I\'m Snare, your homeroom teacher. I\'ll be brief, because talking is tiring.'),
-   SL('snare','First lesson: a one-on-one battle trial. Titan, you\'re up against Nitro.'),
-   SL('nitro','You?! The kid who didn\'t have a power last year? Stay down when I knock you over, Titan.'),
-   SL('titan','I\'m not the same as last year, Nitro.')],
+  sPost:{where:[48,24],actors:[['titan',-1.5,0],['principal',1.5,0],['paragon',0,3,1]]},
+  post:[SL('principal','Exam complete. Applicant Kai Mori, codename TITAN: you passed.',{pose:'point'}),SL('titan','I... passed? I passed!',{pose:'win',fx:'confetti',at:'titan'}),SL('paragon','Told you. Welcome to Aegis, Titan.',{enter:['paragon'],pose:'point'})]},
+ {t:'BATTLE TRIAL',loc:'Aegis Academy · Training Ground',
+  sPre:{where:'train',actors:[['snare',0,2.5],['titan',-2,-1],['nitro',2,-1]]},
+  pre:[
+   SL('snare','I\'m Snare, your homeroom teacher. I\'ll be brief, because talking is tiring.',{pose:'idle'}),
+   SL('snare','First lesson: a one-on-one battle trial. Titan, you\'re up against Nitro.',{pose:'point'}),
+   SL('nitro','You?! The kid who didn\'t have a power last year? Stay down when I knock you over, Titan.',{pose:'point',fx:'explosion',at:'nitro'}),
+   SL('titan','I\'m not the same as last year, Nitro.',{pose:'charge',fx:'aura',at:'titan'})],
   stages:[{player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.9}],diff:1,goal:'Win the battle trial against Nitro'}],
-  post:[SL('nitro','Tch. That was luck. Next time I\'m blowing you off the map.'),SL('snare','Both of you, decent. Now go to the nurse. Both of you.')]},
- {t:'ATTACK ON THE DOME',loc:'Rescue Training Dome',pre:[
-   SL('drift','Rescue training at the Dome today! Floating people out of rubble is kind of my whole thing.'),
-   SL('snare','Wait. Get behind me. That portal isn\'t ours.'),
-   SL('warp','Good afternoon, students. We are THE SEVERANCE. We came to meet the Symbol of Peace, Paragon.'),
-   SL('entropy','He isn\'t here? Then we\'ll break his students instead. Everything falls apart eventually.'),
-   SL('snare','Titan, Drift, with me. Don\'t let anyone touch you with five fingers.')],
+  sPost:{where:'train',actors:[['nitro',1.5,0],['titan',-1.5,0],['snare',0,3]]},
+  post:[SL('nitro','Tch. That was luck. Next time I\'m blowing you off the map.',{pose:'point'}),SL('snare','Both of you, decent. Now go to the nurse. Both of you.',{pose:'idle'})]},
+ {t:'ATTACK ON THE DOME',loc:'Rescue Training Dome',
+  sPre:{where:[-24,-48],actors:[['drift',-2.5,-1],['snare',0,-1.2],['titan',2.5,-1],['warp',0,5,1],['entropy',-1.8,5.5,1]]},
+  pre:[
+   SL('drift','Rescue training at the Dome today! Floating people out of rubble is kind of my whole thing.',{pose:'win'}),
+   SL('snare','Wait. Get behind me. That portal isn\'t ours.',{pose:'block',fx:'portal',at:'warp',cam:'wide'}),
+   SL('warp','Good afternoon, students. We are THE SEVERANCE. We came to meet the Symbol of Peace, Paragon.',{enter:['warp'],fx:'portal',at:'warp',pose:'command'}),
+   SL('entropy','He isn\'t here? Then we\'ll break his students instead. Everything falls apart eventually.',{enter:['entropy'],fx:'decay',at:'entropy',pose:'point'}),
+   SL('snare','Titan, Drift, with me. Don\'t let anyone touch you with five fingers.',{pose:'stare',fx:'erase',at:'snare'})],
   stages:[{player:'titan',allies:['snare','drift'],enemies:[{h:'warp',name:'WARP',take:.8},{h:'entropy',name:'ENTROPY',flee:.55},{h:'quake',name:'SEVERANCE THUG',take:1.4},{h:'legion',name:'SEVERANCE THUG',take:1.4}],diff:1,goal:'Drive off the Severance'}],
-  post:[SL('entropy','This was a test run. Next time, Paragon\'s little heir won\'t be so lucky.'),SL('drift','They... they ran. We actually held them off!'),SL('paragon','You were brave today, Titan. But that man, Entropy, is only the hand. Someone is moving him.')]},
- {t:'SPORTS FESTIVAL',loc:'Aegis Stadium',pre:[
-   SL('crowd','AEGIS SPORTS FESTIVAL! Every pro agency in the country is watching!'),
-   SL('solstice','Titan. I only use my ice. I refuse to use my father\'s fire. Even so, I\'ll beat you.'),
-   SL('titan','You\'re holding back half of yourself... and you think that\'s enough?'),
-   SL('nitro','Shut up, both of you. The only one winning this is me.')],
+  sPost:{where:[-24,-48],actors:[['entropy',0,5],['drift',-2,-1],['titan',2,-1],['paragon',0,-4,1]]},
+  post:[SL('entropy','This was a test run. Next time, Paragon\'s little heir won\'t be so lucky.',{pose:'point',fx:'portal',at:'entropy',exit:['entropy']}),SL('drift','They... they ran. We actually held them off!',{pose:'win'}),
+   SL('paragon','You were brave today, Titan. But that man, Entropy, is only the hand. Someone is moving him.',{enter:['paragon'],pose:'idle'})]},
+ {t:'SPORTS FESTIVAL',loc:'Aegis Stadium',
+  sPre:{where:'train',actors:[['titan',0,0],['solstice',-3,3],['nitro',3,3]]},
+  pre:[
+   SL('crowd','AEGIS SPORTS FESTIVAL! Every pro agency in the country is watching!',{cam:'wide',fx:'confetti',at:'titan'}),
+   SL('solstice','Titan. I only use my ice. I refuse to use my father\'s fire. Even so, I\'ll beat you.',{pose:'point',fx:'ice',at:'solstice'}),
+   SL('titan','You\'re holding back half of yourself... and you think that\'s enough?',{pose:'charge'}),
+   SL('nitro','Shut up, both of you. The only one winning this is me.',{pose:'point',fx:'explosion',at:'nitro'})],
   stages:[
    {player:'titan',enemies:[{h:'piston',name:'PISTON',take:1}],diff:1,goal:'Round 1: defeat Piston'},
-   {player:'titan',enemies:[{h:'solstice',name:'SOLSTICE',take:.85}],diff:1,goal:'Semifinal: defeat Solstice',pre:[SL('titan','It\'s YOUR power, Solstice! Fire and ice, both of them! Use all of it!'),SL('solstice','...Fine. Don\'t regret asking.')]},
-   {player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.8}],diff:2,goal:'Final: defeat Nitro',pre:[SL('nitro','No holding back, Titan. I want a REAL win.'),SL('titan','Then come on!')]}],
-  post:[SL('crowd','TITAN WINS THE SPORTS FESTIVAL!'),SL('nitro','...Next year. Next year it\'s mine.'),SL('solstice','Thank you, Titan. For the first time, my fire felt like mine.')]},
- {t:'THE HERO HUNTER',loc:'Hosu Back Alleys',pre:[
-   SL('narr','During internships, pro heroes start disappearing. Each was shot from impossible angles.'),
-   SL('recoil','I was a hero once. A government hero. I pulled the trigger on whoever they told me to.'),
-   SL('recoil','Now I hunt the ones who smile for cameras. You students are in my sights too.'),
-   SL('piston','She took out my brother\'s whole agency. I\'m not running.'),
-   SL('solstice','Then we fight together. Titan, stay out of her line of fire.')],
+   {player:'titan',enemies:[{h:'solstice',name:'SOLSTICE',take:.85}],diff:1,goal:'Semifinal: defeat Solstice',sPre:{where:'train',actors:[['titan',-2,0],['solstice',2,0]]},
+    pre:[SL('titan','It\'s YOUR power, Solstice! Fire and ice, both of them! Use all of it!',{pose:'point'}),SL('solstice','...Fine. Don\'t regret asking.',{pose:'charge',fx:'fire',at:'solstice'})]},
+   {player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.8}],diff:2,goal:'Final: defeat Nitro',sPre:{where:'train',actors:[['titan',-2,0],['nitro',2,0]]},
+    pre:[SL('nitro','No holding back, Titan. I want a REAL win.',{pose:'charge',fx:'explosion',at:'nitro'}),SL('titan','Then come on!',{pose:'charge',fx:'aura',at:'titan'})]}],
+  sPost:{where:'train',actors:[['titan',0,0],['nitro',2.5,1.5],['solstice',-2.5,1.5]]},
+  post:[SL('crowd','TITAN WINS THE SPORTS FESTIVAL!',{cam:'wide',fx:'confetti',at:'titan'}),SL('nitro','...Next year. Next year it\'s mine.',{pose:'idle'}),SL('solstice','Thank you, Titan. For the first time, my fire felt like mine.',{fx:'fire',at:'solstice'})]},
+ {t:'THE HERO HUNTER',loc:'Hosu Back Alleys',
+  sPre:{where:[96,-30],actors:[['recoil',0,6],['piston',-2,-1],['solstice',0,-1.5],['titan',2,-1]]},
+  pre:[
+   SL('narr','During internships, pro heroes start disappearing. Each was shot from impossible angles.',{cam:'wide'}),
+   SL('recoil','I was a hero once. A government hero. I pulled the trigger on whoever they told me to.',{pose:'aim',fx:'shot',at:'recoil'}),
+   SL('recoil','Now I hunt the ones who smile for cameras. You students are in my sights too.',{pose:'aim'}),
+   SL('piston','She took out my brother\'s whole agency. I\'m not running.',{pose:'charge',fx:'engine',at:'piston'}),
+   SL('solstice','Then we fight together. Titan, stay out of her line of fire.',{pose:'point',fx:'ice',at:'solstice'})],
   stages:[{player:'titan',allies:['piston','solstice'],enemies:[{h:'recoil',name:'RECOIL',take:.55}],diff:2,goal:'Bring down Recoil'}],
-  post:[SL('recoil','You kids... actually aim to save people. Maybe the world isn\'t completely rotten.'),SL('narr','Recoil is taken into custody. Her words about the hero system spread across the news.')]},
- {t:'FOREST CAMP RAID',loc:'Summer Training Camp',pre:[
-   SL('volta','Training camp! Forest, fresh air, zero villains. Best week ever.'),
-   SL('umbra','Too quiet. My shadow doesn\'t like it.'),
-   SL('pyre','Evening, kids. Nice campfire. Mine burns blue.'),
-   SL('marble','Ladies and gentlemen, the Severance\'s vanguard has arrived! Tonight\'s trick: a disappearing student!'),
-   SL('legion','Two of me! No, a hundred of me! No, just enough to win! Ha!')],
+  sPost:{where:[96,-30],actors:[['recoil',0,2],['titan',-1.5,-1],['solstice',1.5,-1]]},
+  post:[SL('recoil','You kids... actually aim to save people. Maybe the world isn\'t completely rotten.',{pose:'idle'}),SL('narr','Recoil is taken into custody. Her words about the hero system spread across the news.',{cam:'wide'})]},
+ {t:'FOREST CAMP RAID',loc:'Summer Training Camp',
+  sPre:{where:[-120,96],actors:[['volta',-2.5,-1],['umbra',0,-1.5],['titan',2.5,-1],['nitro',4.5,-2],['pyre',-2,6,1],['marble',0,6.5,1],['legion',2,6,1]]},
+  pre:[
+   SL('volta','Training camp! Forest, fresh air, zero villains. Best week ever.',{pose:'win',fx:'lightning',at:'volta'}),
+   SL('umbra','Too quiet. My shadow doesn\'t like it.',{pose:'idle',fx:'dark',at:'umbra'}),
+   SL('pyre','Evening, kids. Nice campfire. Mine burns blue.',{enter:['pyre'],fx:'bluefire',at:'pyre',pose:'command'}),
+   SL('marble','Ladies and gentlemen, the Severance\'s vanguard has arrived! Tonight\'s trick: a disappearing student!',{enter:['marble'],fx:'glass',at:'marble',pose:'snap'}),
+   SL('legion','Two of me! No, a hundred of me! No, just enough to win! Ha!',{enter:['legion'],fx:'mud',at:'legion',pose:'win'})],
   stages:[{player:'titan',allies:['volta','umbra'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'marble',name:'MARBLE',take:.85},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Stop the Severance vanguard'}],
-  post:[SL('marble','A fine performance! But the show already ended. Look in my pocket.'),SL('narr','A single glass marble glints in his hand. Inside it: Nitro.'),SL('titan','NITRO!'),SL('warp','Retrieval complete. We\'re leaving.')]},
- {t:'RESCUE AT THE DOCKS',loc:'Kamino Harbor',pre:[
-   SL('quill','I\'m Quill. Pro hero. The Severance hideout is in the warehouses by the harbor. They have your classmate.'),
-   SL('solstice','We\'re not waiting for permission.'),
-   SL('titan','We get in, we get Nitro, we get out.')],
+  sPost:{where:[-120,96],actors:[['marble',0,5],['titan',-1.5,-1],['nitro',1.8,1.5],['warp',2.5,6,1]]},
+  post:[SL('marble','A fine performance! But the show already ended. Look in my pocket.',{pose:'snap'}),SL('narr','A single glass marble glints in his hand. Inside it: Nitro.',{fx:'capture',at:'nitro',cam:'close'}),
+   SL('titan','NITRO!',{pose:'point',fx:'aura',at:'titan'}),SL('warp','Retrieval complete. We\'re leaving.',{enter:['warp'],fx:'portal',at:'marble',exit:['marble','warp']})]},
+ {t:'RESCUE AT THE DOCKS',loc:'Kamino Harbor',
+  sPre:{where:[120,48],actors:[['quill',0,1.5],['solstice',-2,-1],['titan',2,-1]]},
+  pre:[
+   SL('quill','I\'m Quill. Pro hero. The Severance hideout is in the warehouses by the harbor. They have your classmate.',{pose:'point',fx:'feathers',at:'quill'}),
+   SL('solstice','We\'re not waiting for permission.',{pose:'charge',fx:'ice',at:'solstice'}),
+   SL('titan','We get in, we get Nitro, we get out.',{pose:'charge',fx:'aura',at:'titan'})],
   stages:[
    {player:'titan',allies:['solstice','quill'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'quake',name:'QUAKE',take:.7},{h:'warp',name:'WARP',flee:.5}],diff:2,goal:'Break into the hideout'},
    {player:'titan',allies:['bastion','cinder'],enemies:[{h:'sovereign',name:'SOVEREIGN',take:.35,boss:true}],diff:2,goal:'Survive Sovereign',
-    pre:[SL('sovereign','So this is the boy who inherited Overpower. Paragon always did love a lost cause.'),SL('paragon','Get away from my student, Sovereign!'),SL('narr','Paragon throws himself at Sovereign, but his power is almost gone. Titan steps in beside him.'),
-      SL('bastion','Bastion and Cinder, reporting! Titan, we\'ve got your back!'),SL('sovereign','Then I\'ll take ALL of your powers. One by one.')]}],
-  post:[SL('narr','Sovereign falls. Paragon, his power spent, stands one last time before the cameras.'),SL('paragon','Next... it\'s your turn.'),
-   SL('narr','The Symbol of Peace retires that night. Nitro is rescued. And the whole country looks at a boy named Titan.'),SL('nitro','...Don\'t think I\'m thanking you. ...Thanks.')]},
- {t:'THE LIBERATION WAR',loc:'Jaku City',pre:[
-   SL('principal','Entropy has woken up with Sovereign\'s power inside him. The Severance is marching on the city.'),
-   SL('snare','Every hero in the country is on the line today. Students included. I\'ll erase his power, Titan. You end this.'),
-   SL('nitro','We do it together. Don\'t you dare fall behind.'),SL('solstice','Fire and ice. All of it.'),
-   SL('entropy','Heroes, symbols, peace... I\'ll decay all of it. Come on, heir. Let\'s see what Paragon left you.')],
+    sPre:{where:[120,48],actors:[['sovereign',0,6],['paragon',0,1.5],['titan',-2,-1],['bastion',-4,-2,1],['cinder',3.5,-2,1]]},
+    pre:[SL('sovereign','So this is the boy who inherited Overpower. Paragon always did love a lost cause.',{pose:'command',fx:'dark',at:'sovereign'}),SL('paragon','Get away from my student, Sovereign!',{pose:'charge',fx:'aura',at:'paragon'}),
+      SL('narr','Paragon throws himself at Sovereign, but his power is almost gone. Titan steps in beside him.',{cam:'wide',fx:'explosion',at:'sovereign'}),
+      SL('bastion','Bastion and Cinder, reporting! Titan, we\'ve got your back!',{enter:['bastion','cinder'],pose:'charge',fx:'fire',at:'cinder'}),SL('sovereign','Then I\'ll take ALL of your powers. One by one.',{pose:'point',fx:'dark',at:'sovereign'})]}],
+  sPost:{where:[120,48],actors:[['paragon',0,0],['titan',-2,-1.5],['nitro',2.2,-1.5]]},
+  post:[SL('narr','Sovereign falls. Paragon, his power spent, stands one last time before the cameras.',{cam:'wide'}),SL('paragon','Next... it\'s your turn.',{pose:'point',fx:'aura',at:'titan'}),
+   SL('narr','The Symbol of Peace retires that night. Nitro is rescued. And the whole country looks at a boy named Titan.',{cam:'wide'}),SL('nitro','...Don\'t think I\'m thanking you. ...Thanks.',{pose:'idle'})]},
+ {t:'THE LIBERATION WAR',loc:'Jaku City',
+  sPre:{where:[0,72],actors:[['principal',-4.5,-2.5],['snare',-2.5,-1],['nitro',-.8,-1.3],['solstice',.8,-1.3],['titan',2.5,-1],['entropy',0,7,1]]},
+  pre:[
+   SL('principal','Entropy has woken up with Sovereign\'s power inside him. The Severance is marching on the city.',{pose:'point'}),
+   SL('snare','Every hero in the country is on the line today. Students included. I\'ll erase his power, Titan. You end this.',{pose:'stare',fx:'erase',at:'snare'}),
+   SL('nitro','We do it together. Don\'t you dare fall behind.',{pose:'charge',fx:'explosion',at:'nitro'}),SL('solstice','Fire and ice. All of it.',{pose:'charge',fx:'fireice',at:'solstice'}),
+   SL('entropy','Heroes, symbols, peace... I\'ll decay all of it. Come on, heir. Let\'s see what Paragon left you.',{enter:['entropy'],fx:'decay',at:'entropy',pose:'command'})],
   stages:[{player:'titan',allies:['nitro','solstice','snare'],enemies:[{h:'entropy',name:'ENTROPY',take:.3,boss:true},{h:'pyre',name:'PYRE',take:.75},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Defeat Entropy'}],
-  post:[SL('entropy','Why... does everyone... keep reaching out to me...'),SL('titan','Because somebody should have, a long time ago.'),
-   SL('narr','The war ends. The city starts to rebuild, one street at a time.'),
-   SL('paragon','Kai. You were never "powerless." You were a hero before I gave you anything.'),
-   SL('titan','I\'ll keep going, Paragon. Plus Ultra... no. SURGE FORWARD.'),SL('narr','THE END ... for now.')]},
+  sPost:{where:[0,72],actors:[['entropy',0,2.5],['titan',0,-.5],['paragon',-3,-3,1],['nitro',2.5,-2],['solstice',-2.5,-1.5]]},
+  post:[SL('entropy','Why... does everyone... keep reaching out to me...',{pose:'idle',fx:'decay',at:'entropy'}),SL('titan','Because somebody should have, a long time ago.',{pose:'idle'}),
+   SL('narr','The war ends. The city starts to rebuild, one street at a time.',{cam:'wide',exit:['entropy']}),
+   SL('paragon','Kai. You were never "powerless." You were a hero before I gave you anything.',{enter:['paragon'],pose:'point'}),
+   SL('titan','I\'ll keep going, Paragon. Plus Ultra... no. SURGE FORWARD.',{pose:'win',fx:'aura',at:'titan'}),SL('narr','THE END ... for now.',{cam:'wide',fx:'confetti',at:'titan'})]},
 ];
 const STG={on:false,ch:0,st:0,boss:null};
 function storyProg(){try{const v=JSON.parse(store.get(STORY_KEY)||'null');if(v&&Array.isArray(v.done))return v;}catch(e){}return {done:[]};}
@@ -5914,23 +5947,81 @@ function showStory(){showScreen('story');const p=storyProg();const el=$('storyLi
     return `<div class="stc ${done?'done':''} ${open?'':'lock'}" data-i="${i}"><b>${i+1}</b><div><div class="stt">${c.t}</div><div class="stl">${c.loc}${done?' · CLEARED':''}</div></div><span>${open?(done?'REPLAY':'PLAY'):'🔒'}</span></div>`;}).join('');
   [...el.children].forEach(d=>d.onclick=()=>{if(d.classList.contains('lock'))return;AU.ui();storyChapter(+d.dataset.i);});}
 
-/* ---- cutscenes ---- */
+/* ---- 3D cutscenes: the cast stands in the city, the camera cuts between speakers, effects play on cue ---- */
+const CINE={on:false,A:{},X:[],t:0,o:new V3(),cam:new V3(),look:new V3(),camT:new V3(),lookT:new V3(),shot:'wide',focus:null,sp:null,first:true};
+function npcHero(id){const T=HEROES[heroIdx('titan')];
+  if(id==='paragon')return Object.assign({},T,{name:'PARAGON',color:0xffd23f,accent:0xffffff,suit:0x1a2a6a,mainCol:0xf2f2f2,css:'#ffd23f',scale:1.22,bulk:1.18});
+  if(id==='principal'){const D=HEROES[heroIdx('drift')];return Object.assign({},D,{name:'KODA',color:0x9ad8ff,accent:0xffffff,suit:0x2a2a3a,mainCol:0xeeeeee,scale:.72});}return null;}
+function cineStart(sc){cineEnd(true);CINE.on=true;window.__cineOn=true;CINE.t=0;CINE.A={};CINE.X=[];CINE.first=true;
+  if(sc.where==='train'){setWorld('train');CINE.o.set(0,0,0);}else{setWorld('city');CINE.o.set(sc.where[0],0,sc.where[1]);}
+  sc.actors.forEach(([id,dx,dz,hid])=>{const h=npcHero(id)||HEROES[heroIdx(id)];if(!h)return;const R=buildRig(h);if(R.whip)R.whip.group.visible=false;if(R.beam)R.beam.group.visible=false;if(R.frame)R.frame.visible=false;
+    const x=CINE.o.x+dx,z=CINE.o.z+dz;R.root.position.set(x,floorAt(x,z,2),z);scene.add(R.root);R.root.visible=!hid;
+    CINE.A[id]={id,R,h,P:Object.assign({},POSES.relaxed),pose:'relaxed',face:dz>2?Math.PI:0,hidden:!!hid};});
+  const c=cineCenter();for(const k in CINE.A){const A=CINE.A[k],p=A.R.root.position;A.face=Math.atan2(c.x-p.x,c.z-p.z);}}
+function cineEnd(keepWorld){for(const k in CINE.A){const R=CINE.A[k].R;scene.remove(R.root);}CINE.X.forEach(m=>scene.remove(m));CINE.A={};CINE.X=[];if(CINE.on&&!keepWorld)setWorld('city');CINE.on=false;window.__cineOn=false;}
+function cineCenter(){const v=Object.values(CINE.A).filter(a=>!a.hidden);const c=new V3();if(!v.length)return c.copy(CINE.o);v.forEach(a=>c.add(a.R.root.position));return c.multiplyScalar(1/v.length);}
+function headOf(A,v){A.R.root.updateMatrixWorld(true);return A.R.head.getWorldPosition(v||new V3());}
+function chestOf(A){const p=A.R.root.position;return new V3(p.x,p.y+1.25*A.h.scale,p.z);}
+function cineLine(L){const [sp,,o]=L;const A=CINE.A[sp]||null;CINE.sp=A;
+  (o.enter||[]).forEach(id=>{const B=CINE.A[id];if(B&&B.hidden){B.hidden=false;B.R.root.visible=true;const c=chestOf(B);ring(new V3(c.x,B.R.root.position.y+.15,c.z),B.h.color,1.8,.4,true,1.6);burst(ADD,c,24,{colors:[B.h.color,B.h.accent,0xffffff],speed:3,life:.5,size:.22,size1:0,bright:1.6});}});
+  for(const k in CINE.A)CINE.A[k].pose='relaxed';if(A)A.pose=o.pose==='idle'?'relaxed':(o.pose||'talk');
+  if(o.fx){const T=CINE.A[o.at]||A;if(T)cineFx(o.fx,T,A);}
+  (o.exit||[]).forEach(id=>{const B=CINE.A[id];if(!B)return;setTimeout(()=>{if(!CINE.on||B.hidden)return;portal(chestOf(B),1.3,true,1);B.hidden=true;B.R.root.visible=false;},900);});
+  CINE.shot=o.cam||(A?'close':'wide');CINE.focus=o.cam==='close'&&o.at?CINE.A[o.at]:A;if(CINE.shot==='close'&&!CINE.focus)CINE.shot='wide';CINE.cut=true;}
+function cineFx(fx,T,S){const c=chestOf(T),p=T.R.root.position,col=T.h.color,acc=T.h.accent;const snd=f=>{AU.scale=.8;try{f();}catch(e){}AU.scale=1;};
+  switch(fx){
+    case 'aura':ring(new V3(p.x,p.y+.15,p.z),acc,2.2,.6,true,1.6);burst(ADD,c,26,{colors:[col,acc,0xffffff],speed:1.6,up:3.5,life:.8,size:.2,size1:0,bright:1.6,rad:.5});flashLight(c,col,5);snd(()=>AU.swell(.5,.3,'bandpass',300,2400,2));break;
+    case 'transfer':{const P=CINE.A.paragon;if(P){const a=chestOf(P);cutLine(a,c,0xffd23f,.18,1.2);cutLine(a,c,0xffffff,.07,1.2);}implode(c,36,1.4,[0xffd23f,0xffffff],.6,1.8);setTimeout(()=>{if(CINE.on){burst(ADD,c,40,{colors:[0xffd23f,0xffffff,0x3a8aff],speed:4,life:.6,size:.22,size1:0,bright:1.8});flashLight(c,0xffd23f,8);}},700);
+      snd(()=>{AU.tone('sine',220,880,1,.08);AU.swell(1,.3,'bandpass',200,3000,2);});break;}
+    case 'explosion':{const q=c.clone().add(new V3(Math.sin(T.face)*.8,0,Math.cos(T.face)*.8));burst(ADD,q,30,{colors:[0xff7a1a,0xffd23f,0xffffff],speed:4,life:.4,size:.3,size1:0,bright:2});burst(SMK,q,10,{colors:[0x3a3a3a,0x5a5a5a],speed:2,up:2,life:.8,size:.4,size1:.8});flashLight(q,0xff7a1a,8);snd(()=>AU.boom(false));break;}
+    case 'portal':portal(c,1.3,true,1.2);snd(()=>AU.swell(.6,.3,'lowpass',800,200,1));break;
+    case 'decay':burst(ADD,c,50,{colors:[0x8a8a96,0x5a3a6a,0xcfd6e6],speed:2.5,up:1.5,life:1.2,size:.3,size1:0,bright:1.4,rad:.8});ring(new V3(p.x,p.y+.15,p.z),0x5a3a6a,2.6,.8,true,1.4);snd(()=>AU.crackle(.8,.12,30));break;
+    case 'erase':{const h=headOf(T);ring(h,0xff2a4a,.7,.5,false,1.8);flashLight(h,0xff2a4a,4);snd(()=>AU.tone('sine',3200,3200,.6,.04));break;}
+    case 'confetti':for(let k=0;k<6;k++)burst(ADD,new V3(p.x+rand(-4,4),p.y+.3,p.z+rand(-4,4)),18,{colors:[0xff5aa8,0x5af0ff,0xffd23f,0x7dff8a,0xffffff],speed:4,up:10,life:1.6,size:.22,size1:.18,grav:6,bright:1.8});snd(()=>AU.bell());break;
+    case 'ice':for(let k=0;k<7;k++){const a=k/7*6.28+T.face;iceSpike(p.x+Math.sin(a)*1.6,p.z+Math.cos(a)*1.6,.7,2.4);}burst(ADD,c,25,{colors:[0xcff4ff,0xffffff],speed:3,life:.6,size:.25,size1:0,bright:1.8});snd(()=>SND.frostfire.freeze());break;
+    case 'fire':case 'bluefire':{const cs=fx==='fire'?[0xff5a1f,0xffb347,0xffffff]:[0x2a6aff,0x7ad8ff,0xffffff];for(let k=0;k<3;k++)burst(ADD,c,22,{colors:cs,speed:1.8,up:4,life:.6,size:.3,size1:0,bright:1.8,rad:.6});flashLight(c,cs[0],6);snd(()=>AU.swell(.6,.35,'lowpass',2000,300,1));break;}
+    case 'fireice':cineFx('ice',T,S);cineFx('fire',T,S);break;
+    case 'lightning':for(let k=0;k<4;k++){const a=new V3(c.x+rand(-1,1),c.y+rand(0,1.5),c.z+rand(-1,1));cutLine(c,a.clone().add(new V3(rand(-1.5,1.5),rand(-.5,1.5),rand(-1.5,1.5))),0xffe03a,.05,.3);}flashLight(c,0xffe03a,12);burst(ADD,c,20,{colors:[0xffe03a,0xffffff],speed:6,life:.25,size:.2,size1:0,bright:2.6});snd(()=>AU.crackle(.4,.25,60));break;
+    case 'dark':implode(c,40,2,[0x3a1a5a,0x8a3aff,0x000000],.6,1.4);ring(new V3(p.x,p.y+.2,p.z),0x6a3acf,2.6,.6,true,1.5);snd(()=>AU.sub(70,40,.8,.5));break;
+    case 'glass':burst(ADD,c,30,{colors:[0xeaf8ff,0xffffff,acc],speed:4,life:.5,size:.2,size1:0,bright:2.4});snd(()=>SND.glass.spec());break;
+    case 'mud':burst(SMK,new V3(p.x,p.y+.8,p.z),40,{colors:[0x4a3a2a,0x6a5a48,0x2a2018],speed:4,up:2,life:.9,size:.5,size1:.1,grav:8});snd(()=>SND.mud.spec());break;
+    case 'shot':{const f=new V3(Math.sin(T.face),0,Math.cos(T.face)),a=c.clone().add(new V3(0,.2,0)).addScaledVector(f,.8);cutLine(a,a.clone().addScaledVector(f,30),acc,.06,.35);flashLight(a,0xffd08a,10);snd(()=>SND.rifle.shot());break;}
+    case 'engine':burst(ADD,new V3(p.x,p.y+.5,p.z),40,{colors:[0xffb03a,0xff5a1f,0xffffff],speed:4,life:.5,size:.4,size1:0,bright:2.4,rad:.4});snd(()=>SND.engine.dash());break;
+    case 'feathers':burst(ADD,c,30,{colors:[0xff4a5a,0xffd0d8,0xffffff],speed:5,up:3,life:1,size:.3,size1:.1,grav:3,bright:1.8});break;
+    case 'capture':{const M=CINE.A.marble;const m=marbleMesh(0x7ad8ff);m.scale.setScalar(.6);m.position.copy(c);scene.add(m);CINE.X.push(m);implode(c,24,1.2,[0x7ad8ff,0xffffff],.4,1.8);T.hidden=true;T.R.root.visible=false;snd(()=>SND.glass.spec());
+      if(M){m.userData.to=M;m.userData.t=0;}break;}}}
+function cineUpdate(dt){CINE.t+=dt;const t=CINE.t,sp=CINE.sp;updIce(dt);
+  for(const k in CINE.A){const A=CINE.A[k];if(A.hidden)continue;const p=A.R.root.position;
+    // speakers turn to the group, everyone else turns to the speaker
+    let want=A.face;if(sp&&!sp.hidden&&A!==sp){want=Math.atan2(sp.R.root.position.x-p.x,sp.R.root.position.z-p.z);}else if(A===sp){const o=Object.values(CINE.A).filter(b=>b!==A&&!b.hidden);if(o.length){const c=new V3();o.forEach(b=>c.add(b.R.root.position));c.multiplyScalar(1/o.length);want=Math.atan2(c.x-p.x,c.z-p.z);}}
+    A.face=angLerp(A.face,want,Math.min(1,4*dt));A.R.root.rotation.y=A.face;
+    let T=POSES[A.pose];if(A.pose==='talk'){const g=Math.sin(t*5+A.face)*.5+.5;T=Object.assign({},POSES.relaxed,{rSx:-.5-g*.5,rE:-1.1,rSz:-.25,sy:.12*Math.sin(t*2.6),hd:.05*Math.sin(t*7)});}
+    if(!T)T=POSES.relaxed;const k2=Math.min(1,8*dt);for(const q in T)A.P[q]+=(T[q]-A.P[q])*k2;poseRig(A.R,A.P,t);}
+  CINE.X.forEach(m=>{if(m.userData.to){m.userData.t=Math.min(1,m.userData.t+dt*.8);const M=m.userData.to;M.R.root.updateMatrixWorld(true);const h=M.R.rF.getWorldPosition(new V3());h.y+=.25;m.position.lerp(h,m.userData.t*.2);}m.rotation.y+=dt*2;});
+  // camera
+  if(CINE.shot==='close'&&CINE.focus&&!CINE.focus.hidden){const F=CINE.focus,H=headOf(F),f=new V3(Math.sin(F.face),0,Math.cos(F.face)),sd=new V3(Math.cos(F.face),0,-Math.sin(F.face)),S=F.h.scale;
+    CINE.camT.copy(H).addScaledVector(f,2.9*S).addScaledVector(sd,1.0*S);CINE.camT.y+=.12;CINE.lookT.copy(H).addScaledVector(sd,-.35*S);CINE.lookT.y-=.18*S;}
+  else{const c=cineCenter(),a=.55+Math.sin(t*.08)*.35,r=8.5;CINE.camT.set(c.x+Math.sin(a)*r,c.y+3.4,c.z-Math.cos(a)*r*.35+1.2);CINE.lookT.set(c.x,c.y+1.3,c.z+.5);}
+  if(CINE.first){CINE.cam.copy(CINE.camT);CINE.look.copy(CINE.lookT);CINE.first=false;}
+  const k=CINE.cut?1-Math.exp(-6*dt):1-Math.exp(-2.5*dt);if(CINE.cut&&CINE.cam.distanceTo(CINE.camT)<.3)CINE.cut=false;CINE.cam.lerp(CINE.camT,k);CINE.look.lerp(CINE.lookT,k);
+  camera.position.copy(CINE.cam);camera.lookAt(CINE.look);camLook.copy(CINE.look);}
+/* ---- dialogue box over the scene ---- */
 let CUT=null;
-function cutscene(lines,done){if(!lines||!lines.length){done();return;}CUT={lines,i:-1,done,tt:0};$('cut').classList.add('on');cutNext();}
+function cutscene(lines,done,scene){if(!lines||!lines.length){done();return;}if(scene)cineStart(scene);$('cut').classList.toggle('cine',!!scene);CUT={lines,i:-1,done,tt:0};$('cut').classList.add('on');cutNext();}
 function cutNext(){if(!CUT)return;const C=CUT;
   if(C.i>=0&&C.typing){C.typing=false;$('cutTxt').textContent=C.lines[C.i][1];return;}
   C.i++;if(C.i>=C.lines.length){cutEnd();return;}
-  const [sp,txt]=C.lines[C.i],S=spkInfo(sp);
+  const [sp,txt]=C.lines[C.i],S=spkInfo(sp);if(CINE.on)cineLine(C.lines[C.i]);
   $('cutName').textContent=S.name;$('cutName').style.color=S.css;$('cutBox').style.setProperty('--c',S.css);$('cutBox').classList.toggle('narr',sp==='narr');
   $('cutImg').innerHTML=S.img?`<img src="${S.img}" alt="">`:(S.em?`<div class="cem" style="color:${S.css}">${S.em}</div>`:'');$('cutImg').style.display=sp==='narr'?'none':'';
   C.typing=true;let k=0;$('cutTxt').textContent='';clearInterval(C.iv);C.iv=setInterval(()=>{if(!C.typing){clearInterval(C.iv);return;}k+=2;$('cutTxt').textContent=txt.slice(0,k);if(k>=txt.length){C.typing=false;clearInterval(C.iv);}},16);AU.ui();}
-function cutEnd(){if(!CUT)return;const d=CUT.done;clearInterval(CUT.iv);CUT=null;$('cut').classList.remove('on');d();}
+function cutEnd(){if(!CUT)return;const d=CUT.done;clearInterval(CUT.iv);CUT=null;$('cut').classList.remove('on');cineEnd();d();}
 $('cut').onclick=e=>{if(e.target.id==='cutSkip'){cutEnd();return;}cutNext();};
 addEventListener('keydown',e=>{if(!CUT)return;if(e.code==='Space'||e.code==='Enter'){e.preventDefault();cutNext();}else if(e.code==='Escape'){cutEnd();}},true);
 
 /* ---- missions ---- */
-function storyChapter(i){STG.ch=i;STG.st=0;const c=STORY[i];showScreen(null);cutscene(c.pre,()=>storyStage());}
-function storyStage(){const c=STORY[STG.ch],S=c.stages[STG.st];cutscene(S.pre||[],()=>storyStart(S));}
+function storyChapter(i){STG.ch=i;STG.st=0;const c=STORY[i];showScreen(null);cutscene(c.pre,()=>storyStage(),c.sPre);}
+function storyStage(){const c=STORY[STG.ch],S=c.stages[STG.st];cutscene(S.pre||[],()=>storyStart(S),S.sPre);}
 function storyStart(S){AU.init();store.set('surge.name',myName());netShutdown();NET.role='off';NET.myId=0;
   const cos=myCos(),R=[{id:0,name:myName(),bot:false,team:0,hero:heroIdx(S.player),cos}];
   (S.allies||[]).forEach((a,k)=>R.push({id:100+k,name:HEROES[heroIdx(a)].name,hero:heroIdx(a),bot:true,team:0}));
@@ -5944,7 +6035,7 @@ function storyStart(S){AU.init();store.set('surge.name',myName());netShutdown();
   FS.forEach(f=>{if(f.team===0)f.face=0;});if(ME)camYaw=0;
   setTimeout(()=>{if(STG.on)announceSmall(S.goal.toUpperCase());},3800);}
 function storyEnemies(){return FS.filter(f=>f.team===1);}
-function storyTick(dt){if(!STG.on||!game.story||game.phase!=='fight'||STG.over)return;
+function storyTick(dt){if(!game.story||!STG.on||game.phase!=='fight'||STG.over)return;
   for(const f of storyEnemies()){if(f.dead||!f.flee||f.hp>f.flee*100)continue;
     // this villain escapes through a portal once beaten down enough
     f.fled=true;f.dead=true;f.vel.set(0,0,0);portal(f.chest(new V3()),2.4,true,1.2);if(f.pet)f.pet.visible=false;f.rig.root.visible=false;feed(`<b style="--c:${f.hero.css}">${esc(f.name)}</b> escaped through a portal!`);
@@ -5957,13 +6048,14 @@ function storyEnd(win){if(STG.over)return;STG.over=true;game.phase='over';game.s
   setTimeout(()=>{const c=STORY[STG.ch];STG.on=false;endMatchCleanup();$('hud').classList.remove('on');$('hint').style.display='none';
     if(!win){storyFailPanel();return;}
     STG.st++;if(STG.st<c.stages.length){storyStage();return;}
-    cutscene(c.post,()=>{const first=storyDone(STG.ch);if(first)addPoints(50,'STORY');showStory();if(first&&STG.ch<STORY.length-1)announceSmall('CHAPTER '+(STG.ch+2)+' UNLOCKED');});},2600);}
+    cutscene(c.post,()=>{const first=storyDone(STG.ch);if(first)addPoints(50,'STORY');showStory();if(first&&STG.ch<STORY.length-1)announceSmall('CHAPTER '+(STG.ch+2)+' UNLOCKED');},c.sPost);},2600);}
 function storyFailPanel(){showScreen('story');$('storyList').innerHTML=`<div class="stfail"><div class="stt">MISSION FAILED</div><div class="stl">${STORY[STG.ch].t} · ${STORY[STG.ch].stages[STG.st].goal}</div>
   <div class="rowb" style="margin-top:16px"><button class="btn cy" id="stRetry">RETRY</button><button class="btn" id="stBack">CHAPTERS</button></div></div>`;
   $('stRetry').onclick=()=>{AU.ui();showScreen(null);storyStart(STORY[STG.ch].stages[STG.st]);};$('stBack').onclick=()=>{AU.ui();showStory();};}
 $('bStory').onclick=()=>{AU.init();AU.ui();showStory();};
 $('bStoryBack').onclick=()=>{AU.ui();showScreen('title');};
-window.__story={STG,STORY,storyChapter,storyStart,cutNext,cutEnd};
+window.__story={STG,STORY,storyChapter,storyStart,cutNext,cutEnd,CINE};
+window.__cutTest=(ch,k)=>{const c=STORY[ch];showScreen(null);if(k==='post')cutscene(c.post,()=>{},c.sPost);else{const S=c.stages[1];cutscene(S.pre,()=>{},S.sPre);}};
 })();
 </script>
 </body>
