@@ -319,7 +319,7 @@ h3.big{font-family:'Bebas Neue';font-size:46px;letter-spacing:.12em;margin:4px 0
 <div id="banner"><div class="bg"></div><div class="sub">ULTIMATE</div><div class="tx" id="btx">SUPERNOVA</div></div>
 <div id="flash"></div>
 <div id="spec"><div id="specT"></div><button class="btn ghost" id="bSpecLeave">LEAVE MATCH</button></div>
-<div id="hint" style="display:none">WASD MOVE · MOUSE LOOK · SPACE JUMP ×2 · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · Q/U SPECIAL · E/I ULT · W/S + ATTACK = VARIANT · HOLD = CHARGE · S+E/AIR = ALT ULT · TAB TARGET · M MUSIC · ESC MENU</div>
+<div id="hint" style="display:none">WASD MOVE · MOUSE LOOK · SPACE JUMP ×2 · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · Q/U SPECIAL · E/I ULT · HOLD Q/E = CHARGE · S+Q = ALT SPECIAL · S+E/AIR = ALT ULT · TAB TARGET · M MUSIC · ESC MENU</div>
 
 <div id="title" class="screen">
   <h1>SURGE</h1>
@@ -1771,7 +1771,7 @@ function mates(f){return FS.filter(o=>o!==f&&o.team===f.team);}
 function blankIntent(){return {wx:0,wz:0,aim:0,block:false,sprint:false,revive:false,light:false,heavy:false,special:false,ult:false,jump:false,dash:false};}
 // basic (non-variant) punches and shots wait a moment before the next one; variant moves are exempt
 // BREAK bar: fills as you take damage; when full, dash while being hit to burst out of the combo
-const BRK_PER_DMG=2.4,BRK_STATES=['hit','fly','down','bstun','float','framed'];
+const BRK_PER_DMG=3.4,BRK_STATES=['hit','fly','down','bstun','float','framed'];
 const BASE_CHAIN=.75,BASE_CD_L=.22,BASE_CD_H=.38;
 function isVarMove(k){return !!k&&/^v[A-Z]/.test(k);}
 class Fighter{
@@ -1795,8 +1795,8 @@ class Fighter{
   chest(v){return (v||new V3()).set(this.pos.x,this.pos.y+1.25*this.hero.scale,this.pos.z);}
   set(s){if(this.state==='ult'&&s!=='ult')this.clearUltFX();this.state=s;this.stateT=0;}
   curSpecial(){return this.stolenT>0?this.stolen:this.hero.special;}
-  lightMove(){const v=variantLight(this);if(v)return v;if(this.hero.gear&&this.hero.gear.type!=='none'){const mv=GEAR_MV[gearCls(this.hero.gear)];if(mv)return mv[0];}const id=KIT(this.hero,'wpn');return id==='recoil'?'shotA':id==='piston'?'kickA':id==='marrow'?(this.bladeT>0?'bladeA':'whipA'):id==='umbra'?'shadowA':id==='ronin'?'swordA':id==='scathe'?'clawA':'jabR';}
-  heavyMove(){if(this.onGround)return 'vCharge_'+wcls(this);if(this.hero.gear&&this.hero.gear.type!=='none'){const mv=GEAR_MV[gearCls(this.hero.gear)];if(mv)return mv[1];}const id=KIT(this.hero,'wpn');return id==='recoil'?'shotH':id==='piston'?'kickH':id==='marrow'?(this.bladeT>0?'bladeH':'whipH'):id==='umbra'?'shadowH':id==='titan'?'smash':id==='ronin'?'swordH':id==='scathe'?'clawH':'heavy';}
+  lightMove(){if(this.hero.gear&&this.hero.gear.type!=='none'){const mv=GEAR_MV[gearCls(this.hero.gear)];if(mv)return mv[0];}const id=KIT(this.hero,'wpn');return id==='recoil'?'shotA':id==='piston'?'kickA':id==='marrow'?(this.bladeT>0?'bladeA':'whipA'):id==='umbra'?'shadowA':id==='ronin'?'swordA':id==='scathe'?'clawA':'jabR';}
+  heavyMove(){if(this.hero.gear&&this.hero.gear.type!=='none'){const mv=GEAR_MV[gearCls(this.hero.gear)];if(mv)return mv[1];}const id=KIT(this.hero,'wpn');return id==='recoil'?'shotH':id==='piston'?'kickH':id==='marrow'?(this.bladeT>0?'bladeH':'whipH'):id==='umbra'?'shadowH':id==='titan'?'smash':id==='ronin'?'swordH':id==='scathe'?'clawH':'heavy';}
   attack(k){const M=MOVES[k];this.move=M;this.moveName=k;this.set('attack');this.hitDone=false;this.swung=false;this.relH=false;this.chgK=1;if(M.inv)this.invuln=Math.max(this.invuln,M.inv);if(M.air)this.vel.y=Math.min(this.vel.y,2);}
   aimAt(lock){if(!lock&&!this.isBot)this.face=this.intent.aim;}
   startSpecial(){this.set('special');this.fired=false;this._sndF=false;this.vf={};this.chgK=0;this.specVar=inDir(this)==='b'?'alt':'n';if(this.specVar==='alt'&&!(SPECVAR[this.curSpecial()]||{}).alt)this.specVar='n';this.spPend=this.specVar==='n'&&held(this,'S');this.specCD=this.stolenT>0?1.6:(this.hero.specCD||2.2);}
@@ -1867,7 +1867,7 @@ class Fighter{
           if(I.jump&&!this.dj){this.dj=true;this.vel.y=10.5;this.flipT=.42;AU.jump();burst(ADD,TMP2.set(this.pos.x,this.pos.y+.2,this.pos.z),10,{colors:[this.hero.accent],speed:3,life:.3,size:.3,bright:1.8,flat:true});ring(TMP2.set(this.pos.x,this.pos.y+.1,this.pos.z),this.hero.color,1.2,.25,true,2);}
           else if(I.dash&&!this.airDash&&this.dashCD<=0){this.airDash=true;this.startDash(mv,dirO);}
           else if(this.bufL>0){this.bufL=0;this.aimAt(lock);this.attack('air');}
-          else if(this.bufH>0){this.bufH=0;this.aimAt(lock);this.attack('vDive_'+wcls(this));}
+          else if(this.bufH>0){this.bufH=0;this.aimAt(lock);this.attack('air');}
           else if(I.ult&&this.meter>=100){this.aimAt(lock);this.startUlt();}
           else if(this.bufS>0&&this.specCD<=0&&this.hero.special!=='rocket'){this.bufS=0;this.aimAt(lock);this.startSpecial();}
         }
@@ -1983,7 +1983,7 @@ class Fighter{
       const rx=o.pos.x-this.pos.x,rz=o.pos.z-this.pos.z;const along=rx*f.x+rz*f.z,lat=Math.abs(rx*f.z-rz*f.x),dy=Math.abs(o.pos.y-this.pos.y);
       if(along>-.3&&along<M.rng+.45&&lat<(M.lat||1.15)&&dy<1.9){any=true;
         const pt=this.chest(new V3()).addScaledVector(f,M.whip?along:Math.min(along,M.rng)*.75);pt.y=lerp(pt.y,o.chest(TMP).y,.5);
-        const ck=M.hold?(this.chgK||1):1;const hr=applyHit(this,o,{dmg:M.dmg*ck,kb:M.kb*Math.sqrt(ck),up:M.up,stun:M.stun,launch:M.launch,heavy:M.heavy,pt,shock:M.shock,gb:M.gb});if(hr===true&&M.vfx)punchFX(this,o,M.vfx,pt);}}
+        const ck=M.hold?(this.chgK||1):1;const hr=applyHit(this,o,{dmg:M.dmg*ck,kb:M.kb*Math.sqrt(ck),up:M.up,stun:M.stun,launch:M.launch,heavy:M.heavy,pt,shock:M.shock,gb:M.gb});const tier=M.vfx||(M.heavy?2:M.launch?1:0);if(hr===true&&tier)punchFX(this,o,tier,pt);}}
     if(any)this.hitDone=true;
   }
   activateBlades(){this.bladeT=9;const c=this.chest(new V3());
@@ -2383,7 +2383,9 @@ function shatterFrame(f,hard){const c=f.chest(new V3());
 let comboT=0;function showCombo(n){$('cn').textContent=n;$('combo').style.opacity=1;comboT=1.4;}
 let hitStopT=0;function hitStop(s){if(NET.role==='client')s*=.6;hitStopT=Math.max(hitStopT,s);}
 
-function applyHit(att,def,o){
+// every hit in the game deals this share of its listed damage
+const DMG_SCALE=.7;
+function applyHit(att,def,o){o=Object.assign({},o);o.dmg=(o.dmg||0)*DMG_SCALE;
   if(def.dead||ally(att,def))return false;
   if(def.invuln>0&&!o.hold&&!o.keepFrame)return false;
   const dir=new V3(def.pos.x-att.pos.x,0,def.pos.z-att.pos.z);if(dir.lengthSq()<.0001)att.fwd(dir);dir.normalize();
@@ -3101,10 +3103,10 @@ function movesHTML(h){const V=SPECVAR[h.special]||{},A=ALTULT[KIT(h,'alt')];
   if(h.cab&&h.special==='cab'){const C=h.cab,d=a=>a?`<br><i>&nbsp;&nbsp;${esc(a.name)}: ${esc(cabDescribe(a))}</i>`:'';
     return `<b>SPECIAL</b> ${sn}<i> · hold: charged · back:</i> ${(C.spAlt||C.sp).name}${d(C.sp)}${C.spAlt?d(C.spAlt):''}<br>`+
       `<b>ULTIMATE</b> ${h.ultName}<i> · back/air:</i> ${h.altName||(A?A.name:'—')}<i> · hold:</i> OVERCHARGE${h.ult==='cab'?d(C.ult):''}${KIT(h,'alt')==='cab'?d(C.ultAlt):''}<br>`+
-      `<b>PUNCHES</b><i> W/S + light or heavy, sprint, hold heavy, air heavy</i><br><b>POWER HITS</b> ${PFX_DESC[KIT(h,'elem')]||''}`;}
+      `<b>PUNCHES</b><i> light combo · heavy · air attack</i><br><b>POWER HITS</b> ${PFX_DESC[KIT(h,'elem')]||''}`;}
   return `<b>SPECIAL</b> ${sn}<i> · hold:</i> ${V.chg?V.chg[0]:'—'}<i> · back:</i> ${V.alt?V.alt[0]:'—'}<br>`+
     `<b>ULTIMATE</b> ${h.ultName}<i> · back/air:</i> ${A?(h.altName||A.name):'—'}<i> · hold:</i> OVERCHARGE<br>`+
-    `<b>PUNCHES</b><i> W+light lunge · S+light sweep · sprint rush · W/S+heavy drive/uppercut · hold heavy guard break · air heavy dive</i><br>`+
+    `<b>PUNCHES</b><i> light combo · heavy · air attack (combo finishers and heavies trigger power hits)</i><br>`+
     `<b>POWER HITS</b> ${PFX_DESC[KIT(h,'elem')]||''}`;}
 /* ================= ABILITY ENGINE =================
    Runs brand-new abilities described as a recipe: a form (how it's delivered), a style (looks/sounds),
@@ -4293,7 +4295,7 @@ function recoilShot(f,M){const ck=M.hold?(f.chgK||1):1,tier=M.vfx||(M.heavy?2:1)
   if(T){const flat=Math.hypot(dir.x,dir.z)||1;if((dir.x*fw.x+dir.z*fw.z)/flat<.5){dir=fw.clone();T=null;}else faceTo(f,T);}
   if(M.dive){dir=new V3(fw.x*.6,-1,fw.z*.6).normalize();T=null;}
   const base={dmg:M.dmg*ck,kb:M.kb*Math.sqrt(ck),up:M.up,stun:M.stun,heavy:!!M.heavy,speed:80,life:.45,home:T?2.5:0,quiet:true,
-    onHit:(p,o,r)=>{if(r===true&&M.vfx)punchFX(f,o,tier,o.chest(new V3()));}};
+    onHit:(p,o,r)=>{if(r===true&&(M.vfx||M.heavy||M.launch))punchFX(f,o,tier,o.chest(new V3()));}};
   const n=M.shot===3||(M.lat>2.5)?3:1;
   for(let k=0;k<n;k++){const d=dir.clone().applyAxisAngle(UP,(k-(n-1)/2)*.12);fireBullet(f,n>1?null:T,Object.assign({},base,{dir:d,from:st,dmg:base.dmg/(n>1?1.6:1),
     big:M.gb||M.shot===2||ck>1.5,pierce:!!(M.gb||ck>1.5)}));}
