@@ -78,7 +78,10 @@ h3.big{font-family:'Bebas Neue';font-size:46px;letter-spacing:.12em;margin:4px 0
 .hpf.low{background:linear-gradient(180deg,#ffc9c9,#ff4a3f 40%,#b8160e)}
 .mbar{height:11px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.5);transform:skewX(-20deg);overflow:hidden;position:relative;margin-top:6px}
 .mfill{position:absolute;top:0;bottom:0;left:0;background:var(--c)}
-.bkrow{display:flex}#slots{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:none}
+.bkrow{display:flex}#dultP{position:fixed;left:50%;top:30%;transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s;z-index:40;min-width:340px}
+#dultP.on{opacity:1}#dultP .dpa{font:800 26px/1.1 system-ui,sans-serif;letter-spacing:.12em;color:#fff;text-shadow:0 0 18px rgba(255,80,80,.9);animation:mfl .5s infinite alternate}
+#dultP .dpa b{display:inline-block;padding:0 10px;border:2px solid #fff;margin:0 4px}#dultP .dpb{font:600 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;color:#ffd0d0;margin-top:6px;text-transform:uppercase}
+#dultP i{display:block;height:3px;background:#ff5a5a;margin:8px auto 0;width:100%}#slots{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:none}
 .slot{position:relative;min-width:118px;max-width:170px;padding:7px 10px 9px 30px;background:rgba(8,10,18,.72);border:1px solid rgba(255,255,255,.18);transform:skewX(-12deg);overflow:hidden;opacity:.55;transition:opacity .15s,border-color .15s}
 .slot b{position:absolute;left:8px;top:6px;font:800 15px/1 system-ui,sans-serif;color:#fff}.slot span{display:block;font:700 10.5px/1.2 system-ui,sans-serif;letter-spacing:.08em;color:#e8ecf6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .slot i{position:absolute;left:0;bottom:0;height:3px;background:#9ad8ff;width:0}.slot.x1 i,.slot.x2 i{background:#ff9a3a}
@@ -2451,7 +2454,7 @@ function killFighter(def,att,dir){
   def.downed=false;def.dead=true;def.hp=0;def.rig.frame.visible=false;def.set('fly');def.onGround=false;def.pos.y+=.05;
   if(dir){def.vel.copy(dir).multiplyScalar(14);def.vel.y=11;}else{def.vel.set(0,8,0);}
   if(def.rig.whip)def.rig.whip.group.visible=false;if(def.rig.beam)def.rig.beam.group.visible=false;
-  game.onElim(def,att);
+  dultOpen(def,att);game.onElim(def,att);
 }
 
 /* ---- projectiles ---- */
@@ -3115,10 +3118,10 @@ function movesHTML(h){const V=SPECVAR[h.special]||{},A=ALTULT[KIT(h,'alt')];
   if(h.cab&&h.special==='cab'){const C=h.cab,d=a=>a?`<br><i>&nbsp;&nbsp;${esc(a.name)}: ${esc(cabDescribe(a))}</i>`:'';
     return `<b>[1] SPECIAL</b> ${sn}<i> · hold: charged · [2]:</i> ${(C.spAlt||C.sp).name}${d(C.sp)}${C.spAlt?d(C.spAlt):''}<br>`+
       `<b>[3]</b> ${xMoves(h)[0].name} <b>[4]</b> ${xMoves(h)[1].name}<br><b>[Q] ULTIMATE</b> ${h.ultName}<i> · back/air:</i> ${h.altName||(A?A.name:'—')}<i> · hold:</i> OVERCHARGE${h.ult==='cab'?d(C.ult):''}${KIT(h,'alt')==='cab'?d(C.ultAlt):''}<br>`+
-      `<b>PUNCHES</b><i> light combo · heavy · air attack</i><br><b>POWER HITS</b> ${PFX_DESC[KIT(h,'elem')]||''}`;}
+      `<b>DEATH ULT</b> ${DULT_TYPES[dultOf(h)].name}<i> · knocked out with half Surge? press Q</i><br><b>PUNCHES</b><i> light combo · heavy · air attack</i><br><b>POWER HITS</b> ${PFX_DESC[KIT(h,'elem')]||''}`;}
   return `<b>[1] SPECIAL</b> ${sn}<i> · hold:</i> ${V.chg?V.chg[0]:'—'}<i> · [2]:</i> ${V.alt?V.alt[0]:'—'}<br>`+
     `<b>[3]</b> ${xMoves(h)[0].name} <b>[4]</b> ${xMoves(h)[1].name}<br><b>[Q] ULTIMATE</b> ${h.ultName}<i> · back/air:</i> ${A?(h.altName||A.name):'—'}<i> · hold:</i> OVERCHARGE<br>`+
-    `<b>PUNCHES</b><i> light combo · heavy · air attack (combo finishers and heavies trigger power hits)</i><br>`+
+    `<b>DEATH ULT</b> ${DULT_TYPES[dultOf(h)].name}<i> · knocked out with half Surge? press Q</i><br><b>PUNCHES</b><i> light combo · heavy · air attack (combo finishers and heavies trigger power hits)</i><br>`+
     `<b>POWER HITS</b> ${PFX_DESC[KIT(h,'elem')]||''}`;}
 /* ================= ABILITY ENGINE =================
    Runs brand-new abilities described as a recipe: a form (how it's delivered), a style (looks/sounds),
@@ -4398,9 +4401,9 @@ function updStatus(dt){for(const o of FS){const R=o.rig;
     if(sp>6&&(!o.xTopH||game.time-o.xTopH>.3)){o.xTopH=game.time;foes(o,1.7).forEach(e=>{if(hitO(o,e,{dmg:4,kb:7,up:5,launch:true,noSpark:true})===true)burnOn(e,1.5,3);});}}
 }}
 
-function updateMHA(dt){updWaves(dt);updIce(dt);updShots(dt);updLines(dt);updClones(dt);updStatus(dt);
+function updateMHA(dt){updDeathUlts(dt);updWaves(dt);updIce(dt);updShots(dt);updLines(dt);updClones(dt);updStatus(dt);
   for(let i=XDEL.length-1;i>=0;i--){if(game.time>=XDEL[i].t){const d=XDEL.splice(i,1)[0];try{d.fn();}catch(e){}}}}
-function clearMHA(){XW.length=0;XDEL.length=0;for(let i=XP.length-1;i>=0;i--)xKill(i);CLONES.slice().forEach(c=>meltClone(c,true));XL.forEach(L=>L.m.visible=false);ICEP.forEach(g=>g.visible=false);
+function clearMHA(){if(typeof DU!=='undefined')clearDeathUlts();XW.length=0;XDEL.length=0;for(let i=XP.length-1;i>=0;i--)xKill(i);CLONES.slice().forEach(c=>meltClone(c,true));XL.forEach(L=>L.m.visible=false);ICEP.forEach(g=>g.visible=false);
   (typeof FS!=='undefined'?FS:[]).forEach(o=>{o.xHold=null;o.eraseT=0;o.bindT=0;o.xTop=0;if(o.xSelf||o.rig.root.scale.x<.05)o.rig.root.scale.setScalar(o.hero.scale);o.xSelf=false;if(o.xMar)o.xMar.visible=false;
     ['xIce','xEr','xBind'].forEach(k=>{if(o.rig[k])o.rig[k].visible=false;});});}
 
@@ -4707,6 +4710,68 @@ Fighter.prototype.tryExtra=function(lock){const i=this.bufXi;this.bufX=0;if(i==n
 // basic attacks (not variant moves) play 35% slower: wind-up, active and recovery all stretch
 const BASIC_SLOW=1.35;
 Object.keys(MOVES).forEach(k=>{if(isVarMove(k))return;const M=MOVES[k];if(M._slow)return;M._slow=1;['st','ac','rc'].forEach(p=>{if(typeof M[p]==='number')M[p]*=BASIC_SLOW;});});
+
+/* ================= DEATH ULTS =================
+   Get knocked out with at least half a Surge bar and you have 4 seconds to press Q (your ultimate key)
+   for one last attack from beyond. Four kinds, matched to each fighter's power. */
+const DULT_MIN=50,DULT_WIN=4;
+const DULT_TYPES={
+  nova:{name:'FINAL FLARE',desc:'your body rises and detonates'},
+  vengeance:{name:'VENGEFUL SPIRIT',desc:'your spirit hunts down whoever took you out'},
+  curse:{name:'DEATH CURSE',desc:'leaves cursed ground that drains and slows foes'},
+  barrage:{name:'LAST VOLLEY',desc:'fires homing spirit bolts at everyone nearby'}};
+const DULT_OF={cinder:'nova',nitro:'nova',titan:'nova',volta:'nova',solstice:'nova',piston:'nova',bastion:'nova',quake:'nova',
+  ronin:'vengeance',scathe:'vengeance',umbra:'vengeance',snare:'vengeance',strobe:'vengeance',marrow:'vengeance',recoil:'vengeance',
+  hex:'curse',entropy:'curse',sovereign:'curse',void:'curse',warp:'curse',marble:'curse',
+  gale:'barrage',quill:'barrage',riptide:'barrage',drift:'barrage',pyre:'barrage',legion:'barrage'};
+function dultOf(h){return DULT_OF[KIT(h,'elem')]||'nova';}
+const DU=[];   // running death ults
+function dultOpen(f,killer){if(game.practice)return;f.dsT=f.meter>=DULT_MIN?DULT_WIN:0;f.dsK=killer&&killer!==f?killer:null;f.dsP=f.pos.clone();f.dsP.y=0;
+  if(f===ME&&f.dsT>0){const T=DULT_TYPES[dultOf(f.hero)];dultPrompt(`PRESS <b>Q</b> · ${T.name}`,T.desc);}}
+function dultPrompt(a,b){let el=$('dultP');if(!el){el=document.createElement('div');el.id='dultP';document.body.appendChild(el);}
+  el.innerHTML=a?`<div class="dpa">${a}</div><div class="dpb">${b||''}</div><i></i>`:'';el.classList.toggle('on',!!a);}
+function dultStart(f){f.dsT=0;f.meter=0;f.dsUsed=true;const type=dultOf(f.hero),T=DULT_TYPES[type];const p=(f.dsP||f.pos).clone();p.y=0;if(type==='nova'){f.pos.x=p.x;f.pos.z=p.z;}
+  DU.push({f,type,t:0,p,k:f.dsK,hit:{},n:0});if(f===ME){dultPrompt('');announce(T.name,f.hero.css);}
+  feed(`<b style="--c:${f.hero.css}">${esc(f.name)}</b> unleashed <b style="--c:${f.hero.css}">${T.name}</b>`);
+  const c=new V3(p.x,1,p.z);ring(c,f.hero.color,5,.5,false,2.6);implode(c,40,3,[f.hero.color,f.hero.accent,0xffffff],.5,2.4);xSnd(p,()=>{AU.tone('sine',220,880,.6,.08);AU.swell(.6,.3,'bandpass',200,2000,3);});}
+function dFoes(D,R,p){return FS.filter(o=>!o.dead&&!o.downed&&!ally(o,D.f)&&Math.hypot(o.pos.x-p.x,o.pos.z-p.z)<R&&Math.abs(o.pos.y-p.y)<5);}
+function updDeathUlts(dt){
+  if(ME&&!ME.dead&&ME.dsT>0){ME.dsT=0;dultPrompt('');}
+  for(const f of FS){if(f.dsUsed){if(f.dead)f.meter=0;else f.dsUsed=false;}if(!f.dead||!(f.dsT>0))continue;f.dsT-=dt;
+    const want=f.isBot?(f.dsT<DULT_WIN-.8&&f.id%3!==0):!!f.intent.ult;
+    if(want)dultStart(f);
+    else if(f.dsT<=0&&f===ME)dultPrompt('');
+    if(f===ME&&f.dsT>0){const el=$('dultP');if(el&&el.lastChild)el.lastChild.style.width=(f.dsT/DULT_WIN*100)+'%';}}
+  for(let i=DU.length-1;i>=0;i--){const D=DU[i],f=D.f;D.t+=dt;const t=D.t,col=f.hero.color,acc=f.hero.accent;
+    if(D.type==='nova'){const c=new V3(D.p.x,Math.min(3,1+t*1.6),D.p.z);
+      if(t<1.2){if(Math.random()<.8)for(let k=0;k<3;k++){const a=rand(0,6.28),r=rand(2,4);ADD.spawn(c.x+Math.cos(a)*r,c.y+rand(-1,1),c.z+Math.sin(a)*r,-Math.cos(a)*r*2.5,0,-Math.sin(a)*r*2.5,..._rgb(pick([col,acc,0xffffff]),2.4),.35,.4,.05,0,0);}
+        f.pos.x=c.x;f.pos.z=c.z;f.pos.y=lerp(f.pos.y,c.y-1,.1);f.vel.set(0,0,0);if(!D.r1){D.r1=1;orb(c,col,1.2,.5,1.2);}}
+      else{explosion(c,8,[col,acc,0xffffff],true);ring(new V3(c.x,.3,c.z),col,16,.6,true,2.6);screenFlash(.5,c);shake(1.2,c);
+        dFoes(D,8.5,D.p).forEach(o=>hitO(f,o,{dmg:30,kb:15,up:14,launch:true,heavy:true,noSpark:true}));props.forEach(pp=>{if(Math.hypot(pp.x-c.x,pp.z-c.z)<8)breakProp(pp);});
+        xSnd(c,()=>{AU.boom(true);AU.sub(50,25,1.2,.6);});DU.splice(i,1);}continue;}
+    if(D.type==='vengeance'){if(!D.g){const g=new THREE.Group();g.add(new THREE.Mesh(cg('dvO',()=>new THREE.SphereGeometry(.55,24,16)),addMat(col,2.2,.75)));
+        g.add(new THREE.Mesh(cg('dvC',()=>new THREE.SphereGeometry(.28,16,12)),addMat(0xffffff,2.8)));g.position.set(D.p.x,1.2,D.p.z);scene.add(g);D.g=g;}
+      const g=D.g;let T=D.k&&!D.k.dead?D.k:null;if(!T){const L=dFoes(D,30,g.position);T=L.sort((a,b)=>a.pos.distanceTo(g.position)-b.pos.distanceTo(g.position))[0]||null;D.k=T;}
+      if(t<.5){g.position.y=1.2+t*2;g.scale.setScalar(.6+t);}
+      else if(T&&t<3){const tp=T.chest(new V3()),d=tp.clone().sub(g.position),L=d.length();g.position.addScaledVector(d.normalize(),Math.min(L,34*dt));
+        for(let k=0;k<4;k++)ADD.spawn(g.position.x,g.position.y,g.position.z,rand(-1,1),rand(-1,1),rand(-1,1),..._rgb(pick([col,acc,0xffffff]),2.4),.45,.5,0,0,0);
+        if(L<1.2){explosion(tp,3.5,[col,acc,0xffffff],false);cutLine(tp.clone().add(new V3(-1.5,1.5,0)),tp.clone().add(new V3(1.5,-1.5,0)),col,.12,.4);
+          hitO(f,T,{dmg:30,kb:14,up:12,launch:true,heavy:true,noSpark:true});dFoes(D,3.5,T.pos).forEach(o=>{if(o!==T)hitO(f,o,{dmg:12,kb:9,up:8,launch:true});});
+          screenFlash(.3,tp);xSnd(tp,()=>{AU.boom(false);AU.tone('sine',900,120,.5,.08);});scene.remove(g);DU.splice(i,1);}}
+      else{burst(ADD,g.position,30,{colors:[col,0xffffff],speed:6,life:.5,size:.3,size1:0,bright:2.4});scene.remove(g);DU.splice(i,1);}continue;}
+    if(D.type==='curse'){const p=D.p;if(t<6){if(!D.m){const m=new THREE.Mesh(cg('dcR',()=>{const q=new THREE.RingGeometry(.2,7,48,1);q.rotateX(-Math.PI/2);return q;}),addMat(col,1.6,.35));m.position.set(p.x,.06,p.z);scene.add(m);D.m=m;}
+        D.m.rotation.y+=dt*.6;D.m.material.opacity=.25+Math.sin(t*6)*.08;
+        for(let k=0;k<3;k++){const a=rand(0,6.28),r=rand(0,7);ADD.spawn(p.x+Math.cos(a)*r,.2,p.z+Math.sin(a)*r,0,rand(1.5,4),0,..._rgb(pick([col,acc,0x2a0a3a]),2),.7,.4,.1,0,0);}
+        D.n-=dt;if(D.n<=0){D.n=.5;dFoes(D,7.2,p).forEach(o=>{hitO(f,o,{dmg:4,kb:0,stun:.15,hold:true,noSpark:true});o.slowT=Math.max(o.slowT||0,.8);});}}
+      else{if(D.m)scene.remove(D.m);explosion(new V3(p.x,.8,p.z),4,[col,acc,0x2a0a3a],false);DU.splice(i,1);}continue;}
+    if(D.type==='barrage'){const c=new V3(D.p.x,1.6,D.p.z);
+      if(t>.4&&D.n<12&&t>.4+D.n*.12){D.n++;const L=dFoes(D,26,c);const T=L.length?L[D.n%L.length]:null;const a=D.n*.52;const st=c.clone().add(new V3(Math.cos(a)*1.2,rand(0,1),Math.sin(a)*1.2));
+        xShot(f,{kind:'bullet',pos:st,vel:(T?T.chest(new V3()).sub(st).normalize():new V3(Math.cos(a),.3,Math.sin(a))).multiplyScalar(30),tgt:T,home:5,dmg:5,kb:4,up:4,stun:.4,life:1.6,col:acc,r:.6});
+        xSnd(st,()=>AU.tone('sine',600+D.n*60,300,.15,.05));}
+      if(Math.random()<.6)burst(ADD,c,2,{colors:[col,acc,0xffffff],speed:2,life:.4,size:.35,size1:0,bright:2.2});
+      if(t>2.2)DU.splice(i,1);continue;}}
+}
+function clearDeathUlts(){DU.forEach(D=>{if(D.g)scene.remove(D.g);if(D.m)scene.remove(D.m);});DU.length=0;FS.forEach(f=>f.dsT=0);dultPrompt('');}
 /* ================= ZONE / ORBS ================= */
 const ZONE={cx:0,cz:0,r:135,fx:0,fz:0,fr:135,tx:0,tz:0,tr:80,pi:0,st:'wait',t:0,dps:2};
 const ZPH=[{w:24,s:20,r:80,d:2},{w:18,s:18,r:50,d:4},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
@@ -4890,7 +4955,7 @@ function playerIntent(dt){if(!ME)return;const I=ME.intent,k=keys;
   I.special=I.spB=I.ult=I.ultB=I.x1=I.x2=false;I.hS=I.hU=false;
   for(const s of MOVE_SLOTS){const ks=s.keys;if(ks.some(x=>pressed.has(x)))I[s.act]=true;if(s.hold==='S'&&ks.some(x=>k[x]))I.hS=true;}
   if(ULT_KEYS.some(x=>pressed.has(x)))I.ult=true;if(ULT_KEYS.some(x=>k[x]))I.hU=true;
-  if(paused||ME.dead){Object.assign(I,blankIntent());I.aim=camYaw;I.hH=I.hS=I.hU=false;}
+  if(paused||ME.dead){Object.assign(I,blankIntent());I.aim=camYaw;I.hH=I.hS=I.hU=false;if(ME.dead&&!paused&&ME.dsT>0&&ULT_KEYS.some(x=>pressed.has(x)))I.ult=true;}
   netPressAcc|=pressBits(I);
 }
 const camLook=new V3(0,1,0),camT=new V3(),lookT=new V3();
