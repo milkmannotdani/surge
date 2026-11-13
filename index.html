@@ -78,7 +78,22 @@ h3.big{font-family:'Bebas Neue';font-size:46px;letter-spacing:.12em;margin:4px 0
 .hpf.low{background:linear-gradient(180deg,#ffc9c9,#ff4a3f 40%,#b8160e)}
 .mbar{height:11px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.5);transform:skewX(-20deg);overflow:hidden;position:relative;margin-top:6px}
 .mfill{position:absolute;top:0;bottom:0;left:0;background:var(--c)}
-.bkrow{display:flex}#dultP{position:fixed;left:50%;top:30%;transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s;z-index:40;min-width:340px}
+.bkrow{display:flex}
+.btn.story{background:linear-gradient(90deg,#ffd23f,#ff7a3a);color:#1a1020;min-width:260px}
+#storyList{display:flex;flex-direction:column;gap:6px;width:min(620px,92vw);margin:12px auto 0;max-height:calc(100vh - 230px);overflow-y:auto;overflow-x:hidden;padding:0 10px}
+.stc{display:flex;flex:0 0 auto;align-items:center;gap:14px;padding:7px 16px;background:rgba(10,12,22,.78);border:1px solid rgba(255,255,255,.18);cursor:pointer;transform:skewX(-8deg);transition:border-color .15s,background .15s}
+.stc:hover{border-color:#ffd23f;background:rgba(40,30,10,.8)}.stc>b{font:800 26px/1 system-ui,sans-serif;color:#ffd23f;min-width:30px}.stc>div{flex:1}.stc>span{font:800 12px/1 system-ui,sans-serif;letter-spacing:.14em;color:#fff}
+.stc.done>b{color:#7dff8a}.stc.lock{opacity:.4;cursor:default}.stt{font:800 17px/1.1 system-ui,sans-serif;letter-spacing:.08em;color:#fff}.stl{font:600 11px/1.4 system-ui,sans-serif;letter-spacing:.1em;color:#a8b0c4;margin-top:3px}
+.stfail{text-align:center;padding:24px;background:rgba(30,8,10,.8);border:1px solid #ff4a3f}
+#cut{position:fixed;inset:0;z-index:60;display:none;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.25) 40%,rgba(0,0,0,.75));cursor:pointer}#cut.on{display:block}
+#cutBox{position:absolute;left:50%;bottom:6vh;transform:translateX(-50%);width:min(980px,94vw);display:flex;gap:18px;align-items:flex-end;padding:16px 20px;background:rgba(8,10,20,.9);border-top:3px solid var(--c,#fff);box-shadow:0 0 40px rgba(0,0,0,.6)}
+#cutBox.narr{justify-content:center;text-align:center;border-top-color:#55596a}#cutBox.narr #cutTxt{font-style:italic}
+#cutImg{flex:0 0 150px;height:184px;margin-top:-90px;display:flex;align-items:flex-end;justify-content:center}#cutImg img{width:150px;height:184px;object-fit:cover;filter:drop-shadow(0 0 14px rgba(0,0,0,.8))}
+.cem{font-size:96px;line-height:184px;text-shadow:0 0 30px currentColor}.cutr{flex:1;min-height:92px}#cutName{font:800 20px/1 system-ui,sans-serif;letter-spacing:.14em;margin-bottom:8px}
+#cutTxt{font:500 19px/1.45 system-ui,sans-serif;color:#eef1f8}.cuth{font:600 10px/1 system-ui,sans-serif;letter-spacing:.16em;color:#7a8296;margin-top:10px}
+#cutSkip{position:absolute;right:12px;top:-34px;background:rgba(8,10,20,.85);color:#cfd6e6;border:1px solid rgba(255,255,255,.25);font:700 11px/1 system-ui,sans-serif;letter-spacing:.14em;padding:8px 12px;cursor:pointer}
+#bossBar{position:fixed;left:50%;top:18px;transform:translateX(-50%);width:min(520px,70vw);text-align:center;display:none;z-index:20;pointer-events:none}#bossBar.on{display:block}
+#bossName{font:800 15px/1 system-ui,sans-serif;letter-spacing:.24em;color:#fff;text-shadow:0 0 10px #000;margin-bottom:5px}.bbar{height:10px;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.5);transform:skewX(-18deg);overflow:hidden}#bossFill{height:100%;width:100%;transition:width .15s}#dultP{position:fixed;left:50%;top:30%;transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s;z-index:40;min-width:340px}
 #dultP.on{opacity:1}#dultP .dpa{font:800 26px/1.1 system-ui,sans-serif;letter-spacing:.12em;color:#fff;text-shadow:0 0 18px rgba(255,80,80,.9);animation:mfl .5s infinite alternate}
 #dultP .dpa b{display:inline-block;padding:0 10px;border:2px solid #fff;margin:0 4px}#dultP .dpb{font:600 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;color:#ffd0d0;margin-top:6px;text-transform:uppercase}
 #dultP i{display:block;height:3px;background:#ff5a5a;margin:8px auto 0;width:100%}#slots{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:none}
@@ -330,6 +345,9 @@ h3.big{font-family:'Bebas Neue';font-size:46px;letter-spacing:.12em;margin:4px 0
 <div id="spec"><div id="specT"></div><button class="btn ghost" id="bSpecLeave">LEAVE MATCH</button></div>
 <div id="hint" style="display:none">WASD MOVE · MOUSE LOOK · SPACE JUMP ×2 · JUMP INTO A WALL + HOLD = CLIMB · SPACE ON A WALL = WALL JUMP · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · 1–4 MOVES · Q ULT (BACK/AIR = ALT ULT) · HOLD = CHARGE · TAB TARGET · M MUSIC · ESC MENU</div>
 
+<div id="story" class="screen"><h1 style="font-size:52px">SURGE: ORIGIN</h1><p>STORY MODE · THE TALE OF THE HERO TITAN</p><div id="storyList"></div><div class="rowb" style="margin-top:16px"><button class="btn" id="bStoryBack">BACK</button></div></div>
+<div id="cut"><div id="cutBox"><div id="cutImg"></div><div class="cutr"><div id="cutName"></div><div id="cutTxt"></div><div class="cuth">CLICK / SPACE ▶ · ESC SKIP</div></div><button id="cutSkip">SKIP ▶▶</button></div></div>
+<div id="bossBar"><div id="bossName"></div><div class="bbar"><div id="bossFill"></div></div></div>
 <div id="title" class="screen">
   <h1>SURGE</h1>
   <h2>BATTLE ROYALE</h2>
@@ -339,6 +357,7 @@ h3.big{font-family:'Bebas Neue';font-size:46px;letter-spacing:.12em;margin:4px 0
     <button class="btn cy" id="bOffline">PLAY VS BOTS</button>
   </div>
   <div class="rowb" style="margin-top:14px"><button class="chip tb2" id="bPractice">PRACTICE</button><button class="chip tb2" id="bCreate">CREATE A FIGHTER</button><button class="chip tb2 shopb" id="bShop">★ SHOP</button></div>
+  <div class="rowb" style="margin-top:10px"><button class="btn story" id="bStory">STORY MODE</button></div>
   <div class="ptst" id="ptsTitle"></div>
   <div class="rowb" style="margin-top:18px"><span class="lbl">GRAPHICS</span><div class="rowb" style="margin:0" id="gfxChips"></div></div>
 </div>
@@ -2603,7 +2622,7 @@ let hitStopT=0;function hitStop(s){if(NET.role==='client')s*=.6;hitStopT=Math.ma
 
 // every hit in the game deals this share of its listed damage
 const DMG_SCALE=.7;
-function applyHit(att,def,o){o=Object.assign({},o);o.dmg=(o.dmg||0)*DMG_SCALE;
+function applyHit(att,def,o){o=Object.assign({},o);o.dmg=(o.dmg||0)*DMG_SCALE*(def.take||1);
   if(def.dead||ally(att,def))return false;
   if(def.invuln>0&&!o.hold&&!o.keepFrame)return false;
   const dir=new V3(def.pos.x-att.pos.x,0,def.pos.z-att.pos.z);if(dir.lengthSq()<.0001)att.fwd(dir);dir.normalize();
@@ -4992,14 +5011,15 @@ function zonePick(){const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.fx=ZONE.cx
   let tx=0,tz=0;for(let k=0;k<30;k++){const a=rand(0,6.28),m=rand(0,Math.max(0,Math.min(ZONE.r,BOUND+10)-ph.r)*.8);tx=ZONE.cx+Math.cos(a)*m;tz=ZONE.cz+Math.sin(a)*m;
     if(Math.abs(tx)+ph.r*.3<BOUND&&Math.abs(tz)+ph.r*.3<BOUND&&!insideBld(tx,tz,2))break;}
   ZONE.tx=clamp(tx,-BOUND+ph.r*.3,BOUND-ph.r*.3);ZONE.tz=clamp(tz,-BOUND+ph.r*.3,BOUND-ph.r*.3);ZONE.tr=ph.r;ZONE.dps=ph.d;}
-function zoneUpdate(dt){if(game.rules==='arena')return;const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.t+=dt;
+function noStorm(){return game.rules==='arena'||!!game.story;}
+function zoneUpdate(dt){if(noStorm())return;const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.t+=dt;
   if(ZONE.st==='wait'){if(ZONE.t>=ph.w){ZONE.st='shrink';ZONE.t=0;if(NET.role!=='client')netEvent({k:'zone'});zoneMsg();}}
   else{const k=Math.min(1,ZONE.t/ph.s);ZONE.cx=lerp(ZONE.fx,ZONE.tx,k);ZONE.cz=lerp(ZONE.fz,ZONE.tz,k);ZONE.r=lerp(ZONE.fr,ZONE.tr,k);
     if(k>=1){ZONE.pi++;ZONE.st='wait';ZONE.t=0;zonePick();}}}
 function zoneMsg(){announceSmall('THE ZONE IS CLOSING');AU.scale=1;AU.tone('sawtooth',220,110,.6,.12);}
 function zoneLabel(){const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];if(ZONE.pi>=ZPH.length-1)return 'FINAL ZONE';
   const left=Math.max(0,(ZONE.st==='wait'?ph.w:ph.s)-ZONE.t);const m=Math.floor(left/60),s=Math.floor(left%60);return (ZONE.st==='wait'?'ZONE CLOSES IN ':'ZONE CLOSING · ')+m+':'+String(s).padStart(2,'0');}
-function outsideZone(p){if(game.rules==='arena')return false;return Math.hypot(p.x-ZONE.cx,p.z-ZONE.cz)>ZONE.r;}
+function outsideZone(p){if(noStorm())return false;return Math.hypot(p.x-ZONE.cx,p.z-ZONE.cz)>ZONE.r;}
 
 let ORBS=[],orbId=1,orbT=0;
 function randomOpenPoint(cx,cz,R){for(let k=0;k<40;k++){const a=rand(0,6.28),m=Math.sqrt(Math.random())*R;const x=clamp(cx+Math.cos(a)*m,-BOUND+3,BOUND-3),z=clamp(cz+Math.sin(a)*m,-BOUND+3,BOUND-3);
@@ -5026,8 +5046,9 @@ function aliveTeams(){const s=new Set();FS.forEach(f=>{if(!f.dead&&!f.downed)s.a
 function spawnPoints(n){const base=[];INNER.forEach(a=>INNER.forEach(b=>base.push([a,b])));PLAZAS.forEach(p=>base.push([p[0]+(p[0]>0?-12:12),p[1]]));
   base.sort(()=>Math.random()-.5);const out=[];for(let i=0;i<n;i++){const b=base[i%base.length];out.push([b[0]+rand(-4,4),b[1]+rand(-4,4)]);}return out;}
 function startMatch(roster,spawns,diff,mode,rules){
+  game.story=game._storyNext||null;game._storyNext=null;
   if(rules)game.rules=rules==='arena'?'arena':'br';game.ptsEarned=0;game.winPaid=0;game.practice=false;if(!PR.on)setWorld('city');game.mode=mode||'solo';FS.forEach(f=>f.dispose());FS=[];AIS=[];clearProjs();clearOrbs();resetProps();clearMarks();
-  decorateBots(roster);roster.forEach((r,i)=>{r.cos=r.cos?sanitizeCos(r.cos,(rosterHero(Object.assign({},r,{cos:null}))||{}).id):null;const f=new Fighter(rosterHero(r),r.id,r.name,r.bot,game.mode==='duos'?r.team:r.id);const s=spawns[i];f.reset(s[0],s[1],Math.atan2(-s[0],-s[1]));f.cos=r.cos||{card:'none',tag:'none',pet:'none',skin:'default'};attachPet(f);FS.push(f);
+  decorateBots(roster);roster.forEach((r,i)=>{r.cos=r.cos?sanitizeCos(r.cos,(rosterHero(Object.assign({},r,{cos:null}))||{}).id):null;const f=new Fighter(rosterHero(r),r.id,r.name,r.bot,game.mode==='duos'||game.story?r.team:r.id);const s=spawns[i];f.reset(s[0],s[1],Math.atan2(-s[0],-s[1]));f.cos=r.cos||{card:'none',tag:'none',pet:'none',skin:'default'};attachPet(f);FS.push(f);
     if(r.bot&&NET.role!=='client')AIS.push(new AI(f,diff));});
   ME=FS.find(f=>f.id===NET.myId)||null;game.specF=null;
   zoneReset();orbT=0;game.matchT=0;game.winner=null;game.timeScale=1;game.slowT=0;game.cine=null;
@@ -5045,6 +5066,7 @@ game.onElim=function(v,k){
   const teams=aliveTeams();const teamOut=!teams.has(v.team);
   const pl=teamOut?teams.size+1:0;if(teamOut)FS.forEach(f=>{if(f.team===v.team&&!f.place)f.place=pl;});
   netEvent({k:'elim',v:v.id,a:k?k.id:-1,pl});handleElim(v,k,pl);
+  if(game.story)return;   // story missions decide their own ending
   if(teams.size<=1&&game.phase==='fight'){const w=FS.find(f=>teams.has(f.team)&&!f.dead)||null;endMatch(w);}
 };
 game.onDowned=function(v,k){if(NET.role==='client')return;netEvent({k:'down',v:v.id,a:k?k.id:-1});handleDown(v,k);};
@@ -5221,13 +5243,13 @@ function updateHUD(dt){
   const T=F&&!F.dead?F.tgt:null;
   if(T&&!T.dead&&T.pos.distanceTo(F.pos)<32){$('tgt').style.display='block';$('tgN').innerHTML=`<span style="color:${T.hero.css}">${T.hero.name}</span> · ${esc(T.name)}`;$('tgH').style.width=Math.max(0,T.hp)+'%';}
   else $('tgt').style.display='none';
-  if(game.rules==='arena')arenaHUD(F);else{$('alive').textContent=(game.mode==='duos'?aliveTeams().size+' TEAMS':aliveList().length+' ALIVE')+(F?' · '+F.kills+' KO':'');
+  if(game.story){$('alive').textContent=FS.filter(f=>f.team===1&&!f.dead).length+' ENEMIES LEFT';$('zoneT')&&($('zoneT').textContent='');}else if(game.rules==='arena')arenaHUD(F);else{$('alive').textContent=(game.mode==='duos'?aliveTeams().size+' TEAMS':aliveList().length+' ALIVE')+(F?' · '+F.kills+' KO':'');
   $('zinfo').textContent=game.phase==='countdown'?'DROPPING IN…':zoneLabel();}updateMarks();
   if(comboT>0){comboT-=dt;if(comboT<=0)$('combo').style.opacity=0;}
-  if(F&&F.dead&&game.phase!=='over'&&game.rules!=='arena'){const s=specTarget();$('specT').textContent=`ELIMINATED · #${F.place} — SPECTATING ${s?s.name.toUpperCase():''}`;}
+  if(F&&F.dead&&game.phase!=='over'&&game.rules!=='arena'&&!game.story){const s=specTarget();$('specT').textContent=`ELIMINATED · #${F.place} — SPECTATING ${s?s.name.toUpperCase():''}`;}
   hudT-=dt;if(hudT>0)return;hudT=.08;
   const g=mmCtx,P=x=>(x+MAPH)*MS;g.drawImage(mmBase,0,0);
-  if(game.rules!=='arena'){g.save();g.fillStyle='rgba(120,40,200,.35)';g.beginPath();g.rect(0,0,MM,MM);g.arc(P(ZONE.cx),P(ZONE.cz),ZONE.r*MS,0,7,true);g.fill('evenodd');g.restore();
+  if(!noStorm()){g.save();g.fillStyle='rgba(120,40,200,.35)';g.beginPath();g.rect(0,0,MM,MM);g.arc(P(ZONE.cx),P(ZONE.cz),ZONE.r*MS,0,7,true);g.fill('evenodd');g.restore();
   g.strokeStyle='#c58bff';g.lineWidth=3;g.beginPath();g.arc(P(ZONE.cx),P(ZONE.cz),ZONE.r*MS,0,7);g.stroke();
   g.strokeStyle='rgba(255,255,255,.8)';g.lineWidth=2;g.setLineDash([6,5]);g.beginPath();g.arc(P(ZONE.tx),P(ZONE.tz),ZONE.tr*MS,0,7);g.stroke();g.setLineDash([]);}
   ORBS.forEach(o=>{g.fillStyle=o.type==='hp'?'#3dff8a':'#ffd23f';g.fillRect(P(o.x)-3,P(o.z)-3,6,6);});
@@ -5438,7 +5460,7 @@ let mySel=(()=>{const v=+(store.get('surge.hero')||0)||0;return v>=CUST0&&CSPECS
 const BOTN=['Vex','Kairo','Nyx','Brakk','Sola','Juno','Ryze','Mako','Tess','Orin','Pike','Zara','Dax','Lumen'];
 function botName(){return pick(BOTN)+' (BOT)';}
 function myName(){return cleanName($('nameIn').value||store.get('surge.name')||'Player');}
-function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop'].forEach(s=>$(s).classList.toggle('on',s===id));}
+function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop','story'].forEach(s=>$(s).classList.toggle('on',s===id));}
 function showMsg(t){$('msgT').textContent=t;showScreen('msg');}
 /* ---- fighter select: rendered portraits + 3D pedestal ---- */
 const PV={r:null,scene:null,cam:null,rigs:{},idx:0,ped:null,beams:[],portraits:{},filter:'all'};
@@ -5557,7 +5579,7 @@ $('bStartM').onclick=()=>{AU.ui();hostStartMatch();};
 $('bLeave').onclick=()=>{AU.ui();netShutdown();openSetup('on');};
 function togglePause(){if(game.phase==='over')return;paused=!paused;$('pauseNote').textContent=NET.role==='off'?'':'Online matches keep running while this menu is open.';showScreen(paused?'pause':null);
   if(paused&&document.pointerLockElement)document.exitPointerLock();}
-function endMatchCleanup(){if(PR.on)endPractice();paused=false;FS.forEach(f=>f.dispose());FS=[];AIS=[];ME=null;clearProjs();clearOrbs();resetProps();game.cine=null;
+function endMatchCleanup(){STG.on=false;$('bossBar').classList.remove('on');if(PR.on)endPractice();paused=false;FS.forEach(f=>f.dispose());FS=[];AIS=[];ME=null;clearProjs();clearOrbs();resetProps();game.cine=null;
   $('hud').classList.remove('on');$('hint').style.display='none';$('spec').style.display='none';$('storm').style.opacity=0;AU.stopMusic();AU.stopAmb();CUTS.length=0;TINT.target=0;if(document.pointerLockElement)document.exitPointerLock();}
 function leaveToTitle(){endMatchCleanup();game.phase='menu';showScreen('title');}
 function leaveMatch(){AU.ui();netShutdown();leaveToTitle();}
@@ -5589,7 +5611,7 @@ function step(draw){
       if(NET.role==='host')f.sentPress=(f.sentPress|0)|pressBits(f.intent);
     }
     for(const f of FS)f.update(dt);
-    updateProjs(dt);updateCab(dt);updateMHA(dt);arenaTick(dt);arenaRegen(dt);updatePets(dt);if(game.practice)practiceTick(rdt);
+    updateProjs(dt);updateCab(dt);updateMHA(dt);arenaTick(dt);arenaRegen(dt);storyTick(dt);updatePets(dt);if(game.practice)practiceTick(rdt);
     if(game.phase==='fight'&&!game.practice){
       zoneUpdate(dt);
       if(NET.role!=='client'){game.matchT+=dt;orbsHost(dt);if(game.mode==='duos')teamTick(dt);
@@ -5602,11 +5624,11 @@ function step(draw){
   updateFX(rdt*game.timeScale);updateScathe(rdt*game.timeScale);
   TINT.k=lerp(TINT.k,TINT.target,1-Math.exp(-3*rdt));TINT.target=0;sky.material.uniforms.tint.value=TINT.k;scene.fog.color.copy(FOG0).lerp(FOGR,TINT.k*.7);sun.color.copy(SUN0).lerp(SUNR,TINT.k*.8);
   if(PATS.waves)PATS.waves.offset.y-=rdt*.12;if(PATS.circuit)PATS.circuit.offset.x+=rdt*.04;if(PATS.veins)PATS.veins.offset.y+=rdt*.03;
-  if(inMatch()&&ME&&!ME.dead&&game.rules!=='arena'){const dz=Math.abs(ZONE.r-Math.hypot(ME.pos.x-ZONE.cx,ME.pos.z-ZONE.cz));AU.zoneHum(clamp(1-dz/14,0,1));}else AU.zoneHum(0);
+  if(inMatch()&&ME&&!ME.dead&&!noStorm()){const dz=Math.abs(ZONE.r-Math.hypot(ME.pos.x-ZONE.cx,ME.pos.z-ZONE.cz));AU.zoneHum(clamp(1-dz/14,0,1));}else AU.zoneHum(0);
   AU.intensity=inMatch()?clamp(ZONE.pi/4+(game.phase==='fight'?.15:0),0,1):0;
   if(GFX.high&&Math.random()<.6){const a=rand(0,6.28),r=rand(2,16);ADD.spawn(camera.position.x+Math.cos(a)*r,rand(.5,6),camera.position.z+Math.sin(a)*r,rand(-.2,.2),rand(-.05,.15),rand(-.2,.2),.32,.24,.16,rand(3,5),.07,.07,0,0);}
   AU.pan=0;AU.scale=1;
-  zoneMesh.visible=zoneNext.visible=inMatch()&&game.rules!=='arena';
+  zoneMesh.visible=zoneNext.visible=inMatch()&&!noStorm();
   if(inMatch()){zoneMesh.position.set(ZONE.cx,35,ZONE.cz);zoneMesh.scale.set(Math.max(.5,ZONE.r),1,Math.max(.5,ZONE.r));zoneMat.uniforms.t.value=game.time;
     zoneNext.position.set(ZONE.tx,.15,ZONE.tz);zoneNext.scale.setScalar(Math.max(.5,ZONE.tr));}
   walls.forEach(w=>{w.material.opacity=lerp(w.material.opacity,.3,Math.min(1,rdt*2));});
@@ -5800,6 +5822,148 @@ $('prExit').onclick=()=>{AU.ui();leaveMatch();};
 $('prHide').onclick=()=>{PR.panel=!PR.panel;$('prac').classList.toggle('min',!PR.panel);AU.ui();};
 $('bPractice').onclick=()=>{AU.init();AU.ui();openSetup('prac');};
 $('bCreate').onclick=()=>{AU.init();AU.ui();setupMode='off';openCreator();};
+/* ================= STORY MODE: "SURGE: ORIGIN" =================
+   An original hero-school story told in chapters: cutscenes, then missions with set teams.
+   Cast: everyone except the JJK-inspired fighters (Void, Ronin, Strobe, Hex, Scathe) and Marrow. */
+const STORY_KEY='surge.story';
+// speakers who aren't fighters
+const NPC={narr:{name:'',css:'#cfd6e6'},paragon:{name:'PARAGON',css:'#ffd23f',em:'★'},principal:{name:'PRINCIPAL KODA',css:'#9ad8ff',em:'◆'},crowd:{name:'CROWD',css:'#ff9ad8',em:'✦'}};
+const SL=(s,t)=>[s,t];
+const STORY=[
+ {t:'THE INHERITOR',loc:'Sector 7 Streets',pre:[
+   SL('narr','Sector 7. Eight in ten people are born with a power. Kai Mori was one of the two who were not.'),
+   SL('narr','He filled notebooks with every hero he ever saw, and dreamed of joining Aegis Academy anyway.'),
+   SL('paragon','Kid. I saw you run toward that collapsing bridge when everyone else ran away. You had no power, and you went anyway.'),
+   SL('paragon','My power, OVERPOWER, can be passed on. I have carried it a long time. I want you to carry it next.'),
+   SL('titan','Me? ...I won\'t waste it. I promise.'),
+   SL('narr','Ten months of training later: the Aegis Academy entrance exam. Wreck as many exam robots as you can.')],
+  stages:[{player:'titan',enemies:[{h:'bastion',name:'EXAM BOT α',take:1.4},{h:'bastion',name:'EXAM BOT β',take:1.4},{h:'bastion',name:'EXAM BOT γ',take:1.4}],diff:0,goal:'Destroy the exam robots'}],
+  post:[SL('principal','Exam complete. Applicant Kai Mori, codename TITAN: you passed.'),SL('titan','I... passed? I passed!'),SL('paragon','Told you. Welcome to Aegis, Titan.')]},
+ {t:'BATTLE TRIAL',loc:'Aegis Academy · Training Ground',pre:[
+   SL('snare','I\'m Snare, your homeroom teacher. I\'ll be brief, because talking is tiring.'),
+   SL('snare','First lesson: a one-on-one battle trial. Titan, you\'re up against Nitro.'),
+   SL('nitro','You?! The kid who didn\'t have a power last year? Stay down when I knock you over, Titan.'),
+   SL('titan','I\'m not the same as last year, Nitro.')],
+  stages:[{player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.9}],diff:1,goal:'Win the battle trial against Nitro'}],
+  post:[SL('nitro','Tch. That was luck. Next time I\'m blowing you off the map.'),SL('snare','Both of you, decent. Now go to the nurse. Both of you.')]},
+ {t:'ATTACK ON THE DOME',loc:'Rescue Training Dome',pre:[
+   SL('drift','Rescue training at the Dome today! Floating people out of rubble is kind of my whole thing.'),
+   SL('snare','Wait. Get behind me. That portal isn\'t ours.'),
+   SL('warp','Good afternoon, students. We are THE SEVERANCE. We came to meet the Symbol of Peace, Paragon.'),
+   SL('entropy','He isn\'t here? Then we\'ll break his students instead. Everything falls apart eventually.'),
+   SL('snare','Titan, Drift, with me. Don\'t let anyone touch you with five fingers.')],
+  stages:[{player:'titan',allies:['snare','drift'],enemies:[{h:'warp',name:'WARP',take:.8},{h:'entropy',name:'ENTROPY',flee:.55},{h:'quake',name:'SEVERANCE THUG',take:1.4},{h:'legion',name:'SEVERANCE THUG',take:1.4}],diff:1,goal:'Drive off the Severance'}],
+  post:[SL('entropy','This was a test run. Next time, Paragon\'s little heir won\'t be so lucky.'),SL('drift','They... they ran. We actually held them off!'),SL('paragon','You were brave today, Titan. But that man, Entropy, is only the hand. Someone is moving him.')]},
+ {t:'SPORTS FESTIVAL',loc:'Aegis Stadium',pre:[
+   SL('crowd','AEGIS SPORTS FESTIVAL! Every pro agency in the country is watching!'),
+   SL('solstice','Titan. I only use my ice. I refuse to use my father\'s fire. Even so, I\'ll beat you.'),
+   SL('titan','You\'re holding back half of yourself... and you think that\'s enough?'),
+   SL('nitro','Shut up, both of you. The only one winning this is me.')],
+  stages:[
+   {player:'titan',enemies:[{h:'piston',name:'PISTON',take:1}],diff:1,goal:'Round 1: defeat Piston'},
+   {player:'titan',enemies:[{h:'solstice',name:'SOLSTICE',take:.85}],diff:1,goal:'Semifinal: defeat Solstice',pre:[SL('titan','It\'s YOUR power, Solstice! Fire and ice, both of them! Use all of it!'),SL('solstice','...Fine. Don\'t regret asking.')]},
+   {player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.8}],diff:2,goal:'Final: defeat Nitro',pre:[SL('nitro','No holding back, Titan. I want a REAL win.'),SL('titan','Then come on!')]}],
+  post:[SL('crowd','TITAN WINS THE SPORTS FESTIVAL!'),SL('nitro','...Next year. Next year it\'s mine.'),SL('solstice','Thank you, Titan. For the first time, my fire felt like mine.')]},
+ {t:'THE HERO HUNTER',loc:'Hosu Back Alleys',pre:[
+   SL('narr','During internships, pro heroes start disappearing. Each was shot from impossible angles.'),
+   SL('recoil','I was a hero once. A government hero. I pulled the trigger on whoever they told me to.'),
+   SL('recoil','Now I hunt the ones who smile for cameras. You students are in my sights too.'),
+   SL('piston','She took out my brother\'s whole agency. I\'m not running.'),
+   SL('solstice','Then we fight together. Titan, stay out of her line of fire.')],
+  stages:[{player:'titan',allies:['piston','solstice'],enemies:[{h:'recoil',name:'RECOIL',take:.55}],diff:2,goal:'Bring down Recoil'}],
+  post:[SL('recoil','You kids... actually aim to save people. Maybe the world isn\'t completely rotten.'),SL('narr','Recoil is taken into custody. Her words about the hero system spread across the news.')]},
+ {t:'FOREST CAMP RAID',loc:'Summer Training Camp',pre:[
+   SL('volta','Training camp! Forest, fresh air, zero villains. Best week ever.'),
+   SL('umbra','Too quiet. My shadow doesn\'t like it.'),
+   SL('pyre','Evening, kids. Nice campfire. Mine burns blue.'),
+   SL('marble','Ladies and gentlemen, the Severance\'s vanguard has arrived! Tonight\'s trick: a disappearing student!'),
+   SL('legion','Two of me! No, a hundred of me! No, just enough to win! Ha!')],
+  stages:[{player:'titan',allies:['volta','umbra'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'marble',name:'MARBLE',take:.85},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Stop the Severance vanguard'}],
+  post:[SL('marble','A fine performance! But the show already ended. Look in my pocket.'),SL('narr','A single glass marble glints in his hand. Inside it: Nitro.'),SL('titan','NITRO!'),SL('warp','Retrieval complete. We\'re leaving.')]},
+ {t:'RESCUE AT THE DOCKS',loc:'Kamino Harbor',pre:[
+   SL('quill','I\'m Quill. Pro hero. The Severance hideout is in the warehouses by the harbor. They have your classmate.'),
+   SL('solstice','We\'re not waiting for permission.'),
+   SL('titan','We get in, we get Nitro, we get out.')],
+  stages:[
+   {player:'titan',allies:['solstice','quill'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'quake',name:'QUAKE',take:.7},{h:'warp',name:'WARP',flee:.5}],diff:2,goal:'Break into the hideout'},
+   {player:'titan',allies:['bastion','cinder'],enemies:[{h:'sovereign',name:'SOVEREIGN',take:.35,boss:true}],diff:2,goal:'Survive Sovereign',
+    pre:[SL('sovereign','So this is the boy who inherited Overpower. Paragon always did love a lost cause.'),SL('paragon','Get away from my student, Sovereign!'),SL('narr','Paragon throws himself at Sovereign, but his power is almost gone. Titan steps in beside him.'),
+      SL('bastion','Bastion and Cinder, reporting! Titan, we\'ve got your back!'),SL('sovereign','Then I\'ll take ALL of your powers. One by one.')]}],
+  post:[SL('narr','Sovereign falls. Paragon, his power spent, stands one last time before the cameras.'),SL('paragon','Next... it\'s your turn.'),
+   SL('narr','The Symbol of Peace retires that night. Nitro is rescued. And the whole country looks at a boy named Titan.'),SL('nitro','...Don\'t think I\'m thanking you. ...Thanks.')]},
+ {t:'THE LIBERATION WAR',loc:'Jaku City',pre:[
+   SL('principal','Entropy has woken up with Sovereign\'s power inside him. The Severance is marching on the city.'),
+   SL('snare','Every hero in the country is on the line today. Students included. I\'ll erase his power, Titan. You end this.'),
+   SL('nitro','We do it together. Don\'t you dare fall behind.'),SL('solstice','Fire and ice. All of it.'),
+   SL('entropy','Heroes, symbols, peace... I\'ll decay all of it. Come on, heir. Let\'s see what Paragon left you.')],
+  stages:[{player:'titan',allies:['nitro','solstice','snare'],enemies:[{h:'entropy',name:'ENTROPY',take:.3,boss:true},{h:'pyre',name:'PYRE',take:.75},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Defeat Entropy'}],
+  post:[SL('entropy','Why... does everyone... keep reaching out to me...'),SL('titan','Because somebody should have, a long time ago.'),
+   SL('narr','The war ends. The city starts to rebuild, one street at a time.'),
+   SL('paragon','Kai. You were never "powerless." You were a hero before I gave you anything.'),
+   SL('titan','I\'ll keep going, Paragon. Plus Ultra... no. SURGE FORWARD.'),SL('narr','THE END ... for now.')]},
+];
+const STG={on:false,ch:0,st:0,boss:null};
+function storyProg(){try{const v=JSON.parse(store.get(STORY_KEY)||'null');if(v&&Array.isArray(v.done))return v;}catch(e){}return {done:[]};}
+function storyDone(i){const p=storyProg();if(p.done.indexOf(i)<0){p.done.push(i);store.set(STORY_KEY,JSON.stringify(p));return true;}return false;}
+function heroIdx(id){return HEROES.findIndex(h=>h.id===id);}
+function spkInfo(id){if(NPC[id])return NPC[id];const i=heroIdx(id);const h=HEROES[i];return h?{name:h.name,css:h.css,img:PV.portraits[i]}:NPC.narr;}
+
+/* ---- chapter menu ---- */
+function showStory(){showScreen('story');const p=storyProg();const el=$('storyList');
+  el.innerHTML=STORY.map((c,i)=>{const done=p.done.indexOf(i)>=0,open=i===0||p.done.indexOf(i-1)>=0;
+    return `<div class="stc ${done?'done':''} ${open?'':'lock'}" data-i="${i}"><b>${i+1}</b><div><div class="stt">${c.t}</div><div class="stl">${c.loc}${done?' · CLEARED':''}</div></div><span>${open?(done?'REPLAY':'PLAY'):'🔒'}</span></div>`;}).join('');
+  [...el.children].forEach(d=>d.onclick=()=>{if(d.classList.contains('lock'))return;AU.ui();storyChapter(+d.dataset.i);});}
+
+/* ---- cutscenes ---- */
+let CUT=null;
+function cutscene(lines,done){if(!lines||!lines.length){done();return;}CUT={lines,i:-1,done,tt:0};$('cut').classList.add('on');cutNext();}
+function cutNext(){if(!CUT)return;const C=CUT;
+  if(C.i>=0&&C.typing){C.typing=false;$('cutTxt').textContent=C.lines[C.i][1];return;}
+  C.i++;if(C.i>=C.lines.length){cutEnd();return;}
+  const [sp,txt]=C.lines[C.i],S=spkInfo(sp);
+  $('cutName').textContent=S.name;$('cutName').style.color=S.css;$('cutBox').style.setProperty('--c',S.css);$('cutBox').classList.toggle('narr',sp==='narr');
+  $('cutImg').innerHTML=S.img?`<img src="${S.img}" alt="">`:(S.em?`<div class="cem" style="color:${S.css}">${S.em}</div>`:'');$('cutImg').style.display=sp==='narr'?'none':'';
+  C.typing=true;let k=0;$('cutTxt').textContent='';clearInterval(C.iv);C.iv=setInterval(()=>{if(!C.typing){clearInterval(C.iv);return;}k+=2;$('cutTxt').textContent=txt.slice(0,k);if(k>=txt.length){C.typing=false;clearInterval(C.iv);}},16);AU.ui();}
+function cutEnd(){if(!CUT)return;const d=CUT.done;clearInterval(CUT.iv);CUT=null;$('cut').classList.remove('on');d();}
+$('cut').onclick=e=>{if(e.target.id==='cutSkip'){cutEnd();return;}cutNext();};
+addEventListener('keydown',e=>{if(!CUT)return;if(e.code==='Space'||e.code==='Enter'){e.preventDefault();cutNext();}else if(e.code==='Escape'){cutEnd();}},true);
+
+/* ---- missions ---- */
+function storyChapter(i){STG.ch=i;STG.st=0;const c=STORY[i];showScreen(null);cutscene(c.pre,()=>storyStage());}
+function storyStage(){const c=STORY[STG.ch],S=c.stages[STG.st];cutscene(S.pre||[],()=>storyStart(S));}
+function storyStart(S){AU.init();store.set('surge.name',myName());netShutdown();NET.role='off';NET.myId=0;
+  const cos=myCos(),R=[{id:0,name:myName(),bot:false,team:0,hero:heroIdx(S.player),cos}];
+  (S.allies||[]).forEach((a,k)=>R.push({id:100+k,name:HEROES[heroIdx(a)].name,hero:heroIdx(a),bot:true,team:0}));
+  S.enemies.forEach((e,k)=>R.push({id:200+k,name:e.name||HEROES[heroIdx(e.h)].name,hero:heroIdx(e.h),bot:true,team:1}));
+  // heroes start together on a street; the enemies wait down the road
+  const a=INNER[1+Math.floor(Math.random()*(INNER.length-2))],b=INNER[1+Math.floor(Math.random()*(INNER.length-2))],sw=[];
+  R.forEach((r,k)=>{if(r.team===0)sw.push([a+(k%3-1)*2.5,b-14+Math.floor(k/3)*2]);else{const j=k-(1+(S.allies||[]).length);sw.push([a+(j%3-1)*3,b+14+Math.floor(j/3)*3]);}});
+  game._storyNext={S};startMatch(R,sw,S.diff==null?1:S.diff,'solo','br');
+  STG.on=true;STG.over=false;STG.boss=null;STG.flee=0;
+  FS.forEach(f=>{if(f.team!==1)return;const e=S.enemies[f.id-200];f.take=e.take||1;f.flee=e.flee||0;f.boss=!!e.boss;f.face=Math.atan2(-(f.pos.x-a),-(f.pos.z-(b-14)));if(f.boss)STG.boss=f;});
+  FS.forEach(f=>{if(f.team===0)f.face=0;});if(ME)camYaw=0;
+  setTimeout(()=>{if(STG.on)announceSmall(S.goal.toUpperCase());},3800);}
+function storyEnemies(){return FS.filter(f=>f.team===1);}
+function storyTick(dt){if(!STG.on||!game.story||game.phase!=='fight'||STG.over)return;
+  for(const f of storyEnemies()){if(f.dead||!f.flee||f.hp>f.flee*100)continue;
+    // this villain escapes through a portal once beaten down enough
+    f.fled=true;f.dead=true;f.vel.set(0,0,0);portal(f.chest(new V3()),2.4,true,1.2);if(f.pet)f.pet.visible=false;f.rig.root.visible=false;feed(`<b style="--c:${f.hero.css}">${esc(f.name)}</b> escaped through a portal!`);
+    announceSmall(f.name+' ESCAPED!');AU.tone('sine',300,1400,.45,.08);}
+  const B=STG.boss,bb=$('bossBar');if(B){bb.classList.add('on');$('bossName').textContent=B.name;$('bossFill').style.width=Math.max(0,B.hp)+'%';$('bossFill').style.background=B.hero.css;}else bb.classList.remove('on');
+  if(ME&&ME.dead){storyEnd(false);return;}
+  if(storyEnemies().every(f=>f.dead))storyEnd(true);}
+function storyEnd(win){if(STG.over)return;STG.over=true;game.phase='over';game.slowT=1.2;$('bossBar').classList.remove('on');
+  announce(win?'MISSION CLEAR':'MISSION FAILED',win?'#ffd23f':'#ff4a3f');AU.scale=1;win?AU.bell():AU.ko();
+  setTimeout(()=>{const c=STORY[STG.ch];STG.on=false;endMatchCleanup();$('hud').classList.remove('on');$('hint').style.display='none';
+    if(!win){storyFailPanel();return;}
+    STG.st++;if(STG.st<c.stages.length){storyStage();return;}
+    cutscene(c.post,()=>{const first=storyDone(STG.ch);if(first)addPoints(50,'STORY');showStory();if(first&&STG.ch<STORY.length-1)announceSmall('CHAPTER '+(STG.ch+2)+' UNLOCKED');});},2600);}
+function storyFailPanel(){showScreen('story');$('storyList').innerHTML=`<div class="stfail"><div class="stt">MISSION FAILED</div><div class="stl">${STORY[STG.ch].t} · ${STORY[STG.ch].stages[STG.st].goal}</div>
+  <div class="rowb" style="margin-top:16px"><button class="btn cy" id="stRetry">RETRY</button><button class="btn" id="stBack">CHAPTERS</button></div></div>`;
+  $('stRetry').onclick=()=>{AU.ui();showScreen(null);storyStart(STORY[STG.ch].stages[STG.st]);};$('stBack').onclick=()=>{AU.ui();showStory();};}
+$('bStory').onclick=()=>{AU.init();AU.ui();showStory();};
+$('bStoryBack').onclick=()=>{AU.ui();showScreen('title');};
+window.__story={STG,STORY,storyChapter,storyStart,cutNext,cutEnd};
 })();
 </script>
 </body>
