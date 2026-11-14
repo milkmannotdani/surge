@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SURGE: Battle Royale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="load"><div>LOADING ZONE…<div id="err"></div></div></div>
+
+<div id="dmgl"></div>
+<div id="cardShow"></div>
+<div id="prac"><div class="prt">PRACTICE <span id="prHide">P · HIDE</span></div><div class="prbody">
+  <div class="k">DUMMIES DO</div><div class="row" id="prAct"></div>
+  <div class="k">HOW MANY</div><div class="row" id="prCount"></div>
+  <div class="k">TARGETS</div><div class="row" id="prLook"></div>
+  <div class="k">CHEATS</div><div class="row" id="prTog"></div>
+  <div id="prStats"></div>
+  <div id="prMoves"></div>
+  <div class="prb"><span class="chip" id="prReset">RESET <i>H</i></span><span class="chip" id="prFighter">FIGHTER</span><span class="chip" id="prExit">EXIT</span></div>
+  <div class="note">Press Esc to free the mouse and click this panel. Number keys work any time.</div></div></div>
+<div id="hud" class="layer">
+  <div id="me"><div id="mate"><div class="tn" id="mtN"></div><div class="thp"><div id="mtH"></div></div></div><div class="ptsh" id="ptsHud"></div><div class="nmrow" id="meName">YOU</div><div class="hpw"><div class="hpd" id="meD"></div><div class="hpf" id="meH"></div></div>
+    <div class="mbar" id="meMB"><div class="mfill" id="meM"></div></div><div class="bkrow"><span class="bkl">BREAK</span><div class="bkbar" id="meBB"><div class="bkfill" id="meBK"></div></div><span class="bkk" id="meBKk">DASH TO ESCAPE</span></div><div class="cd" id="meCD"></div></div>
+  <div id="slots"></div>
+  <div id="tgt"><div class="tn" id="tgN"></div><div class="thp"><div id="tgH"></div></div></div>
+  <div id="mapw"><canvas id="mini" width="380" height="380"></canvas><div id="alive"></div><div id="zinfo"></div></div>
+  <div id="feed"></div>
+</div>
+<div id="storm"></div>
+<div id="xh"></div>
+<div id="revp"></div>
+<div id="combo"><div class="n" id="cn">2</div><div class="t">HIT COMBO</div></div>
+<div id="announce"></div>
+<div id="toast"></div>
+<div class="lb" id="lbt"></div><div class="lb" id="lbb"></div>
+<div id="banner"><div class="bg"></div><div class="sub">ULTIMATE</div><div class="tx" id="btx">SUPERNOVA</div></div>
+<div id="flash"></div>
+<div id="spec"><div id="specT"></div><button class="btn ghost" id="bSpecLeave">LEAVE MATCH</button></div>
+<div id="hint" style="display:none">WASD MOVE · MOUSE LOOK · SPACE JUMP ×2 · JUMP INTO A WALL + HOLD = CLIMB · SPACE ON A WALL = WALL JUMP · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · 1–4 MOVES · Q ULT (BACK/AIR = ALT ULT) · HOLD = CHARGE · TAB TARGET · M MUSIC · ESC MENU</div>
+
+<div id="story" class="screen"><h1 style="font-size:52px">SURGE: ORIGIN</h1><p>STORY MODE · THE TALE OF THE HERO TITAN</p><div id="storyList"></div><div class="rowb" style="margin-top:16px"><button class="btn" id="bStoryBack">BACK</button></div></div>
+<div id="cut"><canvas id="cutFx"></canvas><div id="cutSfx"></div><div id="cutCard"><b></b><span></span></div><div id="cutEp"><small></small><b></b></div><div id="cutBox"><div id="cutImg"></div><div class="cutr"><div id="cutName"></div><div id="cutTxt"></div><div class="cuth">CLICK / SPACE ▶ · ESC SKIP</div></div><button id="cutSkip">SKIP ▶▶</button></div></div>
+<div id="bossBar"><div id="bossName"></div><div class="bbar"><div id="bossFill"></div></div></div>
+<div id="title" class="screen">
+  <h1>SURGE</h1>
+  <h2>BATTLE ROYALE</h2>
+  <p>SECTOR 7 · HEROES VS VILLAINS · LAST ONE STANDING</p>
+  <div class="rowb" style="margin-top:30px">
+    <button class="btn pulse" id="bOnline">PLAY ONLINE</button>
+    <button class="btn cy" id="bOffline">PLAY VS BOTS</button>
+  </div>
+  <div class="rowb" style="margin-top:14px"><button class="chip tb2" id="bPractice">PRACTICE</button><button class="chip tb2" id="bCreate">CREATE A FIGHTER</button><button class="chip tb2 shopb" id="bShop">★ SHOP</button></div>
+  <div class="rowb" style="margin-top:10px"><button class="btn story" id="bStory">STORY MODE</button></div>
+  <div class="ptst" id="ptsTitle"></div>
+  <div class="rowb" style="margin-top:18px"><span class="lbl">GRAPHICS</span><div class="rowb" style="margin:0" id="gfxChips"></div></div>
+</div>
+
+<div id="setup" class="screen">
+  <div class="topbar"><div class="tabs"><span class="tb sel">FIGHTERS</span><span class="tb" id="modeTab">BATTLE ROYALE</span></div><div class="tbr" id="setupTitle">VS BOTS</div></div>
+  <div class="selwrap">
+    <div class="selL">
+      <div class="filters" id="filters"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="selR">
+      <canvas id="pv"></canvas>
+      <div class="pvinfo">
+        <div class="dtag">Difficulty: <b id="pvDiff"></b></div>
+        <div class="pvname" id="pvName"></div>
+        <div class="tags" id="pvTags"></div>
+        <div class="tags" id="pvTags2"></div>
+        <div class="mvbtn" id="pvMvBtn">MOVE LIST</div> <div class="mvbtn" id="pvEdit" style="display:none">EDIT</div>
+        <div class="pvdesc" id="pvDesc"></div>
+        <div class="pvmoves" id="pvMoves"></div>
+      </div>
+      <div class="pvact">
+        <div class="arow"><span class="lbl">NAME</span><input id="nameIn" maxlength="14" placeholder="Your name"></div>
+        <div class="arow" id="rulesRow"><span class="lbl">TYPE</span><div class="rowb" style="margin:0" id="rules"></div></div>
+        <div class="arow"><span class="lbl">MODE</span><div class="rowb" style="margin:0" id="modes"></div></div>
+        <div class="arow" id="offPanel">
+          <span class="lbl" id="botLbl">BOTS</span><div class="stepper"><span id="bDec">−</span><b id="botN">7</b><span id="bInc">+</span></div>
+          <div class="rowb" style="margin:0" id="diffs"></div>
+        </div>
+        <div class="arow" id="onPanel">
+          <button class="btn sm" id="bHost">HOST GAME</button>
+          <input id="codeIn" maxlength="5" placeholder="CODE" style="width:120px;text-transform:uppercase">
+          <button class="btn cy sm" id="bJoin">JOIN</button>
+        </div>
+        <div id="status"></div>
+        <div class="arow end"><button class="btn ghost sm" id="bBack1">BACK</button><button class="btn" id="bGo">DROP IN</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="creator" class="screen">
+  <div class="topbar"><div class="tabs"><span class="tb sel">CREATE A FIGHTER</span></div><div class="tbr">DESCRIBE IT · IT GETS BUILT</div></div>
+  <div class="crwrap">
+    <div class="crL">
+      <span class="lbl">NAME</span><input id="crName" maxlength="14" placeholder="Fighter name">
+      <span class="lbl">POWERS, MOVES AND LOOK</span>
+      <textarea id="crText" maxlength="1200" spellcheck="false" placeholder="Example: A lava giant who punches with fists of fire. Special: throws a &quot;Magma Ball&quot;. Ultimate: a huge explosion called &quot;Core Meltdown&quot;. Alt ultimate: meteors. Red and orange, big and strong."></textarea>
+      <div class="craib" id="crAI">BUILT-IN DESIGNER</div>
+      <div class="crtips">Describe new abilities in your own words (what they look like, how they hit, what they do to enemies), or write a power (fire, ice, shadow, time, blood, gravity, lightning…), a weapon (sword, katana, axe, hammer, scythe, spear, staff, gun, bow, guitar, claws, whip, chain, dual daggers… even what it's made of, like a golden axe), what the <b>special</b>, <b>second special</b>, <b>ultimate</b> and <b>alt ultimate</b> do, colors, and if they're fast, big, strong or a villain. Put move names in "quotes". You can change anything on the right.</div>
+      <div class="rowb"><button class="btn cy" id="crBuild">BUILD IT</button><button class="chip" id="crIdea">RANDOM IDEA</button></div>
+      <div class="crstat" id="crStat"></div>
+      <div class="rowb"><button class="chip" id="crBack">BACK</button><button class="btn pulse" id="crSave" style="display:none">SAVE FIGHTER</button></div>
+    </div>
+    <div class="crR">
+      <div class="crimgw"><img id="crImg" alt=""><button class="chip mdbtn" id="crMold">✎ MOLD CHARACTER</button><div class="mdhint">Sculpt the body and build armor piece by piece</div></div>
+      <div class="crres" id="crRes"><div class="crhead">WRITE A DESCRIPTION, THEN BUILD IT</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="mold" class="screen">
+  <div class="topbar"><div class="tabs"><span class="tb sel">MOLD</span></div><div class="tbr" id="mdCount"></div></div>
+  <div class="mdwrap">
+    <div class="mdL"><div id="mdTabs" class="mdtabs"><span data-t="body">BODY</span><span data-t="armor">ARMOR</span><span data-t="colors">COLORS</span></div><div id="mdPanel" class="mdpanel"></div></div>
+    <div class="mdR"><div id="mdView"></div>
+      <div class="mdbar"><div id="mdFocus" class="mdrow"><span class="lblx">VIEW</span><span class="chip sm" data-f="full">FULL</span><span class="chip sm" data-f="head">HEAD</span><span class="chip sm" data-f="chest">CHEST</span><span class="chip sm" data-f="arms">ARMS</span><span class="chip sm" data-f="legs">LEGS</span></div>
+        <div id="mdPose" class="mdrow"><span class="lblx">POSE</span><span class="chip sm sel" data-p="idle">IDLE</span><span class="chip sm" data-p="t">T-POSE</span><span class="chip sm" data-p="act">ACTION</span></div>
+        <div class="mdrow mdbtns"><span class="chip" id="mdUndo">UNDO</span><span class="chip" id="mdReset">RESET ALL</span><span class="chip" id="mdCancel">CANCEL</span><button class="btn" id="mdDone">DONE</button></div></div>
+      <div class="mdtip">Drag to turn · scroll to zoom · click a piece to select it · Del removes it · Ctrl+Z undo</div></div></div>
+</div>
+
+<div id="shop" class="screen">
+  <div class="topbar"><div class="tabs" id="shTabs"><span class="tb" data-t="cards">CALLING CARDS</span><span class="tb" data-t="skins">SKINS</span><span class="tb" data-t="pets">PETS</span><span class="tb" data-t="tags">NAME TAGS</span></div><div class="tbr shpts" id="shPts"></div></div>
+  <div class="shwrap">
+    <div class="shL"><div class="mdrow" id="shHero"></div><div class="shgrid" id="shGrid"></div></div>
+    <div class="shR"><div class="shname" id="shName"></div><div id="shView"></div><div id="shBig"></div>
+      <div class="mdrow mdbtns" style="margin-left:0"><span class="chip" id="shBack">BACK</span><button class="btn" id="shBuy">BUY</button></div></div>
+  </div>
+</div>
+
+<div id="lobby" class="screen">
+  <div class="who">ROOM CODE · CLICK TO COPY</div>
+  <div id="lbCode">-----</div>
+  <div id="lbSub" style="opacity:.75;letter-spacing:.1em">Friends join with PLAY ONLINE → enter this code</div>
+  <div id="lbList"></div>
+  <div id="teamRow" style="margin-top:12px"><span class="lbl">YOUR TEAM</span> <span class="rowb" style="margin:0;display:inline-flex" id="teamChips"></span></div>
+  <div class="lbl" style="margin-top:14px">YOUR FIGHTER</div>
+  <div class="minis" id="lbHeroes"></div>
+  <div class="panel" id="lbHost">
+    <span class="lbl">TYPE</span><div class="rowb" style="margin:0" id="rules2"></div>
+    <span class="lbl">MODE</span><div class="rowb" style="margin:0" id="modes2"></div>
+    <span class="lbl">FILL WITH BOTS</span><div class="rowb" style="margin:0" id="fillChips"></div>
+    <span class="lbl">BOT LEVEL</span><div class="rowb" style="margin:0" id="diffs2"></div>
+    <button class="btn" id="bStartM">START MATCH</button>
+  </div>
+  <div id="lbWait" style="margin-top:14px;font-weight:700;letter-spacing:.15em;color:#9fe8ff">WAITING FOR HOST TO START…</div>
+  <div class="rowb"><button class="btn ghost" id="bLeave">LEAVE</button></div>
+</div>
+
+<div id="pause" class="screen"><h3>MENU</h3><div id="pauseNote" style="opacity:.8;letter-spacing:.1em"></div><div class="rowb"><button class="btn" id="bResume">RESUME</button><button class="btn ghost" id="bQuit">LEAVE MATCH</button></div></div>
+<div id="result" class="screen"><div class="who" id="rwho">VICTORY</div><h3 id="rname">#1</h3><div id="rstats"></div>
+  <div class="rowb"><button class="btn" id="bAgain">PLAY AGAIN</button><button class="btn ghost" id="bMenu">MAIN MENU</button></div></div>
+<div id="msg" class="screen"><div id="msgT"></div><div class="rowb"><button class="btn" id="bMsgOk">OK</button></div></div>
+
+<!-- libraries -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/Pass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+<!-- game code: loaded in this order; new files go before js/main.js -->
+<script src="js/engine/core.js"></script>
+<script src="js/engine/world.js"></script>
+<script src="js/engine/fx.js"></script>
+<script src="js/fighters/roster.js"></script>
+<script src="js/fighters/rig.js"></script>
+<script src="js/fighters/moves.js"></script>
+<script src="js/fighters/fighter.js"></script>
+<script src="js/fighters/combat.js"></script>
+<script src="js/fighters/elements.js"></script>
+<script src="js/fighters/variants.js"></script>
+<script src="js/fighters/abilities.js"></script>
+<script src="js/fighters/gear.js"></script>
+<script src="js/creator/mold.js"></script>
+<script src="js/creator/custom.js"></script>
+<script src="js/creator/design.js"></script>
+<script src="js/game/shop.js"></script>
+<script src="js/game/ai.js"></script>
+<script src="js/fighters/mha.js"></script>
+<script src="js/game/game.js"></script>
+<script src="js/game/rules.js"></script>
+<script src="js/game/net.js"></script>
+<script src="js/game/ui.js"></script>
+<script src="js/creator/creator.js"></script>
+<script src="js/game/practice.js"></script>
+<script src="js/story/chapters.js"></script>
+<script src="js/story/story.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

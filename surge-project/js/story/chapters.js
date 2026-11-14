@@ -1,0 +1,112 @@
+/* Story mode script: every chapter, line of dialogue, cutscene staging and mission. Add chapters here */
+/* ================= STORY MODE: "SURGE: ORIGIN" =================
+   An original hero-school story told in chapters: cutscenes, then missions with set teams.
+   Cast: everyone except the JJK-inspired fighters (Void, Ronin, Strobe, Hex, Scathe) and Marrow. */
+const STORY_KEY='surge.story';
+// speakers who aren't fighters
+const NPC={narr:{name:'',css:'#cfd6e6'},paragon:{name:'PARAGON',css:'#ffd23f',em:'★'},principal:{name:'PRINCIPAL KODA',css:'#9ad8ff',em:'◆'},crowd:{name:'CROWD',css:'#ff9ad8',em:'✦'}};
+const SL=(s,t,o)=>[s,t,o||{}];
+// SL(speaker, line, staging): staging can set a pose, play an effect at a character (fx/at), bring characters in or out (enter/exit) and pick a shot (cam: wide/close)
+const STORY=[
+ {t:'THE INHERITOR',loc:'Sector 7 Streets',
+  sPre:{where:[0,-30],actors:[['titan',-1.6,0],['paragon',1.8,0,1]]},
+  pre:[
+   SL('narr','Sector 7. Eight in ten people are born with a power. Kai Mori was one of the two who were not.',{cam:'wide'}),
+   SL('narr','He filled notebooks with every hero he ever saw, and dreamed of joining Aegis Academy anyway.',{cam:'close',at:'titan'}),
+   SL('paragon','Kid. I saw you run toward that collapsing bridge when everyone else ran away. You had no power, and you went anyway.',{enter:['paragon'],fx:'aura',at:'paragon',pose:'point'}),
+   SL('paragon','My power, OVERPOWER, can be passed on. I have carried it a long time. I want you to carry it next.',{fx:'transfer',at:'titan',pose:'command'}),
+   SL('titan','Me? ...I won\'t waste it. I promise.',{pose:'charge',fx:'aura',at:'titan'}),
+   SL('narr','Ten months of training later: the Aegis Academy entrance exam. Wreck as many exam robots as you can.',{cam:'wide'})],
+  stages:[{player:'titan',enemies:[{h:'bastion',name:'EXAM BOT α',take:1.4},{h:'bastion',name:'EXAM BOT β',take:1.4},{h:'bastion',name:'EXAM BOT γ',take:1.4}],diff:0,goal:'Destroy the exam robots'}],
+  sPost:{where:[48,24],actors:[['titan',-1.5,0],['principal',1.5,0],['paragon',0,3,1]]},
+  post:[SL('principal','Exam complete. Applicant Kai Mori, codename TITAN: you passed.',{pose:'point'}),SL('titan','I... passed? I passed!',{pose:'win',fx:'confetti',at:'titan'}),SL('paragon','Told you. Welcome to Aegis, Titan.',{enter:['paragon'],pose:'point'})]},
+ {t:'BATTLE TRIAL',loc:'Aegis Academy · Training Ground',
+  sPre:{where:'train',actors:[['snare',0,2.5],['titan',-2,-1],['nitro',2,-1]]},
+  pre:[
+   SL('snare','I\'m Snare, your homeroom teacher. I\'ll be brief, because talking is tiring.',{pose:'idle'}),
+   SL('snare','First lesson: a one-on-one battle trial. Titan, you\'re up against Nitro.',{pose:'point'}),
+   SL('nitro','You?! The kid who didn\'t have a power last year? Stay down when I knock you over, Titan.',{pose:'point',fx:'explosion',at:'nitro'}),
+   SL('titan','I\'m not the same as last year, Nitro.',{pose:'charge',fx:'aura',at:'titan'})],
+  stages:[{player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.9}],diff:1,goal:'Win the battle trial against Nitro'}],
+  sPost:{where:'train',actors:[['nitro',1.5,0],['titan',-1.5,0],['snare',0,3]]},
+  post:[SL('nitro','Tch. That was luck. Next time I\'m blowing you off the map.',{pose:'point'}),SL('snare','Both of you, decent. Now go to the nurse. Both of you.',{pose:'idle'})]},
+ {t:'ATTACK ON THE DOME',loc:'Rescue Training Dome',
+  sPre:{where:[-24,-48],actors:[['drift',-2.5,-1],['snare',0,-1.2],['titan',2.5,-1],['warp',0,5,1],['entropy',-1.8,5.5,1]]},
+  pre:[
+   SL('drift','Rescue training at the Dome today! Floating people out of rubble is kind of my whole thing.',{pose:'win'}),
+   SL('snare','Wait. Get behind me. That portal isn\'t ours.',{pose:'block',fx:'portal',at:'warp',cam:'wide'}),
+   SL('warp','Good afternoon, students. We are THE SEVERANCE. We came to meet the Symbol of Peace, Paragon.',{enter:['warp'],fx:'portal',at:'warp',pose:'command'}),
+   SL('entropy','He isn\'t here? Then we\'ll break his students instead. Everything falls apart eventually.',{enter:['entropy'],fx:'decay',at:'entropy',pose:'point'}),
+   SL('snare','Titan, Drift, with me. Don\'t let anyone touch you with five fingers.',{pose:'stare',fx:'erase',at:'snare'})],
+  stages:[{player:'titan',allies:['snare','drift'],enemies:[{h:'warp',name:'WARP',take:.8},{h:'entropy',name:'ENTROPY',flee:.55},{h:'quake',name:'SEVERANCE THUG',take:1.4},{h:'legion',name:'SEVERANCE THUG',take:1.4}],diff:1,goal:'Drive off the Severance'}],
+  sPost:{where:[-24,-48],actors:[['entropy',0,5],['drift',-2,-1],['titan',2,-1],['paragon',0,-4,1]]},
+  post:[SL('entropy','This was a test run. Next time, Paragon\'s little heir won\'t be so lucky.',{pose:'point',fx:'portal',at:'entropy',exit:['entropy']}),SL('drift','They... they ran. We actually held them off!',{pose:'win'}),
+   SL('paragon','You were brave today, Titan. But that man, Entropy, is only the hand. Someone is moving him.',{enter:['paragon'],pose:'idle'})]},
+ {t:'SPORTS FESTIVAL',loc:'Aegis Stadium',
+  sPre:{where:'train',actors:[['titan',0,0],['solstice',-3,3],['nitro',3,3]]},
+  pre:[
+   SL('crowd','AEGIS SPORTS FESTIVAL! Every pro agency in the country is watching!',{cam:'wide',fx:'confetti',at:'titan'}),
+   SL('solstice','Titan. I only use my ice. I refuse to use my father\'s fire. Even so, I\'ll beat you.',{pose:'point',fx:'ice',at:'solstice'}),
+   SL('titan','You\'re holding back half of yourself... and you think that\'s enough?',{pose:'charge'}),
+   SL('nitro','Shut up, both of you. The only one winning this is me.',{pose:'point',fx:'explosion',at:'nitro'})],
+  stages:[
+   {player:'titan',enemies:[{h:'piston',name:'PISTON',take:1}],diff:1,goal:'Round 1: defeat Piston'},
+   {player:'titan',enemies:[{h:'solstice',name:'SOLSTICE',take:.85}],diff:1,goal:'Semifinal: defeat Solstice',sPre:{where:'train',actors:[['titan',-2,0],['solstice',2,0]]},
+    pre:[SL('titan','It\'s YOUR power, Solstice! Fire and ice, both of them! Use all of it!',{pose:'point'}),SL('solstice','...Fine. Don\'t regret asking.',{pose:'charge',fx:'fire',at:'solstice'})]},
+   {player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.8}],diff:2,goal:'Final: defeat Nitro',sPre:{where:'train',actors:[['titan',-2,0],['nitro',2,0]]},
+    pre:[SL('nitro','No holding back, Titan. I want a REAL win.',{pose:'charge',fx:'explosion',at:'nitro'}),SL('titan','Then come on!',{pose:'charge',fx:'aura',at:'titan'})]}],
+  sPost:{where:'train',actors:[['titan',0,0],['nitro',2.5,1.5],['solstice',-2.5,1.5]]},
+  post:[SL('crowd','TITAN WINS THE SPORTS FESTIVAL!',{cam:'wide',fx:'confetti',at:'titan'}),SL('nitro','...Next year. Next year it\'s mine.',{pose:'idle'}),SL('solstice','Thank you, Titan. For the first time, my fire felt like mine.',{fx:'fire',at:'solstice'})]},
+ {t:'THE HERO HUNTER',loc:'Hosu Back Alleys',
+  sPre:{where:[96,-30],actors:[['recoil',0,6],['piston',-2,-1],['solstice',0,-1.5],['titan',2,-1]]},
+  pre:[
+   SL('narr','During internships, pro heroes start disappearing. Each was shot from impossible angles.',{cam:'wide'}),
+   SL('recoil','I was a hero once. A government hero. I pulled the trigger on whoever they told me to.',{pose:'aim',fx:'shot',at:'recoil'}),
+   SL('recoil','Now I hunt the ones who smile for cameras. You students are in my sights too.',{pose:'aim'}),
+   SL('piston','She took out my brother\'s whole agency. I\'m not running.',{pose:'charge',fx:'engine',at:'piston'}),
+   SL('solstice','Then we fight together. Titan, stay out of her line of fire.',{pose:'point',fx:'ice',at:'solstice'})],
+  stages:[{player:'titan',allies:['piston','solstice'],enemies:[{h:'recoil',name:'RECOIL',take:.55}],diff:2,goal:'Bring down Recoil'}],
+  sPost:{where:[96,-30],actors:[['recoil',0,2],['titan',-1.5,-1],['solstice',1.5,-1]]},
+  post:[SL('recoil','You kids... actually aim to save people. Maybe the world isn\'t completely rotten.',{pose:'idle'}),SL('narr','Recoil is taken into custody. Her words about the hero system spread across the news.',{cam:'wide'})]},
+ {t:'FOREST CAMP RAID',loc:'Summer Training Camp',
+  sPre:{where:[-120,96],actors:[['volta',-2.5,-1],['umbra',0,-1.5],['titan',2.5,-1],['nitro',4.5,-2],['pyre',-2,6,1],['marble',0,6.5,1],['legion',2,6,1]]},
+  pre:[
+   SL('volta','Training camp! Forest, fresh air, zero villains. Best week ever.',{pose:'win',fx:'lightning',at:'volta'}),
+   SL('umbra','Too quiet. My shadow doesn\'t like it.',{pose:'idle',fx:'dark',at:'umbra'}),
+   SL('pyre','Evening, kids. Nice campfire. Mine burns blue.',{enter:['pyre'],fx:'bluefire',at:'pyre',pose:'command'}),
+   SL('marble','Ladies and gentlemen, the Severance\'s vanguard has arrived! Tonight\'s trick: a disappearing student!',{enter:['marble'],fx:'glass',at:'marble',pose:'snap'}),
+   SL('legion','Two of me! No, a hundred of me! No, just enough to win! Ha!',{enter:['legion'],fx:'mud',at:'legion',pose:'win'})],
+  stages:[{player:'titan',allies:['volta','umbra'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'marble',name:'MARBLE',take:.85},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Stop the Severance vanguard'}],
+  sPost:{where:[-120,96],actors:[['marble',0,5],['titan',-1.5,-1],['nitro',1.8,1.5],['warp',2.5,6,1]]},
+  post:[SL('marble','A fine performance! But the show already ended. Look in my pocket.',{pose:'snap'}),SL('narr','A single glass marble glints in his hand. Inside it: Nitro.',{fx:'capture',at:'nitro',cam:'close'}),
+   SL('titan','NITRO!',{pose:'point',fx:'aura',at:'titan'}),SL('warp','Retrieval complete. We\'re leaving.',{enter:['warp'],fx:'portal',at:'marble',exit:['marble','warp']})]},
+ {t:'RESCUE AT THE DOCKS',loc:'Kamino Harbor',
+  sPre:{where:[120,48],actors:[['quill',0,1.5],['solstice',-2,-1],['titan',2,-1]]},
+  pre:[
+   SL('quill','I\'m Quill. Pro hero. The Severance hideout is in the warehouses by the harbor. They have your classmate.',{pose:'point',fx:'feathers',at:'quill'}),
+   SL('solstice','We\'re not waiting for permission.',{pose:'charge',fx:'ice',at:'solstice'}),
+   SL('titan','We get in, we get Nitro, we get out.',{pose:'charge',fx:'aura',at:'titan'})],
+  stages:[
+   {player:'titan',allies:['solstice','quill'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'quake',name:'QUAKE',take:.7},{h:'warp',name:'WARP',flee:.5}],diff:2,goal:'Break into the hideout'},
+   {player:'titan',allies:['bastion','cinder'],enemies:[{h:'sovereign',name:'SOVEREIGN',take:.35,boss:true}],diff:2,goal:'Survive Sovereign',
+    sPre:{where:[120,48],actors:[['sovereign',0,6],['paragon',0,1.5],['titan',-2,-1],['bastion',-4,-2,1],['cinder',3.5,-2,1]]},
+    pre:[SL('sovereign','So this is the boy who inherited Overpower. Paragon always did love a lost cause.',{pose:'command',fx:'dark',at:'sovereign'}),SL('paragon','Get away from my student, Sovereign!',{pose:'charge',fx:'aura',at:'paragon'}),
+      SL('narr','Paragon throws himself at Sovereign, but his power is almost gone. Titan steps in beside him.',{cam:'wide',fx:'explosion',at:'sovereign'}),
+      SL('bastion','Bastion and Cinder, reporting! Titan, we\'ve got your back!',{enter:['bastion','cinder'],pose:'charge',fx:'fire',at:'cinder'}),SL('sovereign','Then I\'ll take ALL of your powers. One by one.',{pose:'point',fx:'dark',at:'sovereign'})]}],
+  sPost:{where:[120,48],actors:[['paragon',0,0],['titan',-2,-1.5],['nitro',2.2,-1.5]]},
+  post:[SL('narr','Sovereign falls. Paragon, his power spent, stands one last time before the cameras.',{cam:'wide'}),SL('paragon','Next... it\'s your turn.',{pose:'point',fx:'aura',at:'titan'}),
+   SL('narr','The Symbol of Peace retires that night. Nitro is rescued. And the whole country looks at a boy named Titan.',{cam:'wide'}),SL('nitro','...Don\'t think I\'m thanking you. ...Thanks.',{pose:'idle'})]},
+ {t:'THE LIBERATION WAR',loc:'Jaku City',
+  sPre:{where:[0,72],actors:[['principal',-4.5,-2.5],['snare',-2.5,-1],['nitro',-.8,-1.3],['solstice',.8,-1.3],['titan',2.5,-1],['entropy',0,7,1]]},
+  pre:[
+   SL('principal','Entropy has woken up with Sovereign\'s power inside him. The Severance is marching on the city.',{pose:'point'}),
+   SL('snare','Every hero in the country is on the line today. Students included. I\'ll erase his power, Titan. You end this.',{pose:'stare',fx:'erase',at:'snare'}),
+   SL('nitro','We do it together. Don\'t you dare fall behind.',{pose:'charge',fx:'explosion',at:'nitro'}),SL('solstice','Fire and ice. All of it.',{pose:'charge',fx:'fireice',at:'solstice'}),
+   SL('entropy','Heroes, symbols, peace... I\'ll decay all of it. Come on, heir. Let\'s see what Paragon left you.',{enter:['entropy'],fx:'decay',at:'entropy',pose:'command'})],
+  stages:[{player:'titan',allies:['nitro','solstice','snare'],enemies:[{h:'entropy',name:'ENTROPY',take:.3,boss:true},{h:'pyre',name:'PYRE',take:.75},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Defeat Entropy'}],
+  sPost:{where:[0,72],actors:[['entropy',0,2.5],['titan',0,-.5],['paragon',-3,-3,1],['nitro',2.5,-2],['solstice',-2.5,-1.5]]},
+  post:[SL('entropy','Why... does everyone... keep reaching out to me...',{pose:'idle',fx:'decay',at:'entropy'}),SL('titan','Because somebody should have, a long time ago.',{pose:'idle'}),
+   SL('narr','The war ends. The city starts to rebuild, one street at a time.',{cam:'wide',exit:['entropy']}),
+   SL('paragon','Kai. You were never "powerless." You were a hero before I gave you anything.',{enter:['paragon'],pose:'point'}),
+   SL('titan','I\'ll keep going, Paragon. Plus Ultra... no. SURGE FORWARD.',{pose:'win',fx:'aura',at:'titan'}),SL('narr','THE END ... for now.',{cam:'wide',fx:'confetti',at:'titan'})]},
+];
