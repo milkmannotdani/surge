@@ -425,3 +425,4 @@ body:not(.inmatch) #wxBadge{display:none}
 #decreeHud i{font-style:normal;font-size:11px;letter-spacing:.15em;color:#ffd86a}
 #decreeHud b{background:rgba(8,14,20,.8);border:1px solid #ffd86a;padding:3px 10px;font-size:13px;letter-spacing:.08em}#decreeHud b span{margin-left:6px;opacity:.7}
 #decreeHud b.em{opacity:.4}
+#decreeBox .dn{font-size:12px;opacity:.85;margin:-2px 0 8px;line-height:1.5}#decreeBox .dn b{color:#ffd86a;font-weight:600}
