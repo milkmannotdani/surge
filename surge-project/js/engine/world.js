@@ -11,7 +11,10 @@ const BG_CELL=16;let BG=null,BG_N=-1,BG_F=null;
 function bgBuild(){BG=new Map();BG_N=BLD.length;BG_F=BLD[0];for(const b of BLD){const c0=Math.floor(b.x0/BG_CELL),c1=Math.floor(b.x1/BG_CELL),r0=Math.floor(b.z0/BG_CELL),r1=Math.floor(b.z1/BG_CELL);
   for(let i=c0;i<=c1;i++)for(let j=r0;j<=r1;j++){const k=i*1000+j;let L=BG.get(k);if(!L)BG.set(k,L=[]);L.push(b);}}}
 const BG_EMPTY=[];
-function bgNear(x,z){if(BG_N!==BLD.length||BG_F!==BLD[0])bgBuild();return BG.get(Math.floor(x/BG_CELL)*1000+Math.floor(z/BG_CELL))||BG_EMPTY;}
+// moving colliders (the train) live in DYNB; they're added to lookups that fall inside the DYNR box
+const DYNB=[],DYNR={x0:0,x1:0,z0:0,z1:0};
+function bgNear(x,z){if(BG_N!==BLD.length||BG_F!==BLD[0])bgBuild();const L=BG.get(Math.floor(x/BG_CELL)*1000+Math.floor(z/BG_CELL))||BG_EMPTY;
+  if(!DYNB.length||x<DYNR.x0||x>DYNR.x1||z<DYNR.z0||z>DYNR.z1)return L;return L.concat(DYNB);}
 function bgNearPad(x,z,pad,cb){if(pad<=1){for(const b of bgNear(x,z))if(cb(b))return true;return false;}
   const seen=new Set();for(const dx of [-pad,0,pad])for(const dz of [-pad,0,pad])for(const b of bgNear(x+dx,z+dz)){if(seen.has(b))continue;seen.add(b);if(cb(b))return true;}return false;}
 const solids=[];    // round colliders {x,z,r}
@@ -21,7 +24,8 @@ function insideBld(x,z,pad,y){pad=pad||0;if(y===undefined)y=.5;let hit=null;
 function bgList(x,z,r){const out=[],seen=new Set();for(const dx of [-r-.6,0,r+.6])for(const dz of [-r-.6,0,r+.6])for(const b of bgNear(x+dx,z+dz)){if(!seen.has(b)){seen.add(b);out.push(b);}}return out;}
 // highest walkable top (roof) under x,z that is at or below y; 0 is the street
 function floorAt(x,z,y){let g=0;for(const b of bgNear(x,z)){if(b.h>g&&b.h<=y&&x>b.x0&&x<b.x1&&z>b.z0&&z<b.z1&&b.top)g=b.h;}return g;}
-function pushOutBld(p,r,tall){tall=tall||1.7;let hit=null;for(const b of bgList(p.x,p.z,r)){if(p.y>=b.h||p.y+tall<=(b.y0||0))continue;const x0=b.x0-r,x1=b.x1+r,z0=b.z0-r,z1=b.z1+r;
+function pushOutBld(p,r,tall){tall=tall||1.7;let hit=null;for(const b of bgList(p.x,p.z,r)){if(p.y>=b.h||p.y+tall<=(b.y0||0))continue;
+  if(b.top&&tall>1&&b.h-p.y<=.55&&p.x>b.x0-r&&p.x<b.x1+r&&p.z>b.z0-r&&p.z<b.z1+r&&!insideBld(p.x,p.z,r*.5,b.h+.9)){p.y=b.h;continue;}const x0=b.x0-r,x1=b.x1+r,z0=b.z0-r,z1=b.z1+r;
   if(p.y<(b.y0||0)&&p.x>b.x0&&p.x<b.x1&&p.z>b.z0&&p.z<b.z1){p.y=b.y0-tall;if(!hit)hit={b,ceil:true};continue;}
   if(p.x>x0&&p.x<x1&&p.z>z0&&p.z<z1){const dl=p.x-x0,dr=x1-p.x,dn=p.z-z0,df=z1-p.z,m=Math.min(dl,dr,dn,df);
     if(m===dl)p.x=x0;else if(m===dr)p.x=x1;else if(m===dn)p.z=z0;else p.z=z1;hit={b,ax:(m===dl||m===dr)?'x':'z',s:(m===dl||m===dn)?-1:1};}}return hit;}
@@ -367,7 +371,7 @@ function atlasInst(map,cols,rows,bright,list,pick){if(!list.length)return;const 
   const im=new THREE.InstancedMesh(g,atlasMat(map,cols,rows,bright),list.length);
   list.forEach((t,i)=>{_pp.set(t[0],t[1],t[2]);_eu.set(0,t[6]||0,0);_qq.setFromEuler(_eu);_ss.set(t[3],t[4],1);_m4.compose(_pp,_qq,_ss);im.setMatrixAt(i,_m4);});world.add(im);}
 // neon sign atlas (original shop names)
-const SIGNS=['ラーメン RAMEN','寿司 SUSHI','カラオケ KARAOKE','24H MART','薬局 DRUG','本屋 BOOKS','居酒屋 IZAKAYA','GAME CENTER','珈琲 CAFE','うどん UDON','焼肉 BBQ','パチンコ PACHINKO','SKY MALL','電器 TECH','花屋 FLOWERS','銭湯 BATH','百貨店 DEPT. STORE','HERO CORP','NEO BANK','SURGE NEWS','TOWER OFFICES','ホテル HOTEL','歯科 DENTAL','美容室 SALON'];
+const SIGNS=['ラーメン RAMEN','寿司 SUSHI','カラオケ KARAOKE','24H MART','薬局 DRUG','本屋 BOOKS','居酒屋 IZAKAYA','GAME CENTER','珈琲 CAFE','うどん UDON','焼肉 BBQ','パチンコ PACHINKO','SKY MALL','電器 TECH','花屋 FLOWERS','銭湯 BATH','百貨店 DEPT. STORE','HERO CORP','NEO BANK','MUSUTAFU NEWS','PLUS ULTRA GYM','ホテル HOTEL','歯科 DENTAL','美容室 SALON'];
 const SIGNC=['#ff5aa8','#5af0ff','#7dff8a','#ffd25a','#ff7a3a','#ff4a5a','#c58bff','#9ae0ff'];
 const [sc4,sg4]=cv(1024,384);sg4.fillStyle='#0a0a12';sg4.fillRect(0,0,1024,384);
 SIGNS.forEach((n,i)=>{const x=(i%4)*256,y=Math.floor(i/4)*64;const col=SIGNC[i%SIGNC.length];sg4.fillStyle='#120e18';sg4.fillRect(x+4,y+4,248,56);

@@ -20,7 +20,7 @@ function teamUpFX(a,b,pt,name){const ca=a.chest(new V3()),cb=b.chest(new V3());
   const near=ME&&(a===ME||b===ME||pt.distanceTo(ME.pos)<30);
   if(near){announce('TEAM-UP!','#ffd23f');announceSmall(name);game.slowT=Math.max(game.slowT,.8);}
   feed(`<b style="--c:${a.hero.css}">${esc(a.name)}</b> + <b style="--c:${b.hero.css}">${esc(b.name)}</b>: ${name}!`);}
-function teamUp(a,b){a.tuT=b.tuT=game.time;
+function teamUp(a,b){a.tuT=b.tuT=game.time;if(a===ME||b===ME)emitEv('teamupMe');
   // aim at the densest enemy spot near the pair
   const mid=a.pos.clone().add(b.pos).multiplyScalar(.5);let best=null,bs=-1;
   for(const e of FS){if(e.dead||ally(e,a))continue;const d=e.pos.distanceTo(mid);if(d>28)continue;let s=0;for(const o of FS)if(!o.dead&&!ally(o,a)&&o.pos.distanceTo(e.pos)<TU_RAD)s++;s-=d*.02;if(s>bs){bs=s;best=e;}}

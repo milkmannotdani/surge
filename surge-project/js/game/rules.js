@@ -4,7 +4,7 @@
    the first player (or duo) to 25 kills wins, and an 8-minute timer crowns the leader if nobody gets there.
    Points: +5 per kill (online and vs bots), +100 for winning an online match. Saved on this device. */
 const ARENA_KILLS=25,ARENA_TIME=480,RESPAWN_T=3;
-game.rules=store.get('surge.rules')==='arena'?'arena':'br';
+game.rules=normRules(store.get('surge.rules'));
 let POINTS=Math.max(0,+(store.get('surge.points')||0)||0);
 function isArena(){return game.rules==='arena';}
 function renderPoints(){const t='★ '+POINTS.toLocaleString();if($('ptsTitle'))$('ptsTitle').textContent=t+' POINTS';if($('ptsHud'))$('ptsHud').textContent=t;}
@@ -30,6 +30,6 @@ game.onElim=function(v,k){if(NET.role==='client')return;if(!isArena())return _on
 function arenaHUD(F){const L=arenaLead(),left=Math.max(0,ARENA_TIME-game.matchT),m=Math.floor(left/60),s=Math.floor(left%60);
   const mine=F?teamScore(F.team):0;$('alive').textContent=`${game.mode==='duos'?'TEAM':'YOU'} ${mine} · LEAD ${L.score} / ${ARENA_KILLS}`;
   $('zinfo').textContent=game.phase==='countdown'?'DROPPING IN…':(F&&F.dead?`RESPAWNING IN ${Math.max(1,Math.ceil(F.respT!=null?F.respT:RESPAWN_T))}`:`ARENA · ${m}:${String(s).padStart(2,'0')} LEFT`);}
-function rulesChips(id,cur,on){const el=$(id);if(!el)return;el.innerHTML='';[['br','BATTLE ROYALE'],['arena','ARENA · RESPAWNS']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(cur===k?' sel':'');b.textContent=n;
-  b.title=k==='arena'?'No storm. Respawn after 3 s. First to 25 kills wins.':'Shrinking storm. Last one standing wins.';b.onclick=()=>{AU.ui();on(k);};el.appendChild(b);});}
+function rulesChips(id,cur,on){const el=$(id);if(!el)return;el.innerHTML='';[['br','BATTLE ROYALE'],['arena','ARENA · RESPAWNS'],['raid','BOSS RAID · CO-OP']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(cur===k?' sel':'');b.textContent=n;
+  b.title=k==='arena'?'No storm. Respawn after 3 s. First to 25 kills wins.':k==='raid'?'Everyone teams up against one giant boss. 6 shared lives.':'Shrinking storm. Last one standing wins.';b.onclick=()=>{AU.ui();on(k);};el.appendChild(b);});}
 renderPoints();

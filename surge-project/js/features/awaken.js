@@ -3,7 +3,7 @@
    +25 health, +50 ult meter, 35% more damage, 30% more speed, faster cooldowns, a blazing aura and a dramatic camera moment. */
 const AWK_HP=30,AWK_T=12,AWK_KEYS=['KeyX'];
 function canAwaken(f){return !f.dead&&!f.downed&&!f.awkUsed&&!(f.awkT>0)&&f.hp<=AWK_HP&&(f.brk||0)>=100&&game.phase==='fight'&&!game.practice;}
-function awaken(f,fromNet){if(!fromNet&&!canAwaken(f))return;f.awkUsed=true;f.awkT=AWK_T;f.brk=0;
+function awaken(f,fromNet){if(!fromNet&&!canAwaken(f))return;f.awkUsed=true;if(f===ME)emitEv('awakenMe');f.awkT=AWK_T;f.brk=0;
   f.hp=Math.min(100,f.hp+25);f.meter=Math.min(100,f.meter+50);f.invuln=Math.max(f.invuln||0,1.2);f.hasteT=Math.max(f.hasteT||0,AWK_T);
   const c=f.chest(new V3()),col=f.hero.color,acc=f.hero.accent;
   ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),acc,6,.7,true,2.6);ring(c,col,4,.5,false,2.6);burst(ADD,c,70,{colors:[col,acc,0xffffff],speed:9,up:4,life:.8,size:.4,size1:0,bright:2.6});

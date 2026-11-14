@@ -2,7 +2,7 @@
 /* ================= FIGHTER ================= */
 let FS=[], ME=null;
 function ally(a,b){return a===b||(a.team!==undefined&&a.team===b.team);}
-function enemiesOf(f){return FS.filter(o=>!ally(o,f)&&!o.dead);}
+function enemiesOf(f){return FS.filter(o=>!ally(o,f)&&!o.dead&&!o.dormant);}
 function mates(f){return FS.filter(o=>o!==f&&o.team===f.team);}
 function blankIntent(){return {wx:0,wz:0,aim:0,block:false,sprint:false,revive:false,light:false,heavy:false,special:false,ult:false,jump:false,dash:false,spB:false,ultB:false,x1:false,x2:false,awk:false,team:false};}
 // basic (non-variant) punches and shots wait a moment before the next one; variant moves are exempt
@@ -200,7 +200,7 @@ class Fighter{
     if(!this.dead&&this.state!=='down')for(const o of FS){if(o===this||o.dead||o.state==='down')continue;const dx=o.pos.x-this.pos.x,dz=o.pos.z-this.pos.z;const d=Math.hypot(dx,dz);
       if(d<.95&&d>.001&&Math.abs(this.pos.y-o.pos.y)<1.6){const p=(.95-d)/2;this.pos.x-=dx/d*p;this.pos.z-=dz/d*p;}}
   }
-  breakOut(mv){this.brk=0;if(this.xHold==='marble')this.xBy=null;if(this.state==='framed'){this.rig.frame.visible=false;}
+  breakOut(mv){this.brk=0;if(this.xHold==='marble'||this.xHold==='dis')this.xBy=null;if(this.state==='framed'){this.rig.frame.visible=false;}
     const A=this.lastHitBy&&!this.lastHitBy.dead?this.lastHitBy:null;let d=mv.lengthSq()>.05?mv.clone().normalize():null;
     if(!d&&A){d=new V3(this.pos.x-A.pos.x,0,this.pos.z-A.pos.z);if(d.lengthSq()<.01)d=this.fwd().negate();d.normalize();}if(!d)d=this.fwd().negate();
     this.set('dash');this.dashDir=d;this.face=Math.atan2(d.x,d.z);this.invuln=.6;this.dashCD=.3;this.vel.set(d.x*20,Math.max(this.vel.y,this.onGround?0:3),d.z*20);this.stunT=0;this.bounce=0;this.dropDmg=0;

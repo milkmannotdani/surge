@@ -62,7 +62,7 @@ function downFighter(def,att){
 }
 function killFighter(def,att,dir){
   if(game.practice){def.hp=100;def.flash=1;ring(def.chest(new V3()),0xff8a1a,2.6,.4,false,2.4);return;}
-  if(game.mode==='duos'&&game.rules!=='arena'&&!def.downed&&mates(def).some(m=>!m.dead&&!m.downed)){downFighter(def,att);return;}
+  if(game.mode==='duos'&&game.rules!=='arena'&&game.rules!=='raid'&&!def.downed&&mates(def).some(m=>!m.dead&&!m.downed)){downFighter(def,att);return;}
   def.downed=false;def.dead=true;def.hp=0;emitEv('kill',def,att);def.rig.frame.visible=false;def.set('fly');def.onGround=false;def.pos.y+=.05;
   if(dir){def.vel.copy(dir).multiplyScalar(14);def.vel.y=11;}else{def.vel.set(0,8,0);}
   if(def.rig.whip)def.rig.whip.group.visible=false;if(def.rig.beam)def.rig.beam.group.visible=false;

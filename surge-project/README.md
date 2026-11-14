@@ -22,6 +22,9 @@ js/
     abilities.js      ability engine used by created fighters
     gear.js           weapons and gear
     mha.js            Solstice, Piston, Snare, Marble, Legion, Recoil; extra moves (XMOVES); death ults
+    mha2.js           Crimson, Sawback, Resect, Cushion, Corrosa, Verdict (another worked example of adding fighters)
+    looks.js          costume layer for every fighter: chest emblem, belt, bracers, boots, shoulders, collar, signature item (LOOKS)
+    humans.js         ARMOR OFF mode: each fighter's face and hair under the suit (HUMAN table)
   creator/
     mold.js           Mold editor
     custom.js         fighter creator: turns a text description into a fighter
@@ -49,7 +52,15 @@ js/
     missions.js       MISSIONS screen: Rescue + Hero License Exam
     progress.js       fighter levels/XP and unlockable costumes (UNLOCKS)
     input.js          gamepad + touch controls
+    credits.js        CREDITS screen + small My Hero Academia nods (INSPIRED notes, tips, Plus Ultra call-out)
     settings.js       settings menu (SET_DEF / SET_ROWS), game modes menu, shift lock, Tab lock-on, controller button icons
+    netx.js           netSay(): send add-on events to everyone in an online match
+    raid.js           BOSS RAID rules + the Giga Nomu villain attack event (RAID_BOSSES)
+    worldlife.js      time of day + weather, the train, throwable cars, civilian crowds
+    social.js         emotes (EMOTES), victory poses (VPOSES), quick chat, pings, voice lines
+    keybinds.js       key rebinding (KB_ACTIONS)
+    voice.js          voice chat for online rooms (PeerJS audio calls)
+    meta.js           PROGRESS screen: challenges (CH_POOL), season pass (SEASON), skills (SKILLS)
   main.js             starts the game (always loaded last)
 tools/bundle.py       optional: packs everything back into one HTML file
 ```

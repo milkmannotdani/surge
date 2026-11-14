@@ -58,13 +58,14 @@
   <h2>BATTLE ROYALE</h2>
   <p>SECTOR 7 · HEROES VS VILLAINS · LAST ONE STANDING</p>
   <div class="rowb" style="margin-top:30px"><button class="btn pulse big" id="bPlay">PLAY</button></div>
-  <div class="rowb" style="margin-top:14px"><button class="chip tb2" id="bCreate">CREATE A FIGHTER</button><button class="chip tb2 shopb" id="bShop">★ SHOP</button><button class="chip tb2" id="bSettings">⚙ SETTINGS</button></div>
+  <div class="rowb" style="margin-top:14px"><button class="chip tb2" id="bCreate">CREATE A FIGHTER</button><button class="chip tb2 shopb" id="bShop">★ SHOP</button><button class="chip tb2" id="bProgress">📈 PROGRESS</button><button class="chip tb2" id="bSettings">⚙ SETTINGS</button><button class="chip tb2" id="bCredits">CREDITS</button></div>
   <div class="ptst" id="ptsTitle"></div>
+  <div id="nodTip"></div>
 </div>
 <div id="gmodes" class="screen"><h1 style="font-size:52px">GAME MODES</h1><p>PICK HOW YOU WANT TO PLAY</p>
   <div class="gmgrid">
-    <div class="gm" id="bOnline"><div class="gmt">PLAY ONLINE</div><div class="gmd">Host or join a room with a code. Battle royale or arena, solo or duos.</div></div>
-    <div class="gm cy" id="bOffline"><div class="gmt">PLAY VS BOTS</div><div class="gmd">Battle royale or arena against bots. Solo or duos with a bot partner.</div></div>
+    <div class="gm" id="bOnline"><div class="gmt">PLAY ONLINE</div><div class="gmd">Host or join a room with a code. Battle royale, arena or co-op BOSS RAID. Voice chat included.</div></div>
+    <div class="gm cy" id="bOffline"><div class="gmt">PLAY VS BOTS</div><div class="gmd">Battle royale, arena or BOSS RAID against bots. Solo or duos with a bot partner.</div></div>
     <div class="gm st" id="bStory"><div class="gmt">STORY MODE</div><div class="gmd">Training Arc, the hero story SURGE: ORIGIN and the villain story THE SEVERANCE.</div></div>
     <div class="gm ms" id="bMissions"><div class="gmt">MISSIONS</div><div class="gmd">Rescue civilians during a villain attack, or take the Hero License Exam.</div></div>
     <div class="gm pr" id="bPractice"><div class="gmt">PRACTICE</div><div class="gmd">Training dummies, free meter and no damage. Try out any fighter.</div></div>
@@ -73,7 +74,21 @@
 <div id="settings" class="screen"><h1 style="font-size:52px">SETTINGS</h1>
   <div class="setgrid"><div class="setrow"><span class="setl">GRAPHICS</span><div class="rowb" style="margin:0" id="gfxChips"></div></div><div id="setList"></div></div>
   <div class="rowb" style="margin-top:16px"><button class="btn ghost" id="setReset">RESET TO DEFAULTS</button><button class="btn" id="setBack">DONE</button></div></div>
-<div id="clickLock">CLICK THE GAME TO LOCK YOUR CURSOR · ESC TO FREE IT</div><div id="slIcon">🔒 SHIFT LOCK</div>
+<div id="clickLock">CLICK THE GAME TO LOCK YOUR CURSOR · ESC TO FREE IT</div><div id="prog" class="screen"><h1 style="font-size:52px">PROGRESS</h1><div class="rowb" id="pgTabs"></div><div id="pgBody"></div><div class="rowb" style="margin-top:14px"><button class="btn" id="pgBack">BACK</button></div></div>
+<div id="bubs"></div><div id="wheel"></div><div id="vcBox"></div><div id="wxBadge"></div>
+<div id="credits" class="screen"><h1 style="font-size:52px">CREDITS</h1>
+  <div class="crbox">
+    <div class="crh">INSPIRED BY</div>
+    <p><b>My Hero Academia</b> (僕のヒーローアカデミア) — created by <b>Kōhei Horikoshi</b>, published by Shueisha. The hero academy, quirks, the Hero License Exam and the "go beyond" spirit of SURGE all come from loving this series. Thank you, Horikoshi-sensei — Plus Ultra!</p>
+    <p>Some fighters are also inspired by <b>Jujutsu Kaisen</b> — created by <b>Gege Akutami</b>, published by Shueisha.</p>
+    <p class="crs">SURGE is an unofficial, non-commercial fan game. It is not affiliated with or endorsed by Kōhei Horikoshi, Gege Akutami, Shueisha, or the anime studios. All fighters, names, story and designs in SURGE are original creations.</p>
+    <div class="crh">FIGHTERS INSPIRED BY MY HERO ACADEMIA</div>
+    <p class="crl">Solstice ← Shoto Todoroki · Piston ← Tenya Iida · Snare ← Shota Aizawa · Marble ← Mr. Compress · Legion ← Twice · Recoil ← Lady Nagant · Crimson ← Himiko Toga · Sawback ← Spinner · Resect ← Overhaul · Cushion ← Fat Gum · Verdict ← Stain · Corrosa ← Mina Ashido</p>
+    <div class="crh">BUILT WITH</div>
+    <p class="crl">three.js (3D graphics, MIT license) · PeerJS (online play and voice chat, MIT license)</p>
+  </div>
+  <div class="rowb" style="margin-top:14px"><button class="btn" id="crBack">BACK</button></div></div>
+<div id="slIcon">🔒 SHIFT LOCK</div>
 
 <div id="setup" class="screen">
   <div class="topbar"><div class="tabs"><span class="tb sel">FIGHTERS</span><span class="tb" id="modeTab">BATTLE ROYALE</span></div><div class="tbr" id="setupTitle">VS BOTS</div></div>
@@ -86,7 +101,7 @@
       <canvas id="pv"></canvas>
       <div class="pvinfo">
         <div class="dtag">Difficulty: <b id="pvDiff"></b></div>
-        <div class="pvname" id="pvName"></div><div id="pvLv"></div>
+        <div class="pvname" id="pvName"></div><div id="pvLv"></div><button class="chip" id="armorBtn">🛡 ARMOR: ON</button>
         <div class="tags" id="pvTags"></div>
         <div class="tags" id="pvTags2"></div>
         <div class="mvbtn" id="pvMvBtn">MOVE LIST</div> <div class="mvbtn" id="pvEdit" style="display:none">EDIT</div>
@@ -107,7 +122,7 @@
           <button class="btn cy sm" id="bJoin">JOIN</button>
         </div>
         <div id="status"></div>
-        <div class="arow end"><button class="btn ghost sm" id="bBack1">BACK</button><button class="btn" id="bGo">DROP IN</button></div>
+        <div class="arow end"><button class="chip" id="menuTog" title="Hide the menu to see your fighter">▾ HIDE MENU</button><button class="btn ghost sm" id="bBack1">BACK</button><button class="btn" id="bGo">DROP IN</button></div>
       </div>
     </div>
   </div>
@@ -144,7 +159,7 @@
 </div>
 
 <div id="shop" class="screen">
-  <div class="topbar"><div class="tabs" id="shTabs"><span class="tb" data-t="cards">CALLING CARDS</span><span class="tb" data-t="skins">SKINS</span><span class="tb" data-t="pets">PETS</span><span class="tb" data-t="tags">NAME TAGS</span></div><div class="tbr shpts" id="shPts"></div></div>
+  <div class="topbar"><div class="tabs" id="shTabs"><span class="tb" data-t="cards">CALLING CARDS</span><span class="tb" data-t="skins">SKINS</span><span class="tb" data-t="pets">PETS</span><span class="tb" data-t="tags">NAME TAGS</span><span class="tb" data-t="emotes">EMOTES</span><span class="tb" data-t="poses">VICTORY POSES</span></div><div class="tbr shpts" id="shPts"></div></div>
   <div class="shwrap">
     <div class="shL"><div class="mdrow" id="shHero"></div><div class="shgrid" id="shGrid"></div></div>
     <div class="shR"><div class="shname" id="shName"></div><div id="shView"></div><div id="shBig"></div>
@@ -208,6 +223,9 @@
 <script src="js/game/shop.js"></script>
 <script src="js/game/ai.js"></script>
 <script src="js/fighters/mha.js"></script>
+<script src="js/fighters/mha2.js"></script>
+<script src="js/fighters/looks.js"></script>
+<script src="js/fighters/humans.js"></script>
 <script src="js/game/game.js"></script>
 <script src="js/game/rules.js"></script>
 <script src="js/game/net.js"></script>
@@ -228,6 +246,14 @@
 <script src="js/features/progress.js"></script>
 <script src="js/features/input.js"></script>
 <script src="js/features/settings.js"></script>
+<script src="js/features/netx.js"></script>
+<script src="js/features/raid.js"></script>
+<script src="js/features/worldlife.js"></script>
+<script src="js/features/social.js"></script>
+<script src="js/features/keybinds.js"></script>
+<script src="js/features/voice.js"></script>
+<script src="js/features/meta.js"></script>
+<script src="js/features/credits.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -30,7 +30,7 @@ function civTick(dt){const ev={saved:[],lost:[]};let near=null;
   // hold R next to someone to rescue them
   const pe=$('civProg');
   if(near&&ME.intent.revive&&['idle','run','block'].indexOf(ME.state)>=0){const c=near.c;c.prog+=dt;pe.classList.add('on');pe.style.setProperty('--p',Math.min(1,c.prog/1.1)*360+'deg');
-    if(c.prog>=1.1){c.saved=true;c.liftT=0;ev.saved.push(c);pe.classList.remove('on');c.help.visible=false;c.beam.material.color.set(0xffffff);c.beam.material.opacity=.8;
+    if(c.prog>=1.1){c.saved=true;c.liftT=0;ev.saved.push(c);emitEv('civSaved',c);pe.classList.remove('on');c.help.visible=false;c.beam.material.color.set(0xffffff);c.beam.material.opacity=.8;
       ring(new V3(c.x,c.y+.2,c.z),0x5aff8a,3,.5,true,2.4);burst(ADD,new V3(c.x,c.y+1,c.z),30,{colors:[0x5aff8a,0xffffff],speed:4,up:5,life:.7,size:.3,size1:0,bright:2.2});AU.scale=1;AU.bell();}}
   else{pe.classList.remove('on');if(near)near.c.prog=Math.max(0,near.c.prog-dt*2);}
   $('civHint').classList.toggle('on',!!near&&!(ME.intent.revive));

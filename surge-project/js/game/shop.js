@@ -38,6 +38,10 @@ const SKINS_H={cinder:[['Blue Flame',0x0e1a3a,0x2a6aff,0x9ad0ff,0x4fd2ff],['Magm
   scathe:[['Ashen',0x2a2a2e,0x6a6a72,0xa8a8b0,0xffffff],['Hellfire',0x1a0400,0x3a0a00,0xff7a1a,0xffd23f]],
   solstice:[['Inverted',0x1a0a0a,0xc4202a,0x6ac8ff,0xcff4ff],['Eclipse',0x06060a,0x1a1a24,0xff6a3a,0xffd27a]],piston:[['Racing Red',0x1a0606,0xd8202a,0xf0f0f0,0xffd23f],['Midnight Engine',0x06060c,0x1a1c28,0x3a8aff,0x7ad8ff]],
   snare:[['Underground',0x0a0a0c,0x16161a,0x8a8e9a,0xffd23f],['Pro Hero',0x0a1430,0x2a4aa8,0xffffff,0x8ad8ff]],marble:[['Ringmaster',0x2a0606,0xc4102a,0xffd23f,0xffe08a],['Emerald Act',0x061a0e,0x0a4a2a,0x1ab86a,0x8affc0]],
+  crimson:[['School Uniform',0x0a0a1a,0x2a3a6a,0xd81a3a,0xffd23f],['Vampire',0x06000a,0x1a0010,0xff2a4a,0xff8a9a]],sawback:[['Reptile Gold',0x14100a,0x6a5a2a,0xffd23f,0xfff2b0],['Rusted',0x1a0a06,0x5a2a1a,0xa86a3a,0xffb070]],
+  resect:[['Plague White',0xe8e8ee,0x8a8a96,0x2a2a32,0xff3a4a],['Eight Bullets',0x0a0a0c,0x2a0a0e,0xffd23f,0xffe08a]],cushion:[['Slim Mode',0x0a1a2a,0x2a4a8a,0xffd23f,0xffffff],['Gold Medal',0x1a1406,0xd8a820,0xffffff,0xfff2b0]],
+  verdict:[['Bone White',0xe8e4da,0x8a8a92,0xc4102a,0xff3a3a],['Night Judge',0x05050a,0x14141e,0x6a6ad8,0xb0b0ff]],
+  corrosa:[['Alien Queen',0x0a1406,0x3aa82a,0xff7ad8,0xe0ff8a],['Pinky Pop',0x1a0614,0xff4ab8,0x2a0a3a,0xffd0f0]],
   legion:[['Mud Brown',0x1a1006,0x5a4a32,0x8a7a58,0xffd27a],['Sanctuary',0x0a0a1a,0x2a2a4a,0xff3a6a,0xff8ab8]],recoil:[['Pink Bullet',0x1a0614,0xff6ad8,0xffffff,0xffd0f0],['Steel Sight',0x0a0c10,0x3a3e48,0x9aa0aa,0x8ad8ff]]};
 function skinList(hid){const out=[['default','Default',0]];(SKINS_H[hid]||[]).forEach((s,i)=>out.push(['h'+i,s[0],200]));for(const k in SKINS_U)out.push([k,SKINS_U[k][0],SKINS_U[k][6]]);return out;}
 function skinDef(hid,sid){if(!sid||sid==='default')return null;if(SKINS_U[sid]){const s=SKINS_U[sid];return {n:s[0],suit:s[1],main:s[2],trim:s[3],glow:s[4],mat:s[5]};}
@@ -54,9 +58,9 @@ let INV={own:{},eq:{card:'none',tag:'none',pet:'none',skins:{}}};
 try{const s=JSON.parse(store.get('surge.inv')||'null');if(s&&s.own&&s.eq)INV={own:s.own,eq:Object.assign({card:'none',tag:'none',pet:'none',skins:{}},s.eq)};}catch(e){}
 function saveInv(){store.set('surge.inv',JSON.stringify(INV));}
 function owns(key){return key.endsWith(':none')||key.endsWith(':default')||!!INV.own[key];}
-function myCos(){const h=heroAt(mySel);return sanitizeCos({card:INV.eq.card,tag:INV.eq.tag,pet:INV.eq.pet,skin:h.custom?'default':(INV.eq.skins[h.id]||'default')},h.id);}
+function myCos(){const h=heroAt(mySel);return sanitizeCos({human:typeof ARMOR_OFF!=='undefined'&&ARMOR_OFF&&!h.custom,pose:INV.eq.pose,card:INV.eq.card,tag:INV.eq.tag,pet:INV.eq.pet,skin:h.custom?'default':(INV.eq.skins[h.id]||'default')},h.id);}
 function sanitizeCos(c,hid){if(!c||typeof c!=='object')return null;const one=(v,o)=>o[v]?v:'none';const sk=skinList(hid||'').map(x=>x[0]).indexOf(c.skin)>=0?c.skin:'default';
-  return {card:one(c.card,CARDS),tag:one(c.tag,TAGS),pet:one(c.pet,PETS),skin:sk};}
+  return {card:one(c.card,CARDS),tag:one(c.tag,TAGS),pet:one(c.pet,PETS),skin:sk,pose:(typeof VPOSES!=='undefined'&&VPOSES[c.pose])?c.pose:'classic',human:!!c.human};}
 /* ---- calling cards ---- */
 const CARD_CACHE={};
 function drawCard(id,name){const key=id+'|'+name;if(CARD_CACHE[key])return CARD_CACHE[key];const C=CARDS[id]||CARDS.none;const [c,g]=cv(512,112);
@@ -131,42 +135,43 @@ function updatePets(dt){for(const f of FS){const p=f.pet;if(!p)continue;f.petT+=
 function arenaRegen(dt){if(game.rules!=='arena'||game.phase!=='fight'||NET.role==='client'||game.practice)return;for(const f of FS){if(f.dead||f.hp>=100)continue;if(game.time-f.lastHitT>4){f.hp=Math.min(100,f.hp+(game.time-f.lastHitT>7?12:6)*dt);if(f===ME&&Math.random()<.15)burst(ADD,f.chest(TMP2),1,{colors:[0x3dff8a,0xffffff],speed:.5,up:1.5,life:.5,size:.2,size1:0,bright:2});}}}
 /* ================= the shop screen ================= */
 const SH={tab:'cards',hero:0,sel:null,open:false,raf:0,obj:null,home:null};
-function shopPrice(cat,id,hid){if(cat==='cards')return CARDS[id].p;if(cat==='tags')return TAGS[id].p;if(cat==='pets')return PETS[id].p;const s=skinList(hid).find(x=>x[0]===id);return s?s[2]:0;}
+function shopPrice(cat,id,hid){if(cat==='emotes')return EMOTES[id].p;if(cat==='poses')return VPOSES[id].p;if(cat==='cards')return CARDS[id].p;if(cat==='tags')return TAGS[id].p;if(cat==='pets')return PETS[id].p;const s=skinList(hid).find(x=>x[0]===id);return s?s[2]:0;}
 function shopKey(cat,id,hid){return cat==='skins'?'skin:'+hid+':'+id:cat.slice(0,-1)+':'+id;}
-function isEq(cat,id,hid){if(cat==='skins')return (INV.eq.skins[hid]||'default')===id;return INV.eq[cat.slice(0,-1)]===id;}
+function isEq(cat,id,hid){if(cat==='emotes')return false;if(cat==='skins')return (INV.eq.skins[hid]||'default')===id;return INV.eq[cat.slice(0,-1)]===id;}
 function openShop(){SH.open=true;SH.home=$('pv').parentNode;$('shView').appendChild($('pv'));showScreen('shop');renderShop();shopLoop();}
 function closeShop(){SH.open=false;cancelAnimationFrame(SH.raf);shopClear();SH.home.insertBefore($('pv'),SH.home.firstChild);PV.ped.visible=true;showScreen('title');renderPoints();}
 function shopClear(){if(SH.obj){PV.scene.remove(SH.obj);SH.obj=null;}}
 function shopShow3D(){shopClear();Object.values(PV.rigs).forEach(r=>r.root.visible=false);PV.ped.visible=true;const H=HEROES[SH.hero];
-  if(SH.tab==='skins'){const R=buildRig(skinHero(H,SH.sel||'default'),PV.scene);poseRig(R,POSES.showcase,0);SH.obj=R.root;SH.rig=R;}
+  if(SH.tab==='skins'||SH.tab==='emotes'||SH.tab==='poses'){const R=buildRig(skinHero(H,SH.tab==='skins'?(SH.sel||'default'):(INV.eq.skins[H.id]||'default')),PV.scene);poseRig(R,POSES.showcase,0);SH.obj=R.root;SH.rig=R;}
   else if(SH.tab==='pets'){const g=new THREE.Group();const R=buildRig(skinHero(H,INV.eq.skins[H.id]||'default'),PV.scene);poseRig(R,POSES.showcase,0);g.add(R.root);SH.rig=R;
     if(SH.sel&&SH.sel!=='none'){const p=petMesh(SH.sel,H.color,H.accent);p.scale.setScalar(1.6);p.position.set(.75,1.9,.2);g.add(p);SH.pet=p;}else SH.pet=null;SH.obj=g;}
   if(SH.obj)PV.scene.add(SH.obj);}
-function shopLoop(){if(!SH.open)return;SH.raf=requestAnimationFrame(shopLoop);const cvs=$('pv'),w=cvs.clientWidth,h=cvs.clientHeight;const show=SH.tab==='skins'||SH.tab==='pets';$('shView').style.display=show?'':'none';if(!show||!w||!h)return;
+function shopLoop(){if(!SH.open)return;SH.raf=requestAnimationFrame(shopLoop);const cvs=$('pv'),w=cvs.clientWidth,h=cvs.clientHeight;const show=SH.tab==='skins'||SH.tab==='pets'||SH.tab==='emotes'||SH.tab==='poses';$('shView').style.display=show?'':'none';if(!show||!w||!h)return;
   if(cvs.width!==Math.floor(w*PV.r.getPixelRatio())||cvs.height!==Math.floor(h*PV.r.getPixelRatio()))PV.r.setSize(w,h,false);
-  if(SH.obj){SH.obj.rotation.y+=.008;if(SH.rig)poseRig(SH.rig,SH.rig.P||POSES.showcase,game.time);if(SH.pet){const t=game.time;SH.pet.position.y=1.9+Math.sin(t*2.4)*.1;const an=SH.pet.userData.anim;
+  if(SH.obj){SH.obj.rotation.y+=.008;if(SH.rig)poseRig(SH.rig,(SH.tab==='emotes'||SH.tab==='poses')&&typeof emotePose==='function'?emotePose(SH.tab==='poses'?'pose_'+SH.sel:SH.sel,game.time):(SH.rig.P||POSES.showcase),game.time);if(SH.pet){const t=game.time;SH.pet.position.y=1.9+Math.sin(t*2.4)*.1;const an=SH.pet.userData.anim;
     if(an.wings)an.wings.forEach(w2=>w2.rotation.z=Math.sin(t*14)*.6*w2.userData.k);if(an.rot)an.rot.forEach(r=>r.rotation.y+=.5);if(an.spin)SH.pet.children[0].rotation.y+=.03;if(an.squish)an.squish.scale.set(1+Math.sin(t*6)*.08,.75-Math.sin(t*6)*.08,1+Math.sin(t*6)*.08);}}
   const c=PV.cam;c.aspect=w/h;c.fov=30;c.updateProjectionMatrix();c.position.set(0,1.35,6.2);c.lookAt(0,1.1,0);PV.r.render(PV.scene,c);}
 function renderShop(){$('shPts').textContent='★ '+POINTS.toLocaleString();document.querySelectorAll('#shTabs span').forEach(s=>s.classList.toggle('sel',s.dataset.t===SH.tab));
   const H=HEROES[SH.hero],cat=SH.tab;let items=[];
   if(cat==='cards')items=Object.keys(CARDS).map(k=>[k,CARDS[k].n,CARDS[k].p]);else if(cat==='tags')items=Object.keys(TAGS).map(k=>[k,TAGS[k].n,TAGS[k].p]);
-  else if(cat==='pets')items=Object.keys(PETS).map(k=>[k,PETS[k].n,PETS[k].p]);else items=skinList(H.id);
-  if(!SH.sel||!items.some(x=>x[0]===SH.sel))SH.sel=cat==='skins'?(INV.eq.skins[H.id]||'default'):INV.eq[cat.slice(0,-1)];
-  $('shHero').style.display=cat==='skins'||cat==='pets'?'':'none';
+  else if(cat==='pets')items=Object.keys(PETS).map(k=>[k,PETS[k].n,PETS[k].p]);else if(cat==='emotes')items=Object.keys(EMOTES).map(k=>[k,EMOTES[k].n,EMOTES[k].p]);else if(cat==='poses')items=Object.keys(VPOSES).map(k=>[k,VPOSES[k].n,VPOSES[k].p]);else items=skinList(H.id);
+  if(!SH.sel||!items.some(x=>x[0]===SH.sel))SH.sel=cat==='skins'?(INV.eq.skins[H.id]||'default'):cat==='emotes'?'wave':cat==='poses'?(INV.eq.pose||'classic'):INV.eq[cat.slice(0,-1)];
+  $('shHero').style.display=cat==='skins'||cat==='pets'||cat==='emotes'||cat==='poses'?'':'none';
   $('shHero').innerHTML=`<span class="lblx">FIGHTER</span><select id="shHeroSel">${HEROES.map((h,i)=>`<option value="${i}"${i===SH.hero?' selected':''}>${h.name}</option>`).join('')}</select>`;
   $('shHeroSel').onchange=e=>{SH.hero=+e.target.value;SH.sel=null;AU.ui();renderShop();};
   const g=$('shGrid');g.innerHTML='';items.forEach(([id,n,p])=>{const own=owns(shopKey(cat,id,H.id)),eq=isEq(cat,id,H.id);const d=document.createElement('div');d.className='shit'+(SH.sel===id?' sel':'')+(own?' own':'');
     let pv='';if(cat==='cards')pv=`<img src="${drawCard(id,myName())}" alt="">`;else if(cat==='tags')pv=`<div class="shtag">${tagName({cos:{tag:id}},myName())}</div>`;
     else if(cat==='skins'){const s=skinDef(H.id,id)||{suit:H.suit,main:H.mainCol||H.color,trim:H.color,glow:H.accent};pv=`<div class="shsw">${[s.suit,s.main,s.trim,s.glow!=null?s.glow:H.accent].map(c=>`<i style="background:${hexCss(c)}"></i>`).join('')}</div>`;}
+    else if(cat==='emotes'||cat==='poses')pv=`<div class="shpet">${(cat==='emotes'?EMOTES:VPOSES)[id].ic}</div>`;
     else pv=`<div class="shpet">${({none:'—',orb:'◆',slime:'●',ghost:'👻',drone:'⌖',meteor:'☄',robocat:'🐱',fox:'🦊',phoenix:'🔥',dragon:'🐉'})[id]}</div>`;
     d.innerHTML=pv+`<div class="shn">${n}</div><div class="shp">${eq?'EQUIPPED':own?'OWNED':'★ '+p}</div>`;d.onclick=()=>{SH.sel=id;AU.ui();renderShop();};g.appendChild(d);});
   const sel=SH.sel,own=owns(shopKey(cat,sel,H.id)),eq=isEq(cat,sel,H.id),price=shopPrice(cat,sel,H.id);const b=$('shBuy');
   b.textContent=eq?'EQUIPPED':own?'EQUIP':POINTS>=price?`BUY · ★ ${price}`:`NEED ★ ${price}`;b.disabled=eq||(!own&&POINTS<price);
-  const nm=(cat==='cards'?CARDS[sel].n:cat==='tags'?TAGS[sel].n:cat==='pets'?PETS[sel].n:(skinList(H.id).find(x=>x[0]===sel)||[0,''])[1]);
+  const nm=(cat==='emotes'?EMOTES[sel].n:cat==='poses'?VPOSES[sel].n:cat==='cards'?CARDS[sel].n:cat==='tags'?TAGS[sel].n:cat==='pets'?PETS[sel].n:(skinList(H.id).find(x=>x[0]===sel)||[0,''])[1]);
   $('shName').textContent=(cat==='skins'?H.name+' · ':'')+nm;
   $('shBig').innerHTML=cat==='cards'?`<img src="${drawCard(sel,myName())}" alt=""><div class="mdnote">Enemies you eliminate see this card. It also shows in lobbies and on the results screen when you win.</div>`:
     cat==='tags'?`<div class="shtag big">${tagName({cos:{tag:sel}},myName())}</div><div class="mdnote">Your name shows in this style above your fighter, in the kill feed and in lobbies.</div>`:'';
-  if(cat==='skins'||cat==='pets')shopShow3D();else shopClear();}
+  if(cat==='skins'||cat==='pets'||cat==='emotes'||cat==='poses')shopShow3D();else shopClear();}
 $('shBuy').onclick=()=>{const H=HEROES[SH.hero],cat=SH.tab,id=SH.sel,key=shopKey(cat,id,H.id);AU.init();
   if(!owns(key)){const p=shopPrice(cat,id,H.id);if(POINTS<p)return;POINTS-=p;store.set('surge.points',String(POINTS));INV.own[key]=1;AU.scale=1;AU.tone('triangle',660,1320,.25,.1);AU.tone('triangle',990,1980,.3,.08,.1);}
   else AU.ui();if(cat==='skins')INV.eq.skins[H.id]=id;else INV.eq[cat.slice(0,-1)]=id;saveInv();clearSkinRigs();renderShop();};

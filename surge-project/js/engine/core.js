@@ -19,7 +19,8 @@ const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},
 // event hooks: add-on files listen with onEv('name',fn) instead of editing core code.
 // events: input(dt) before player controls are read, tick(dt) each sim step in a match, frame(dt) every frame,
 // hit(att,def,dmg,o), kill(def,att), ult(f), matchStart(), matchEnd(), win(w)
-const EVH={};function onEv(n,fn){(EVH[n]||(EVH[n]=[])).push(fn);}
+const EVH={};
+function normRules(r){return r==='arena'||r==='raid'?r:'br';}function onEv(n,fn){(EVH[n]||(EVH[n]=[])).push(fn);}
 function emitEv(n,a,b,c,d){const L=EVH[n];if(!L)return;for(const fn of L){try{fn(a,b,c,d);}catch(e){console.error('['+n+']',e);}}}
 function KIT(h,slot){return h.as?(h.as[slot]||h.as.elem||h.id):h.id;}
 function HAS(h,x){return h.id===x||(!!h.as&&(h.as.look===x||(h.as.parts||[]).indexOf(x)>=0));}
@@ -186,8 +187,8 @@ sun.shadow.bias=-.00025;sun.shadow.normalBias=.025;sun.shadow.radius=3;scene.add
 const rim=new THREE.DirectionalLight(0x6fb6ff,.8);rim.position.set(30,25,40);scene.add(rim);
 
 const sky=new THREE.Mesh(new THREE.SphereGeometry(700,32,16),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,
-  uniforms:{sd:{value:sunDir},tint:{value:0}},vertexShader:'varying vec3 vW;void main(){vW=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*viewMatrix*vec4(vW,1.);}',
-  fragmentShader:`uniform vec3 sd;uniform float tint;varying vec3 vW;
+  uniforms:{sd:{value:sunDir},tint:{value:0},dayk:{value:0},nightk:{value:0},cloudk:{value:0}},vertexShader:'varying vec3 vW;void main(){vW=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*viewMatrix*vec4(vW,1.);}',
+  fragmentShader:`uniform vec3 sd;uniform float tint,dayk,nightk,cloudk;varying vec3 vW;
   void main(){vec3 d=normalize(vW-cameraPosition*0.);float h=d.y;vec3 top=vec3(.02,.03,.11),mid=vec3(.22,.1,.3),hor=vec3(1.,.38,.18);
   vec3 c=mix(hor,mid,smoothstep(0.,.22,h));c=mix(c,top,smoothstep(.18,.7,h));
   float s=max(dot(d,sd),0.);c+=vec3(1.,.55,.25)*pow(s,300.)*12.+vec3(1.,.4,.15)*pow(s,8.)*.55;
@@ -198,6 +199,9 @@ const sky=new THREE.Mesh(new THREE.SphereGeometry(700,32,16),new THREE.ShaderMat
       n+=a*mix(mix(v00,v10,fp.x),mix(v01,v11,fp.x),fp.y);q*=2.1;a*=.5;}
     float cl=smoothstep(.52,.78,n)*smoothstep(0.,.12,h)*(1.-smoothstep(.45,.8,h));
     vec3 cc=mix(vec3(.32,.16,.3),vec3(1.,.55,.32),pow(s,3.)*.8+.25*(1.-h));c=mix(c,cc,cl*.85);}
+  vec3 dayc=mix(vec3(.62,.78,.95),vec3(.18,.42,.85),smoothstep(0.,.6,h))+vec3(1.,.95,.8)*pow(s,200.)*8.;if(h<0.)dayc=vec3(.35,.38,.42);c=mix(c,dayc,dayk);
+  c=mix(c,c*vec3(.12,.14,.3)+vec3(step(.9975,st))*smoothstep(.1,.5,h)*1.2,nightk);
+  c=mix(c,mix(vec3(.2,.21,.25),vec3(.36,.38,.42),smoothstep(-.1,.5,h))*(1.-nightk*.75),cloudk);
   c=mix(c,c*vec3(1.3,.28,.24)+vec3(.14,0.,.01),tint);
   gl_FragColor=vec4(c,1.);}`}));
 const TINT={k:0,target:0},FOG0=scene.fog.color.clone(),FOGR=new THREE.Color(0x5a0a0c),SUN0=new THREE.Color(0xffb27a),SUNR=new THREE.Color(0xff3a2a);

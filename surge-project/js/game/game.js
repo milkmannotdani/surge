@@ -7,7 +7,7 @@ function zonePick(){const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.fx=ZONE.cx
   let tx=0,tz=0;for(let k=0;k<30;k++){const a=rand(0,6.28),m=rand(0,Math.max(0,Math.min(ZONE.r,BOUND+10)-ph.r)*.8);tx=ZONE.cx+Math.cos(a)*m;tz=ZONE.cz+Math.sin(a)*m;
     if(Math.abs(tx)+ph.r*.3<BOUND&&Math.abs(tz)+ph.r*.3<BOUND&&!insideBld(tx,tz,2))break;}
   ZONE.tx=clamp(tx,-BOUND+ph.r*.3,BOUND-ph.r*.3);ZONE.tz=clamp(tz,-BOUND+ph.r*.3,BOUND-ph.r*.3);ZONE.tr=ph.r;ZONE.dps=ph.d;}
-function noStorm(){return game.rules==='arena'||!!game.story;}
+function noStorm(){return game.rules==='arena'||game.rules==='raid'||!!game.story;}
 function zoneUpdate(dt){if(noStorm())return;const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.t+=dt;
   if(ZONE.st==='wait'){if(ZONE.t>=ph.w){ZONE.st='shrink';ZONE.t=0;if(NET.role!=='client')netEvent({k:'zone'});zoneMsg();}}
   else{const k=Math.min(1,ZONE.t/ph.s);ZONE.cx=lerp(ZONE.fx,ZONE.tx,k);ZONE.cz=lerp(ZONE.fz,ZONE.tz,k);ZONE.r=lerp(ZONE.fr,ZONE.tr,k);
@@ -37,14 +37,14 @@ function orbsAnimate(){ORBS.forEach(o=>{o.mesh.position.y=1+Math.sin(game.time*2
 /* ================= GAME FLOW ================= */
 const game={mode:'solo',phase:'menu',time:0,matchT:0,cine:null,slowT:0,timeScale:1,winner:null,diff:1,botN:7,cdT:0,specF:null,lastCd:0};
 let AIS=[];
-function aliveList(){return FS.filter(f=>!f.dead);}
-function aliveTeams(){const s=new Set();FS.forEach(f=>{if(!f.dead&&!f.downed)s.add(f.team);});FS.forEach(f=>{if(!f.dead&&f.downed&&mates(f).some(m=>!m.dead))s.add(f.team);});return s;}
+function aliveList(){return FS.filter(f=>!f.dead&&!f.evt);}
+function aliveTeams(){const s=new Set();FS.forEach(f=>{if(!f.dead&&!f.downed&&!f.evt)s.add(f.team);});FS.forEach(f=>{if(!f.dead&&f.downed&&mates(f).some(m=>!m.dead))s.add(f.team);});return s;}
 function spawnPoints(n){const base=[];INNER.forEach(a=>INNER.forEach(b=>base.push([a,b])));PLAZAS.forEach(p=>base.push([p[0]+(p[0]>0?-12:12),p[1]]));
   base.sort(()=>Math.random()-.5);const out=[];for(let i=0;i<n;i++){const b=base[i%base.length];out.push([b[0]+rand(-4,4),b[1]+rand(-4,4)]);}return out;}
 function startMatch(roster,spawns,diff,mode,rules){
   game.story=game._storyNext||null;game._storyNext=null;
-  if(rules)game.rules=rules==='arena'?'arena':'br';game.ptsEarned=0;game.winPaid=0;game.practice=false;if(!PR.on)setWorld('city');game.mode=mode||'solo';FS.forEach(f=>f.dispose());FS=[];AIS=[];clearProjs();clearOrbs();resetProps();clearMarks();
-  decorateBots(roster);roster.forEach((r,i)=>{r.cos=r.cos?sanitizeCos(r.cos,(rosterHero(Object.assign({},r,{cos:null}))||{}).id):null;const f=new Fighter(rosterHero(r),r.id,r.name,r.bot,game.mode==='duos'||game.story?r.team:r.id);const s=spawns[i];f.reset(s[0],s[1],Math.atan2(-s[0],-s[1]));f.cos=r.cos||{card:'none',tag:'none',pet:'none',skin:'default'};attachPet(f);FS.push(f);
+  if(rules)game.rules=normRules(rules);if(typeof matchPrep==='function'){const pr=matchPrep(roster,spawns,mode,game.rules);roster=pr[0];spawns=pr[1];}game.ptsEarned=0;game.winPaid=0;game.practice=false;if(!PR.on)setWorld('city');game.mode=mode||'solo';FS.forEach(f=>f.dispose());FS=[];AIS=[];clearProjs();clearOrbs();resetProps();clearMarks();
+  decorateBots(roster);roster.forEach((r,i)=>{r.cos=r.cos?sanitizeCos(r.cos,(rosterHero(Object.assign({},r,{cos:null}))||{}).id):null;const f=new Fighter(rosterHero(r),r.id,r.name,r.bot,game.mode==='duos'||game.story||r.keepTeam?r.team:r.id);const s=spawns[i];f.reset(s[0],s[1],Math.atan2(-s[0],-s[1]));f.cos=r.cos||{card:'none',tag:'none',pet:'none',skin:'default'};attachPet(f);FS.push(f);
     if(r.bot&&NET.role!=='client')AIS.push(new AI(f,diff));});
   ME=FS.find(f=>f.id===NET.myId)||null;game.specF=null;
   zoneReset();orbT=0;game.matchT=0;game.winner=null;game.timeScale=1;game.slowT=0;game.cine=null;
@@ -88,9 +88,10 @@ function handleElim(v,k,pl){
   feed(`${kn} eliminated <b style="--c:${v.hero.css}">${tagName(v,v.name)}</b>`);
   if(v===ME&&k&&k!==ME&&!ally(k,v))showCard(k,'ELIMINATED BY');
   if(k===ME&&v!==ME&&!ally(k,v))addPoints(5,'KILL');
-  if(v===ME&&game.rules==='arena'){v.respT=RESPAWN_T;announce('ELIMINATED','#ff4a3f');AU.scale=1;AU.ko();announceSmall('RESPAWNING IN 3…');}
+  if(v===ME&&(game.rules==='arena'||(game.rules==='raid'&&!v.raidOut))){v.respT=game.rules==='raid'?6:RESPAWN_T;announce('ELIMINATED','#ff4a3f');AU.scale=1;AU.ko();announceSmall(game.rules==='raid'?'RESPAWNING IN 6…':'RESPAWNING IN 3…');}
   else if(v===ME){const mt=mates(ME).find(m=>!m.dead);game.specF=mt||(k&&!k.dead?k:null);announce('ELIMINATED','#ff4a3f');AU.scale=1;AU.ko();showSpec(true);}
   else if(game.rules==='arena')v.respT=RESPAWN_T;
+  else if(game.rules==='raid')v.respT=6;
   else if(k===ME){announceSmall('ELIMINATED '+v.name.toUpperCase());}
 }
 function endMatch(w){
@@ -102,7 +103,7 @@ function showWin(w){emitEv('win',w);
   const myWin=w&&ME&&ally(w,ME);if(myWin&&NET.role!=='off'&&!game.practice&&!game.winPaid){game.winPaid=1;addPoints(100,'WIN');}const tn=w?(game.mode==='duos'?mates(w).concat([w]).map(f=>f.name).join(' & '):w.name):'';
   announce(myWin?'VICTORY':(w?tn.toUpperCase()+' WIN':'DRAW'),myWin?'#ffd23f':'#fff');AU.scale=1;AU.bell();
   setTimeout(()=>{if(game.phase!=='over')return;
-    const nT=new Set(FS.map(f=>f.team)).size;const p=ME?(myWin?1:(ME.place||2)):0;$('rwho').textContent=myWin?(game.rules==='arena'?(game.mode==='duos'?'DUO VICTORY':'ARENA VICTORY'):(game.mode==='duos'?'DUO VICTORY':'VICTORY ROYALE')):'MATCH OVER';
+    const nT=new Set(FS.filter(f=>!f.evt).map(f=>f.team)).size;const p=ME?(myWin?1:(ME.place||2)):0;$('rwho').textContent=myWin&&game.rules==='raid'?'RAID CLEARED':myWin?(game.rules==='arena'?(game.mode==='duos'?'DUO VICTORY':'ARENA VICTORY'):(game.mode==='duos'?'DUO VICTORY':'VICTORY ROYALE')):'MATCH OVER';
     if(game.rules==='arena'){const L=arenaLead();$('rname').textContent=ME?`${game.mode==='duos'?'TEAM':'YOU'}: ${teamScore(ME.team)} KILLS · ${w?'WINNER '+teamScore(w.team):'TIME UP · DRAW'}`:(w?w.name:'');}
     else $('rname').textContent=ME?'#'+p+' OF '+nT+(game.mode==='duos'?' TEAMS':''):(w?w.name:'');
     $('rname').style.color=myWin?'#ffd23f':'#fff';$('rstats').innerHTML=ME?`ELIMINATIONS: ${ME.kills} · FIGHTER: ${esc(ME.hero.name)}<br><span class="rpts">+${game.ptsEarned||0} POINTS THIS MATCH · ★ ${POINTS.toLocaleString()} TOTAL${NET.role==='off'?' · (wins earn points online)':''}</span>`:'';
@@ -127,13 +128,14 @@ const keys={},pressed=new Set();let camYaw=0,camPitch=.3,lastMouseT=-9,manualTgt
 addEventListener('keydown',e=>{
   if(e.target&&e.target.tagName==='INPUT')return;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code))e.preventDefault();
-  if(!e.repeat)pressed.add(e.code);keys[e.code]=true;
+  const code=typeof mapKey==='function'?mapKey(e.code):e.code;if(code==='Tab'&&e.code!=='Tab')e.preventDefault();
+  if(!e.repeat)pressed.add(code);keys[code]=true;
   if(e.code==='Escape'&&inMatch()){togglePause();}
   if(e.code==='KeyM')AU.music=!AU.music;
-  if(e.code==='Tab'&&ME&&!ME.dead)lockOnCycle();
+  if(code==='Tab'&&ME&&!ME.dead)lockOnCycle();
   if(e.code===SET.slKey&&!e.repeat&&inMatch())toggleShiftLock();
 });
-addEventListener('keyup',e=>{keys[e.code]=false;});
+addEventListener('keyup',e=>{keys[typeof mapKey==='function'?mapKey(e.code):e.code]=false;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 function inMatch(){return ['countdown','fight','over'].indexOf(game.phase)>=0;}
 const cvs=renderer.domElement;
@@ -145,7 +147,7 @@ cvs.addEventListener('mousedown',e=>{
   if(e.button===0){pressed.add('MouseL');keys.MouseL=true;}if(e.button===2){pressed.add('MouseR');keys.MouseR=true;}
 });
 addEventListener('mouseup',e=>{if(e.button===0)keys.MouseL=false;if(e.button===2){keys.MouseR=false;if(game.rDrag&&game.rDrag.moved<6&&inMatch())pressed.add('MouseR');game.rDrag=null;}});
-addEventListener('mousemove',e=>{if(!inMatch()||paused)return;const locked=document.pointerLockElement===cvs;
+addEventListener('mousemove',e=>{if(!inMatch()||paused||(typeof WH!=='undefined'&&WH.open))return;const locked=document.pointerLockElement===cvs;
   const drag=!locked&&(e.buttons&2)&&game.rDrag;if(drag)game.rDrag.moved+=Math.abs(e.movementX)+Math.abs(e.movementY);
   if(locked||drag||(e.buttons&&game.plFail&&(SET.shiftLock||SET.cursorLock))){const s=SET.sens/50;camYaw-=e.movementX*.0026*s;camPitch=clamp(camPitch+e.movementY*.002*s*(SET.invertY?-1:1),-.25,1.1);lastMouseT=game.time;}});
 document.addEventListener('pointerlockchange',()=>{$('xh').style.display=document.pointerLockElement===cvs?'block':'none';if(!document.pointerLockElement&&inMatch()&&!paused&&game.phase!=='over'&&game.plTried&&!game.plFail){/* user pressed Esc */}});
@@ -157,7 +159,7 @@ function autoTarget(){if(!ME||ME.dead)return;
   if(ME.hardLock){if(ME.tgt&&!ME.tgt.dead&&ME.tgt.pos.distanceTo(ME.pos)<40)return;ME.hardLock=false;lockOnCycle(true);return;}
   if(ME.tgt&&!ME.tgt.dead&&game.time-manualTgtT<8&&ME.tgt.pos.distanceTo(ME.pos)<32)return;
   const fx=Math.sin(camYaw),fz=Math.cos(camYaw);let best=null,bs=1e9;
-  for(const o of FS){if(ally(o,ME)||o.dead)continue;const dx=o.pos.x-ME.pos.x,dz=o.pos.z-ME.pos.z,d=Math.hypot(dx,dz)+(o.downed?5:0);if(d>20)continue;
+  for(const o of FS){if(ally(o,ME)||o.dead||o.dormant)continue;const dx=o.pos.x-ME.pos.x,dz=o.pos.z-ME.pos.z,d=Math.hypot(dx,dz)+(o.downed?5:0);if(d>20)continue;
     const facing=(dx*fx+dz*fz)/(d||1);const s=d+(1-facing)*5;if(s<bs){bs=s;best=o;}}
   if(ME.tgt&&!ME.tgt.dead){const d=ME.tgt.pos.distanceTo(ME.pos);if(d<20&&best&&best!==ME.tgt&&d<bs+2)best=ME.tgt;}
   ME.tgt=best;}
@@ -244,10 +246,10 @@ function updateHUD(dt){
   const T=F&&!F.dead?F.tgt:null;
   if(T&&!T.dead&&T.pos.distanceTo(F.pos)<32){$('tgt').style.display='block';$('tgN').innerHTML=`<span style="color:${T.hero.css}">${T.hero.name}</span> · ${esc(T.name)}`;$('tgH').style.width=Math.max(0,T.hp)+'%';}
   else $('tgt').style.display='none';
-  if(game.story){const SS=game.story.S;$('alive').textContent=SS&&SS.hud?SS.hud():FS.filter(f=>f.team===1&&!f.dead).length+' ENEMIES LEFT';$('zoneT')&&($('zoneT').textContent='');}else if(game.rules==='arena')arenaHUD(F);else{$('alive').textContent=(game.mode==='duos'?aliveTeams().size+' TEAMS':aliveList().length+' ALIVE')+(F?' · '+F.kills+' KO':'');
+  if(game.story){const SS=game.story.S;$('alive').textContent=SS&&SS.hud?SS.hud():FS.filter(f=>f.team===1&&!f.dead).length+' ENEMIES LEFT';$('zoneT')&&($('zoneT').textContent='');}else if(game.rules==='arena')arenaHUD(F);else if(game.rules==='raid'&&typeof raidHUD==='function')raidHUD(F);else{$('alive').textContent=(game.mode==='duos'?aliveTeams().size+' TEAMS':aliveList().length+' ALIVE')+(F?' · '+F.kills+' KO':'');
   $('zinfo').textContent=game.phase==='countdown'?'DROPPING IN…':zoneLabel();}updateMarks();
   if(comboT>0){comboT-=dt;if(comboT<=0)$('combo').style.opacity=0;}
-  if(F&&F.dead&&game.phase!=='over'&&game.rules!=='arena'&&!game.story){const s=specTarget();$('specT').textContent=`ELIMINATED · #${F.place} — SPECTATING ${s?s.name.toUpperCase():''}`;}
+  if(F&&F.dead&&game.phase!=='over'&&game.rules!=='arena'&&game.rules!=='raid'&&!game.story){const s=specTarget();$('specT').textContent=`ELIMINATED · #${F.place} — SPECTATING ${s?s.name.toUpperCase():''}`;}
   hudT-=dt;if(hudT>0)return;hudT=.08;
   const g=mmCtx,P=x=>(x+MAPH)*MS;g.drawImage(mmBase,0,0);
   if(!noStorm()){g.save();g.fillStyle='rgba(120,40,200,.35)';g.beginPath();g.rect(0,0,MM,MM);g.arc(P(ZONE.cx),P(ZONE.cz),ZONE.r*MS,0,7,true);g.fill('evenodd');g.restore();

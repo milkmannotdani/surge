@@ -255,10 +255,11 @@ function updClones(dt){for(let i=CLONES.length-1;i>=0;i--){const c=CLONES[i],f=c
   clonePose(c,dt,moving);}}
 
 /* ---------- per-fighter status from the new kits ---------- */
+const XHOLD_REL={};
 function updStatus(dt){for(const o of FS){const R=o.rig;
   if(o.dead){o.eraseT=Math.min(o.eraseT||0,.001);o.bindT=0;o.xTop=0;}
   const holding=o.state==='framed'&&!!o.xHold;
-  if(o.xHold&&!holding){if(o.xHold==='marble')marbleRelease(o);else if(o.xHold==='ice'){burst(ADD,o.chest(new V3()),30,{colors:[0xcff4ff,0xffffff,0x7ad4ff],speed:6,life:.5,size:.22,size1:0,grav:12,bright:2,rad:.6});}o.xHold=null;}
+  if(o.xHold&&!holding){if(o.xHold==='marble')marbleRelease(o);else if(XHOLD_REL[o.xHold])XHOLD_REL[o.xHold](o);else if(o.xHold==='ice'){burst(ADD,o.chest(new V3()),30,{colors:[0xcff4ff,0xffffff,0x7ad4ff],speed:6,life:.5,size:.22,size1:0,grav:12,bright:2,rad:.6});}o.xHold=null;}
   if(R.xIce)R.xIce.visible=o.xHold==='ice'&&!o.dead;
   if(o.xHold){R.frame.visible=false;if(o.xHold==='marble'){if(R.root.scale.x>.05)R.root.scale.setScalar(.02);if(o.xMar){o.xMar.position.set(o.pos.x,o.pos.y+.55,o.pos.z);o.xMar.rotation.y+=dt*2;o.xMar.userData.sw.rotation.x+=dt*5;}}}
   if(o.xSelf&&(o.state!=='special'||o.dead)){o.xSelf=false;R.root.scale.setScalar(o.hero.scale);if(o.xMar)o.xMar.visible=false;}
@@ -482,16 +483,15 @@ function mhaParts(h,X){const out={};const {O,M,head,neck,spine,hips,lS,lE,lF,rS,
   const env=m=>{m.envMap=main.envMap;m.envMapIntensity=main.envMapIntensity;return m;};
   if(HAS(h,'solstice')){
     const white=env(new THREE.MeshPhysicalMaterial({color:0xf2f6ff,roughness:.35,clearcoat:.6})),red=env(new THREE.MeshPhysicalMaterial({color:0xc4202a,roughness:.4,clearcoat:.5}));
-    const hairG=new THREE.SphereGeometry(.178,32,20,0,Math.PI,0,Math.PI*.52);
-    const hw=M(hairG,white);hw.position.y=.13;hw.rotation.y=-Math.PI/2;hw.scale.set(1,1.1,1.08);head.add(hw);const hr=M(hairG,red);hr.position.y=.13;hr.rotation.y=Math.PI/2;hr.scale.set(1,1.1,1.08);head.add(hr);
-    for(let k=0;k<5;k++){const sp=M(new THREE.ConeGeometry(.04,.13,8),k<2?white:k>2?red:white);const a=(k-2)*.35;sp.position.set(Math.sin(a)*.12,.2,.1+Math.cos(a)*.02);sp.rotation.set(1.1,0,-a*.6);head.add(sp);}
+    const silver=env(new THREE.MeshPhysicalMaterial({color:0xc8d8ee,roughness:.35,clearcoat:.6})),ember=new THREE.MeshStandardMaterial({color:0xff8a3a,emissive:0xff4a1a,emissiveIntensity:1.6});
+    const hs=M(new THREE.SphereGeometry(.178,32,20,0,Math.PI*2,0,Math.PI*.5),silver);hs.position.y=.12;hs.scale.set(1.05,1.08,1.1);head.add(hs);
+    for(let k=0;k<6;k++){const a=(k-2.5)*.42;const sp=M(new THREE.ConeGeometry(.035,.2,8),k%2?silver:ember);sp.position.set(Math.sin(a)*.12,.24,-.06+Math.cos(a)*.04);sp.rotation.set(-1.4,0,-a*.5);head.add(sp);}
     const ice=env(new THREE.MeshPhysicalMaterial({color:0xcff4ff,emissive:0x2a8aff,emissiveIntensity:.5,roughness:.05,clearcoat:1,transparent:true,opacity:.9}));
     for(let k=0;k<6;k++){const c=M(iceGeo(),ice);c.scale.setScalar(rand(.1,.18));c.position.set(rand(-.06,.08),rand(-.02,.08),rand(-.08,.08));c.rotation.set(rand(-.6,.6),0,-rand(.2,1));rS.add(c);}
     for(let k=0;k<4;k++){const c=M(iceGeo(),ice);c.scale.setScalar(rand(.06,.1));c.position.set(rand(-.05,.05),-rand(.05,.25),rand(-.05,.05));c.rotation.set(rand(-.5,.5),0,-rand(.4,1.2));rE.add(c);}
     const fm=new THREE.MeshStandardMaterial({color:0xffb347,emissive:0xff5a1f,emissiveIntensity:3});
     for(let k=0;k<4;k++){const c=M(new THREE.ConeGeometry(.035,.16,10),fm);c.position.set((k-1.5)*.05,.1,-.02);c.rotation.z=(k-1.5)*.25;lS.add(c);}
     const rg=M(new THREE.TorusGeometry(.07,.015,8,32),fm);rg.rotation.x=Math.PI/2;rg.position.y=-.24;lE.add(rg);
-    const scar=M(new THREE.BoxGeometry(.06,.05,.01),new THREE.MeshStandardMaterial({color:0x7a1a1a,roughness:.9}));scar.position.set(.07,.14,.155);head.add(scar);
     cape(0x1a2a44,.5,.75,.6,.2,-.18);}
   if(HAS(h,'piston')){const pipe=env(new THREE.MeshPhysicalMaterial({color:0xc8ccd8,metalness:1,roughness:.22,clearcoat:.8}));
     const hot=new THREE.MeshStandardMaterial({color:0xffd08a,emissive:0xff7a1a,emissiveIntensity:2.6});
@@ -500,25 +500,23 @@ function mhaParts(h,X){const out={};const {O,M,head,neck,spine,hips,lS,lE,lF,rS,
         const tip=M(new THREE.CylinderGeometry(.02,.02,.012,12),hot);tip.position.set(q*.045,-.04,-.135);tip.rotation.x=-.35;k.add(tip);}});
     [-1,1].forEach(s=>{const fin=M(new THREE.BoxGeometry(.02,.05,.16),trim);fin.position.set(s*.17,.17,-.02);fin.rotation.x=-.3;head.add(fin);});
     const crest=M(new THREE.BoxGeometry(.03,.05,.22),main);crest.position.set(0,.29,-.01);head.add(crest);}
-  if(HAS(h,'snare')){const cloth=new THREE.MeshStandardMaterial({color:0xd8d8e0,roughness:.9});
+  if(HAS(h,'snare')){const cloth=env(new THREE.MeshStandardMaterial({color:0x8a9ab0,roughness:.35,metalness:.8}));
     for(let k=0;k<4;k++){const r=M(new THREE.TorusGeometry(.11+k*.018,.035,10,32),cloth);r.rotation.x=Math.PI/2+rand(-.15,.15);r.position.y=-.02+k*.035;neck.add(r);}
     for(let k=0;k<3;k++){const r=M(new THREE.TorusGeometry(.34-k*.03,.03,8,40,Math.PI*1.2),cloth);r.rotation.set(Math.PI/2+.3,0,Math.PI*.9+k*.3);r.position.set(0,.55-k*.06,.02);spine.add(r);}
-    cape(0xd8d8e0,.13,1.15,1.1,.02,-.11,neck);
-    const gog=M(new THREE.TorusGeometry(.17,.028,10,40,Math.PI*.8),new THREE.MeshStandardMaterial({color:0xffd23f,emissive:0xff2a4a,emissiveIntensity:1.4,roughness:.3}));gog.rotation.set(Math.PI/2,0,Math.PI*.1);gog.position.set(0,.14,.01);head.add(gog);
+    cape(0x3a4a5e,.13,1.15,1.1,.02,-.11,neck);
+    const vis=M(new THREE.BoxGeometry(.3,.045,.06),new THREE.MeshStandardMaterial({color:0x2a0a10,emissive:0xff2a4a,emissiveIntensity:1.8,roughness:.2}));vis.position.set(0,.15,.13);head.add(vis);
     const hair=new THREE.MeshStandardMaterial({color:0x14141a,roughness:.8});for(let k=0;k<9;k++){const c=M(new THREE.ConeGeometry(.045,.2,8),hair);const a=k/9*6.28;c.position.set(Math.cos(a)*.11,.26,Math.sin(a)*.1-.03);c.rotation.set(Math.sin(a)*.9,0,-Math.cos(a)*.9);head.add(c);}
   }
   if(HAS(h,'marble')){const blk=env(new THREE.MeshPhysicalMaterial({color:0x101014,roughness:.4,clearcoat:.6}));
-    const hat=M(new THREE.CylinderGeometry(.13,.13,.24,32),blk);hat.position.set(0,.4,-.01);head.add(hat);const brim=M(new THREE.CylinderGeometry(.24,.24,.015,40),blk);brim.position.set(0,.285,-.01);head.add(brim);
-    const band=M(new THREE.CylinderGeometry(.133,.133,.04,32),trim);band.position.set(0,.31,-.01);head.add(band);
-    const mask=M(new THREE.SphereGeometry(.172,32,16,Math.PI*.05,Math.PI*.9,Math.PI*.25,Math.PI*.42),env(new THREE.MeshPhysicalMaterial({color:0xf4f0e8,roughness:.2,clearcoat:1})));mask.position.y=.12;mask.scale.set(.99,1.1,1.07);head.add(mask);
+    const cry=env(new THREE.MeshPhysicalMaterial({color:0x9ae8ff,roughness:.05,metalness:.1,clearcoat:1,transparent:true,opacity:.85,emissive:0x2a6aff,emissiveIntensity:.4}));
+    for(let k=0;k<7;k++){const a=(k-3)*.32;const c=M(new THREE.OctahedronGeometry(.05+(k===3?.03:0)),cry);c.position.set(Math.sin(a)*.15,.27+Math.cos(a)*.04-(Math.abs(k-3)*.012),Math.cos(a)*.05-.02);c.scale.y=1.8;c.rotation.z=-a*.4;head.add(c);}
+    const dom=M(new THREE.BoxGeometry(.24,.06,.05),blk);dom.position.set(0,.15,.145);head.add(dom);
     [-1,1].forEach(s=>{const e=M(new THREE.SphereGeometry(.022,12,10),glow);e.position.set(s*.06,.15,.165);head.add(e);});
     cape(0x241c30,.62,1.25,.75,.5,-.2);
     out.orbiters=[];for(let k=0;k<4;k++){const m=marbleMesh(h.accent);m.scale.setScalar(.16);out.orbiters.push(m);hips.parent.add(m);}}
   if(HAS(h,'legion')){const st=new THREE.MeshStandardMaterial({color:0x0a0a0c,roughness:.8});
     const half=M(new THREE.SphereGeometry(.169,32,24,0,Math.PI,0,Math.PI),new THREE.MeshPhysicalMaterial({color:0x8a8e9a,roughness:.5,clearcoat:.3}));half.position.y=.12;half.rotation.y=Math.PI/2;half.scale.set(.98,1.1,1.06);head.add(half);
-    for(let k=0;k<3;k++){const r=M(new THREE.TorusGeometry(.172,.006,6,48,Math.PI),st);r.position.y=.12;r.rotation.set(0,0,0);r.rotation.x=(k-1)*.5;r.scale.set(.99,1.1,1.07);head.add(r);}
-    const z=M(new THREE.BoxGeometry(.01,.2,.012),st);z.position.set(0,.08,.17);head.add(z);
-    for(let k=0;k<6;k++){const s=M(new THREE.BoxGeometry(.04,.006,.012),st);s.position.set(0,.0+k*.035,.172);head.add(s);}
+    const seam=M(new THREE.TorusGeometry(.174,.008,8,48,Math.PI),glow);seam.position.y=.12;seam.rotation.set(0,0,Math.PI/2);seam.scale.set(1.1,.99,1.07);head.add(seam);
     [lE,rE].forEach(el=>{for(let k=0;k<3;k++){const s=M(new THREE.TorusGeometry(.068,.005,6,24),st);s.rotation.x=Math.PI/2;s.position.y=-.05-k*.07;el.add(s);}});
     const pouch=M(new THREE.BoxGeometry(.12,.1,.06),dark);pouch.position.set(.18,.0,.12);hips.add(pouch);}
   if(HAS(h,'recoil')){const gun=env(new THREE.MeshPhysicalMaterial({color:0x2a2c34,metalness:.9,roughness:.28,clearcoat:.6}));

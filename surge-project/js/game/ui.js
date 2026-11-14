@@ -5,7 +5,7 @@ let mySel=(()=>{const v=+(store.get('surge.hero')||0)||0;return v>=CUST0&&CSPECS
 const BOTN=['Vex','Kairo','Nyx','Brakk','Sola','Juno','Ryze','Mako','Tess','Orin','Pike','Zara','Dax','Lumen'];
 function botName(){return pick(BOTN)+' (BOT)';}
 function myName(){return cleanName($('nameIn').value||store.get('surge.name')||'Player');}
-function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop','story','missions','gmodes','settings'].forEach(s=>$(s).classList.toggle('on',s===id));}
+function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop','story','missions','gmodes','settings','prog','credits'].forEach(s=>$(s).classList.toggle('on',s===id));}
 function showMsg(t){$('msgT').textContent=t;showScreen('msg');}
 /* ---- fighter select: rendered portraits + 3D pedestal ---- */
 const PV={r:null,scene:null,cam:null,rigs:{},idx:0,ped:null,beams:[],portraits:{},filter:'all'};
@@ -28,7 +28,10 @@ function initPreview(){
   const glow=new THREE.Mesh(new THREE.CircleGeometry(2.4,64),new THREE.MeshBasicMaterial({color:0x2fc6ff,transparent:true,opacity:.25,blending:THREE.AdditiveBlending,depthWrite:false}));glow.rotation.x=-Math.PI/2;glow.position.y=-.21;ped.add(glow);
   S.add(ped);PV.ped=ped;
 }
-function pvRig(i){if(PV.rigs[i])return PV.rigs[i];const h=i<CUST0?skinHero(heroAt(i),(INV.eq.skins||{})[HEROES[i].id]):heroAt(i);const R=buildRig(h,PV.scene);PV.scene.add(R.root);R.root.visible=false;R.P=Object.assign({},POSES.showcase);PV.rigs[i]=R;return R;}
+// armor on/off (the fighter-select toggle): 'h'-prefixed keys hold the unarmored preview rigs
+let ARMOR_OFF=store.get('surge.armor')==='off';function pvKey(i,hm){return (hm===undefined?ARMOR_OFF:hm)?'h'+i:i;}
+function pvRig(i,hm){if(hm===undefined)hm=false;const k=pvKey(i,hm);if(PV.rigs[k])return PV.rigs[k];let h=i<CUST0?skinHero(heroAt(i),(INV.eq.skins||{})[HEROES[i].id]):heroAt(i);if(hm)h=Object.assign({},h,{human:true});
+  const R=buildRig(h,PV.scene);PV.scene.add(R.root);R.root.visible=false;R.P=Object.assign({},POSES.showcase);PV.rigs[k]=R;return R;}
 function poseRig(R,P,t){
   R.hips.position.y=(R.hipY||.95)+P.hy+Math.sin(t*2.2)*.012;R.hips.rotation.x=P.hx;R.spine.rotation.set(P.sx+Math.sin(t*2.2)*.02,P.sy,P.sz);R.head.rotation.x=P.hd;
   R.lS.rotation.set(P.lSx,0,P.lSz);R.lE.rotation.x=P.lE;R.rS.rotation.set(P.rSx,0,P.rSz);R.rE.rotation.x=P.rE;
@@ -43,7 +46,7 @@ function renderPortrait(i){if(!PV.r)return;const cvs=$('pv');const mdv=MD.R?MD.R
   poseRig(R,POSES.showcase,0);R.root.rotation.y=.35;R.root.position.set(0,0,0);
   const sc=h.scale,hy=1.8*sc;PV.cam.aspect=.82;PV.cam.fov=26;PV.cam.updateProjectionMatrix();PV.cam.position.set(.22*sc,hy+.06,1.35*sc);PV.cam.lookAt(0,hy-.1,0);
   PV.r.setSize(205,250,false);PV.r.render(PV.scene,PV.cam);try{PV.portraits[i]=cvs.toDataURL('image/png');}catch(e){}
-  Object.values(PV.rigs).forEach(r=>r.root.visible=false);const cur=PV.rigs[PV.idx];if(cur)cur.root.visible=true;R.root.rotation.y=-.5;
+  Object.values(PV.rigs).forEach(r=>r.root.visible=false);const cur=PV.rigs[pvKey(PV.idx)];if(cur)cur.root.visible=true;R.root.rotation.y=-.5;
   PV.r.setSize(cvs.clientWidth||400,cvs.clientHeight||400,false);if(mdv)mdv.visible=true;PV.ped.visible=true;}
 function makePortraits(){
   if(!PV.r)return;let i=0;const ids=HEROES.map((h,k)=>k).concat(CSPECS.map((s,k)=>CUST0+k));
@@ -56,12 +59,13 @@ function previewHero(i){PV.idx=i;const h=heroAt(i);
   $('pvTags').innerHTML=`<span class="tag ${h.faction==='hero'?'h':'v'}">${h.faction==='hero'?'HERO':'VILLAIN'}</span><span class="tag">${h.cls}</span><span class="tag">${h.power}</span>`;
   $('pvTags2').innerHTML=h.tags.map(t=>`<span class="tag o">${t}</span>`).join('')+`<span class="tag o">Ult: ${h.ultName}</span>`;
   $('pvDesc').textContent=h.desc;$('pvDesc').style.setProperty('--c',h.css);$('pvMoves').innerHTML=movesHTML(h);$('pvEdit').style.display=i>=CUST0?'inline-block':'none';$('pvEdit').onclick=()=>{AU.ui();openCreator(i-CUST0);};if(!PV.mvb){PV.mvb=1;$('pvMvBtn').onclick=()=>{const pi=document.querySelector('.pvinfo');pi.classList.toggle('mv');$('pvMvBtn').textContent=pi.classList.contains('mv')?'ABOUT':'MOVE LIST';AU.ui();};}$('pvMoves').style.setProperty('--c',h.css);
-  if(PV.r){const R=pvRig(i);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;R.root.rotation.y=-.5;}
+  if(PV.r){const R=pvRig(i,ARMOR_OFF);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;R.root.rotation.y=-.5;}
+  const ab=$('armorBtn');if(ab){ab.textContent=ARMOR_OFF?'🧍 ARMOR: OFF':'🛡 ARMOR: ON';ab.classList.toggle('on',!ARMOR_OFF);ab.style.display=i<CUST0?'':'none';}
 }
 function renderPreview(dt){
   if(!PV.r||!$('setup').classList.contains('on'))return;const cvs=$('pv');const w=cvs.clientWidth,h=cvs.clientHeight;if(!w||!h)return;
   if(cvs.width!==Math.floor(w*PV.r.getPixelRatio())||cvs.height!==Math.floor(h*PV.r.getPixelRatio()))PV.r.setSize(w,h,false);
-  const R=PV.rigs[PV.idx];if(!R)return;PV.ped.visible=true;const t=game.time,sc=heroAt(PV.idx).scale;
+  const R=PV.rigs[pvKey(PV.idx)];if(!R)return;PV.ped.visible=true;const t=game.time,sc=heroAt(PV.idx).scale;
   R.root.rotation.y+=dt*.35;R.root.position.y=.02;poseRig(R,R.P,t);PV.ped.rotation.y-=dt*.1;PV.beams.forEach((b,k)=>b.material.opacity=.07+Math.sin(t*1.5+k)*.025);
   PV.cam.aspect=w/h;PV.cam.fov=w/h>1?26:34;PV.cam.updateProjectionMatrix();const off=w/h>1.05?-.55:0;
   PV.cam.position.set(off,1.35*sc,6.8);PV.cam.lookAt(off,1.0*sc,0);PV.r.render(PV.scene,PV.cam);
@@ -78,11 +82,11 @@ function buildCards(){
   if(PV.filter==='all'||PV.filter==='custom'){const a=document.createElement('div');a.className='tile add';a.innerHTML='<b>+</b>CREATE';a.onclick=()=>{AU.ui();openCreator();};g.appendChild(a);}
   const dd=$('diffs');dd.innerHTML='';['ROOKIE','PRO','LEGEND'].forEach((n,i)=>{const b=document.createElement('div');b.className='chip'+(game.diff===i?' sel':'');b.textContent=n;b.onclick=()=>{game.diff=i;AU.ui();buildCards();};dd.appendChild(b);});
   const md=$('modes');md.innerHTML='';[['solo','SOLO'],['duos','DUOS']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(game.mode===k?' sel':'');b.textContent=n;b.onclick=()=>{game.mode=k;store.set('surge.mode',k);AU.ui();buildCards();};md.appendChild(b);});
-  rulesChips('rules',game.rules,k=>{game.rules=k;store.set('surge.rules',k);buildCards();});$('modeTab').textContent=game.rules==='arena'?'ARENA':'BATTLE ROYALE';
+  rulesChips('rules',game.rules,k=>{game.rules=k;store.set('surge.rules',k);buildCards();});$('modeTab').textContent=game.rules==='arena'?'ARENA':game.rules==='raid'?'BOSS RAID':'BATTLE ROYALE';
   $('botLbl').textContent=game.mode==='duos'?'RIVAL TEAMS':'BOTS';$('botN').textContent=game.mode==='duos'?Math.min(3,Math.max(1,game.teamN)):game.botN;
 }
 function openSetup(mode){setupMode=mode;game.phase='menu';$('setupTitle').textContent=mode==='off'?'VS BOTS':mode==='prac'?'PRACTICE':'ONLINE';
-  if(mode==='off')game.rules=store.get('surge.rules')==='arena'?'arena':'br';$('rulesRow').style.display=mode==='off'?'':'none';
+  if(mode==='off')game.rules=normRules(store.get('surge.rules'));$('rulesRow').style.display=mode==='off'?'':'none';
   $('offPanel').style.display=mode==='off'?'flex':'none';$('onPanel').style.display=mode==='on'?'flex':'none';$('bGo').style.display=mode!=='on'?'':'none';$('bGo').textContent=mode==='prac'?'START PRACTICE':'DROP IN';netStatus('');
   if(mode==='on'&&NET.local)netStatus('Same-device test mode (#local).');
   $('nameIn').value=store.get('surge.name')||'';buildCards();previewHero(mySel);showScreen('setup');}
@@ -197,3 +201,7 @@ window.__SND=SND;window.__AU=AU;window.__pshot=(i,rot,pose)=>{if(!PV.r)return ''
 window.__dbg={pvcam:()=>PV.cam,au:()=>[AU.live,!!AU.ctx&&AU.ctx.state],applyHit,H:HEROES.map(h=>h.name),g:()=>({FS,ME,game,ZONE,NET,AIS,ORBS,camera,scene,composer,renderer}),
   lum(){render();const gl=renderer.getContext(),w=gl.drawingBufferWidth,h=gl.drawingBufferHeight,px=new Uint8Array(4);let s=0,n=0;
     for(let i=1;i<8;i++)for(let j=1;j<6;j++){gl.readPixels((w*i/8)|0,(h*j/6)|0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);s+=px[0]+px[1]+px[2];n++;}return s/n/3;}};
+
+// collapse the settings + details over the fighter preview (remembered between visits)
+(function(){const R=document.querySelector('.selR'),b=$('menuTog');const set=c=>{R.classList.toggle('collapsed',c);b.textContent=c?'▴ SHOW MENU':'▾ HIDE MENU';store.set('surge.selMenu',c?'hide':'show');};
+  set(store.get('surge.selMenu')==='hide');b.onclick=()=>{AU.ui();set(!R.classList.contains('collapsed'));};})();

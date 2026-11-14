@@ -41,11 +41,15 @@ function buildTraining(){if(TRAIN)return TRAIN;const G=new THREE.Group();G.visib
   TRAIN=G;return G;}
 function practiceSpot(k){return [[0,7],[-4.5,10],[4.5,10],[-9,15],[9,15]][k%5];}
 const SAVED_COL={};
-function setWorld(w){if(PR.world===w)return;PR.world=w;const tr=w==='train';if(tr)buildTraining();
-  CITY.forEach(o=>{if(tr){o.userData._v=o.visible;o.visible=false;}else o.visible=o.userData._v!==undefined?o.userData._v:true;});if(TRAIN)TRAIN.visible=tr;
-  [['BLD',BLD],['solids',solids],['props',props],['walls',walls]].forEach(([k,a])=>{if(tr){SAVED_COL[k]=a.slice();a.length=0;}else if(SAVED_COL[k]){a.length=0;SAVED_COL[k].forEach(x=>a.push(x));}});
-  if(tr){PR.fog=scene.fog.density;scene.fog.density=.0028;}else if(PR.fog)scene.fog.density=PR.fog;
-  $('mapw').style.display=tr?'none':'';}
+// worlds: 'city' (the battle map) and 'train' (practice ground)
+function setWorld(w){const prev=PR.world||'city';if(prev===w)return;PR.world=w;const alt=w!=='city';
+  if(w==='train')buildTraining();
+  if(prev==='city'){CITY.forEach(o=>{o.userData._v=o.visible;o.visible=false;});[['BLD',BLD],['solids',solids],['props',props],['walls',walls]].forEach(([k,a])=>{SAVED_COL[k]=a.slice();a.length=0;});PR.fog=scene.fog.density;}
+  else{[BLD,solids,props,walls].forEach(a=>a.length=0);}
+  if(!alt){CITY.forEach(o=>{o.visible=o.userData._v!==undefined?o.userData._v:true;});[['BLD',BLD],['solids',solids],['props',props],['walls',walls]].forEach(([k,a])=>{if(SAVED_COL[k]){a.length=0;SAVED_COL[k].forEach(x=>a.push(x));}});if(PR.fog)scene.fog.density=PR.fog;}
+  if(TRAIN)TRAIN.visible=w==='train';
+  if(w==='train')scene.fog.density=.0028;
+  $('mapw').style.display=alt?'none':'';}
 /* dummies */
 class DummyAI{constructor(f,k){this.f=f;this.k=k;this.t=rand(0,2);this.real=new AI(f,1);}
   think(dt){const f=this.f,I=f.intent;I.light=I.heavy=I.special=I.ult=I.jump=I.dash=false;I.block=false;I.sprint=false;I.wx=I.wz=0;this.t+=dt;

@@ -2,7 +2,7 @@
 /* ================= BOT AI ================= */
 const ULT_RANGE={dominion:9,singularity:16,sealedarena:10,thousandcuts:14,collapse:10,arsenal:20,bloodarrow:26,chain:14,supernova:6,tectonic:12,tidal:18,tempest:14,stopmotion:14,thunderdome:10,eclipse:7,meteor:16,unbreakable:16,skyfall:18,cataclysm:20,azureinferno:10,abyss:22};
 const SPECIAL_AI={rend:[0,12,.5],nullfield:[0,4,.35],vow:[0,8,.5],chainbolt:[0,16,.5],bluelash:[0,6,.6],gate:[4,22,.4],shadowgrab:[3,10,.45],harden:[0,5,.5],featherfan:[4,20,.5],airburst:[2,12,.45],bubble:[3,16,.45],bladeform:[0,7,.35],rocket:[2.5,8,.3],framelock:[2.5,10,.35]};
-function nearestEnemy(f,maxD){let best=null,bd=maxD||1e9;for(const o of FS){if(ally(o,f)||o.dead)continue;const d=Math.hypot(o.pos.x-f.pos.x,o.pos.z-f.pos.z)+(o.downed?6:0);if(d<bd){bd=d;best=o;}}return best;}
+function nearestEnemy(f,maxD){let best=null,bd=maxD||1e9;for(const o of FS){if(ally(o,f)||o.dead||o.dormant)continue;const d=Math.hypot(o.pos.x-f.pos.x,o.pos.z-f.pos.z)+(o.downed?6:0);if(d<bd){bd=d;best=o;}}return best;}
 class AI{
   constructor(f,d){this.f=f;this.t=0;this.blockT=0;this.str=Math.random()<.5?1:-1;this.react=[.42,.26,.15][d];this.def=[.2,.42,.62][d];this.aggr=[.45,.7,.9][d];
     this.retgt=0;this.wp=null;this.wpT=0;this.stuckT=0;this.avoidT=0;this.avoid=new V3();}

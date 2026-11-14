@@ -16,7 +16,7 @@ function netShutdown(){
 }
 function hostStart(){
   netShutdown();NET.role='host';NET.myId=0;NET.nextId=1;NET.code=genCode();
-  NET.mode=game.mode;NET.rules=store.get('surge.rules')==='arena'?'arena':'br';NET.lobby=[Object.assign({id:0,name:myName(),host:true,team:0,cust:null},selEntry())];
+  NET.mode=game.mode;NET.rules=normRules(store.get('surge.rules'));NET.lobby=[Object.assign({id:0,name:myName(),host:true,team:0,cust:null},selEntry())];
   if(NET.local){NET.bc=new BroadcastChannel('surge-'+NET.code);NET.bc.onmessage=e=>{const m=e.data;if(!m||m.to!=='host')return;let c=NET.conns.get(m.from);
       if(!c){c={id:m.from,send:o=>NET.bc.postMessage({from:'host',to:m.from,d:o}),close:()=>{}};NET.conns.set(m.from,c);}hostRecv(c,m.d);};showLobby();return;}
   if(!window.Peer){netStatus('Online play could not load. Check your connection, or host the game on its own web page (see the README).');NET.role='off';return;}
@@ -54,7 +54,8 @@ function hostRecv(c,m){
   if(m.t==='team'){const L=NET.lobby.find(p=>p.id===c.pid);const t=clamp(m.team|0,0,3);if(L&&(NET.lobby.filter(p=>p.team===t).length<2)){L.team=t;broadcastLobby();}return;}
   if(m.t==='pick'){const L=NET.lobby.find(p=>p.id===c.pid);if(L){L.hero=clamp(m.hero|0,0,HEROES.length-1);L.cust=m.cust?sanitizeSpec(m.cust):null;L.cos=sanitizeCos(m.cos,(HEROES[m.hero|0]||{}).id);broadcastLobby();}return;}
   if(m.t==='in'){const f=FS.find(x=>x.id===c.pid);if(f&&!f.isBot){const I=f.intent;I.wx=+m.wx||0;I.wz=+m.wz||0;I.aim=+m.aim||0;I.block=!!m.b;I.sprint=!!m.s;I.revive=!!m.r;I.hH=!!(m.h&1);I.hS=!!(m.h&2);I.hU=!!(m.h&4);f.netPress|=(m.p|0);}return;}
-  if(m.t==='bye'){hostDrop(c);}
+  if(m.t==='bye'){hostDrop(c);return;}
+  emitEv('hmsg',m,c);
 }
 function hostDrop(c){
   if(!NET.conns.has(c.id))return;NET.conns.delete(c.id);
@@ -83,9 +84,10 @@ function clientRecv(m){
   if(m.t==='busy'){netShutdown();netStatus('That match is already in progress. Try again when it ends.');return;}
   if(m.t==='full'){netShutdown();netStatus('That room is full (8 players).');return;}
   if(m.t==='closed'){hostLost();return;}
-  if(m.t==='lobby'){NET.lobby=m.players;NET.fill=m.fill;NET.diff=m.diff;NET.rules=m.rules==='arena'?'arena':'br';NET.mode=m.mode||'solo';if(inMatch()){endMatchCleanup();}if(game.phase!=='lobby')showLobby();else renderLobby();return;}
+  if(m.t==='lobby'){NET.lobby=m.players;NET.fill=m.fill;NET.diff=m.diff;NET.rules=normRules(m.rules);NET.mode=m.mode||'solo';if(inMatch()){endMatchCleanup();}if(game.phase!=='lobby')showLobby();else renderLobby();return;}
   if(m.t==='start'){startMatch(m.roster,m.spawns,m.diff,m.mode,m.rules);return;}
   if(m.t==='s'){applySnap(m);return;}
+  emitEv('cmsg',m);
 }
 // --- snapshots ---
 const SPKN=STEALABLE;
@@ -122,7 +124,7 @@ function applySnap(m){
     const [id,x,y,z2,vx,vy,vz,face,si,stT,mi,pi,hp,me,dead,wx,wz,aim,fl,pr,tg,bl,soI,soT,dc,ki,pl,frT,arT,dn,bld,rv,fdT,vwT,mk,bu,bd,sl,sv,ua,uo,pa,bk]=a;f.brk=bk||0;f.burnT=Math.abs(bu||0);f.burnB=(bu||0)<0;f.burnD=bd||0;f.slowT=sl||0;f.parryT=pa||0;f.fieldT=fdT||0;f.vowT=vwT||0;f.marks=mk||0;if(mk)f.markT=Math.max(f.markT,.3);f.armorT=arT||0;f.downed=!!dn&&!dead;f.bleed=bld||0;f.revT=rv||0;const hs=STATES[si];const isMe=f===ME;
     f.hp=hp;f.meter=me;f.bladeT=bl;f.stolen=soI>=0?SPKN[soI]:null;f.stolenT=soT;f.decay=dc;if(dc>0)f.decayT=Math.max(f.decayT,.3);f.kills=ki;f.place=pl;f.framedT=frT;
     if(dead&&!f.dead){f.dead=true;f.rig.frame.visible=false;}
-    else if(!dead&&f.dead&&game.rules==='arena'){respawnFighter(f,x,z2);}
+    else if(!dead&&f.dead&&(game.rules==='arena'||game.rules==='raid')){respawnFighter(f,x,z2);}
     if(!isMe){const I=f.intent;I.wx=wx;I.wz=wz;I.aim=aim;I.block=!!(fl&1);I.sprint=!!(fl&2);I.revive=!!(fl&8);I.hH=!!(fl&16);I.hS=!!(fl&32);I.hU=!!(fl&64);
       if(hs==='special'&&sv>0&&f.specVar!==SVAR[sv]){f.specVar=SVAR[sv];f.spPend=false;}if(hs==='ult'){f.ultAlt=!!ua;f.ultPow=uo?1.3:1;}f.netPress|=pr;f.tgt=tg>=0?byId(tg):null;}
     if(hs!==f.state){if(isMe?(INVOL.indexOf(hs)>=0||(INVOL.indexOf(f.state)>=0&&f.stateT>.3)):(f.stateT>.1||INVOL.indexOf(hs)>=0))adopt(f,hs,stT,mi,pi);}
