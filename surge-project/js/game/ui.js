@@ -5,7 +5,7 @@ let mySel=(()=>{const v=+(store.get('surge.hero')||0)||0;return v>=CUST0&&CSPECS
 const BOTN=['Vex','Kairo','Nyx','Brakk','Sola','Juno','Ryze','Mako','Tess','Orin','Pike','Zara','Dax','Lumen'];
 function botName(){return pick(BOTN)+' (BOT)';}
 function myName(){return cleanName($('nameIn').value||store.get('surge.name')||'Player');}
-function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop','story'].forEach(s=>$(s).classList.toggle('on',s===id));}
+function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop','story','missions','gmodes','settings'].forEach(s=>$(s).classList.toggle('on',s===id));}
 function showMsg(t){$('msgT').textContent=t;showScreen('msg');}
 /* ---- fighter select: rendered portraits + 3D pedestal ---- */
 const PV={r:null,scene:null,cam:null,rigs:{},idx:0,ped:null,beams:[],portraits:{},filter:'all'};
@@ -71,7 +71,7 @@ function buildCards(){
   const g=$('grid');g.innerHTML='';
   const ids=HEROES.map((h,k)=>k).concat(CSPECS.map((s,k)=>CUST0+k));
   ids.forEach(i=>{const h=heroAt(i),cu=i>=CUST0;if(PV.filter==='custom'?!cu:(PV.filter!=='all'&&h.faction!==PV.filter))return;const t=document.createElement('div');t.className='tile'+(h.faction==='villain'?' vil':'')+(mySel===i?' sel':'');t.style.setProperty('--c',h.css);
-    t.innerHTML=(PV.portraits[i]?`<img src="${PV.portraits[i]}" alt="">`:'')+`<div class="fx">${h.faction==='hero'?'★':'☠'}</div><div class="tn">${h.name}</div><div class="bar"></div><div class="ck">✔ Selected</div>`+(cu?'<div class="del" title="Delete">✕</div>':'');
+    t.innerHTML=(PV.portraits[i]?`<img src="${PV.portraits[i]}" alt="">`:'')+`<div class="fx">${h.faction==='hero'?'★':'☠'}</div><div class="tn">${h.name}</div>${typeof progBadge==='function'?progBadge(i):''}<div class="bar"></div><div class="ck">✔ Selected</div>`+(cu?'<div class="del" title="Delete">✕</div>':'');
     if(cu){const d=t.querySelector('.del');d.onclick=e=>{e.stopPropagation();AU.ui();if(d.dataset.arm){deleteCustom(i);}else{d.dataset.arm=1;d.textContent='DEL?';d.style.width='44px';d.style.background='#c4102a';setTimeout(()=>{d.dataset.arm='';d.textContent='✕';d.style.width='';d.style.background='';},2500);}};}
     t.onmouseenter=()=>previewHero(i);t.onmouseleave=()=>previewHero(mySel);
     t.onclick=()=>{mySel=i;store.set('surge.hero',i);AU.init();AU.ui();buildCards();previewHero(i);};g.appendChild(t);});
@@ -89,7 +89,7 @@ function openSetup(mode){setupMode=mode;game.phase='menu';$('setupTitle').textCo
 $('nameIn').addEventListener('change',()=>store.set('surge.name',myName()));
 $('bOnline').onclick=()=>{AU.init();AU.ui();openSetup('on');};
 $('bOffline').onclick=()=>{AU.init();AU.ui();openSetup('off');};
-$('bBack1').onclick=()=>{AU.ui();netShutdown();showScreen('title');};
+$('bBack1').onclick=()=>{AU.ui();netShutdown();showScreen('gmodes');};
 $('bDec').onclick=()=>{if(game.mode==='duos')game.teamN=Math.max(1,game.teamN-1);else game.botN=Math.max(1,game.botN-1);buildCards();AU.ui();};
 $('bInc').onclick=()=>{if(game.mode==='duos')game.teamN=Math.min(3,game.teamN+1);else game.botN=Math.min(7,game.botN+1);buildCards();AU.ui();};
 function startOffline(){store.set('surge.name',myName());netShutdown();NET.role='off';NET.myId=0;
@@ -124,7 +124,7 @@ $('bStartM').onclick=()=>{AU.ui();hostStartMatch();};
 $('bLeave').onclick=()=>{AU.ui();netShutdown();openSetup('on');};
 function togglePause(){if(game.phase==='over')return;paused=!paused;$('pauseNote').textContent=NET.role==='off'?'':'Online matches keep running while this menu is open.';showScreen(paused?'pause':null);
   if(paused&&document.pointerLockElement)document.exitPointerLock();}
-function endMatchCleanup(){if(window.__story)__story.STG.on=false;$('bossBar').classList.remove('on');if(PR.on)endPractice();paused=false;FS.forEach(f=>f.dispose());FS=[];AIS=[];ME=null;clearProjs();clearOrbs();resetProps();game.cine=null;
+function endMatchCleanup(){emitEv('matchEnd');if(window.__story)__story.STG.on=false;$('bossBar').classList.remove('on');if(PR.on)endPractice();paused=false;FS.forEach(f=>f.dispose());FS=[];AIS=[];ME=null;clearProjs();clearOrbs();resetProps();game.cine=null;
   $('hud').classList.remove('on');$('hint').style.display='none';$('spec').style.display='none';$('storm').style.opacity=0;AU.stopMusic();AU.stopAmb();CUTS.length=0;TINT.target=0;if(document.pointerLockElement)document.exitPointerLock();}
 function leaveToTitle(){endMatchCleanup();game.phase='menu';showScreen('title');}
 function leaveMatch(){AU.ui();netShutdown();leaveToTitle();}
@@ -146,17 +146,18 @@ function step(draw){
   if(game.slowT>0){game.slowT-=rdt;game.timeScale=game.slowT>0?.3:1;}
   if(game.cine){game.cine.t+=rdt;if(game.cine.t>1.1)game.cine=null;}
   let dt=rdt*game.timeScale;if(hitStopT>0){hitStopT-=rdt;dt*=.08;}
+  emitEv('frame',rdt);emitEv('input',rdt);
   if(inMatch()){
     if(game.phase==='countdown'){if(NET.role!=='client'){game.cdT-=rdt;if(game.cdT<=0){game.phase='fight';announce('FIGHT!','#ffd23f');AU.scale=1;AU.boom(false);}}
       const n=Math.ceil(game.cdT);if(n!==game.lastCd&&n>0&&n<=3){game.lastCd=n;announce(String(n));AU.scale=1;AU.bell();}}
-    playerIntent(rdt);tgtT-=rdt;if(tgtT<=0){tgtT=.25;autoTarget();}
+    playerIntent(rdt);emitEv('intent',rdt);tgtT-=rdt;if(tgtT<=0){tgtT=.25;autoTarget();}
     if(NET.role!=='client')AIS.forEach(a=>a.think(rdt));
     for(const f of FS){
       if(f!==ME&&(NET.role==='client'||!f.isBot)){applyBits(f.intent,f.netPress);f.netPress=0;}
       if(NET.role==='host')f.sentPress=(f.sentPress|0)|pressBits(f.intent);
     }
     for(const f of FS)f.update(dt);
-    updateProjs(dt);updateCab(dt);updateMHA(dt);arenaTick(dt);arenaRegen(dt);storyTick(dt);updatePets(dt);if(game.practice)practiceTick(rdt);
+    updateProjs(dt);updateCab(dt);updateMHA(dt);arenaTick(dt);arenaRegen(dt);storyTick(dt);emitEv('tick',dt);updatePets(dt);if(game.practice)practiceTick(rdt);
     if(game.phase==='fight'&&!game.practice){
       zoneUpdate(dt);
       if(NET.role!=='client'){game.matchT+=dt;orbsHost(dt);if(game.mode==='duos')teamTick(dt);

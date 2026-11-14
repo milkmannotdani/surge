@@ -4,7 +4,7 @@ let FS=[], ME=null;
 function ally(a,b){return a===b||(a.team!==undefined&&a.team===b.team);}
 function enemiesOf(f){return FS.filter(o=>!ally(o,f)&&!o.dead);}
 function mates(f){return FS.filter(o=>o!==f&&o.team===f.team);}
-function blankIntent(){return {wx:0,wz:0,aim:0,block:false,sprint:false,revive:false,light:false,heavy:false,special:false,ult:false,jump:false,dash:false,spB:false,ultB:false,x1:false,x2:false};}
+function blankIntent(){return {wx:0,wz:0,aim:0,block:false,sprint:false,revive:false,light:false,heavy:false,special:false,ult:false,jump:false,dash:false,spB:false,ultB:false,x1:false,x2:false,awk:false,team:false};}
 // basic (non-variant) punches and shots wait a moment before the next one; variant moves are exempt
 // BREAK bar: fills as you take damage; when full, dash while being hit to burst out of the combo
 // while blocking you turn to face the nearest enemy (or where you aim), so hits from the side and from range get blocked
@@ -73,7 +73,7 @@ class Fighter{
     const o=(this.tgt&&!this.tgt.dead)?this.tgt:null;
     let dist=99,dirO=this.fwd();
     if(o){const dx=o.pos.x-this.pos.x,dz=o.pos.z-this.pos.z;dist=Math.hypot(dx,dz);if(dist>.01)dirO=new V3(dx/dist,0,dz/dist);}
-    const lock=!!o&&dist<9;this.locked=lock;
+    const lock=!!o&&(this===ME?(!!this.hardLock&&dist<40):dist<9);this.locked=lock;
     const mv=new V3(I.wx||0,0,I.wz||0);if(mv.lengthSq()>1)mv.normalize();
     if(!fight&&['idle','run','block'].indexOf(this.state)>=0)mv.set(0,0,0);
     let canTurn=true,fr=0,grav=true;this.sprinting=false;
@@ -347,7 +347,7 @@ class Fighter{
     if(this.state==='air'||(this.state==='attack'&&this.move.air)){this.set(Math.hypot(this.vel.x,this.vel.z)>.7?'run':'idle');dust(this.pos,hard?10:4,hard?1:.5);AU.scale=sndAt(this.pos);AU.landW(this.hero.scale*(this.hero.bulk||1),hard);}
   }
   startUlt(){
-    this.meter=0;this.set('ult');this.u1=false;this.uStep=0;this.slamLanded=false;this.uEnd=99;this.invuln=1.2;this.hitMap={};this.vf={};this.ultPow=1;this.ocChk=false;
+    this.meter=0;this.set('ult');emitEv('ult',this);this.u1=false;this.uStep=0;this.slamLanded=false;this.uEnd=99;this.invuln=1.2;this.hitMap={};this.vf={};this.ultPow=1;this.ocChk=false;
     this.ultAlt=!!ALTULT[KIT(this.hero,'alt')]&&(inDir(this)==='b'||!this.onGround||!!this.intent.ultB);
     if(this===ME){game.cine={f:this,t:0};banner({css:this.hero.css,ultName:ultLabel(this)});}
     else if(ME&&this.pos.distanceTo(ME.pos)<40)feed(`<b style="--c:${this.hero.css}">${esc(this.name)}</b> unleashed ${ultLabel(this)}`);

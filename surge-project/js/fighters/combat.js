@@ -34,7 +34,7 @@ function applyHit(att,def,o){o=Object.assign({},o);o.dmg=(o.dmg||0)*DMG_SCALE*(d
   const scale=Math.max(.35,1-def.combo*.07);let dmg=o.dmg*scale*att.hero.pow*mult;if(att.armorT>0)dmg*=1.4;if(att.state==='ult'&&att.ultPow>1)dmg*=att.ultPow;if(att.powT>0)dmg*=1.25;if(att.vowT>0)dmg*=1.6;if(def.fieldT>0)dmg*=.5;
   if(KIT(att.hero,'elem')==='hex'&&!o.noSpark){def.marks=(def.marks||0)+(o.mark||1);def.markT=6;if(def.marks>=3){def.marks=0;dmg+=9*att.hero.pow;o=Object.assign({},o,{launch:true,kb:9,up:11,heavy:true});
     for(let k=0;k<3;k++)slashFX(def.chest(new V3()),0x5aff8a,2.4);ring(def.chest(TMP2),0x5aff8a,2.6,.35,false,2.4);const s1=AU.scale;AU.scale=sndAt(def.pos);SND.curse.hit(1.4);AU.scale=s1;}}const armored=def.armorT>0;if(armored)dmg*=.45;
-  def.hp-=dmg;def.combo++;if(!def.dead)def.brk=Math.min(100,(def.brk||0)+dmg*BRK_PER_DMG);if(game.practice)practiceHit(att,def,dmg,o.pt);def.flash=1;def.bounce=0;
+  def.hp-=dmg;emitEv('hit',att,def,dmg,o);def.combo++;if(!def.dead)def.brk=Math.min(100,(def.brk||0)+dmg*BRK_PER_DMG);if(game.practice)practiceHit(att,def,dmg,o.pt);def.flash=1;def.bounce=0;
   att.meter=Math.min(100,att.meter+dmg*1.3);def.meter=Math.min(100,def.meter+dmg*.7);
   impactFX(att,o.pt,!!(o.heavy||(o.noSpark&&!o.cut)),o.noSpark);
   if(KIT(att.hero,'elem')==='scathe'&&!o.cut&&!o.noSpark)CUTS.push({att,def,t:game.time+.32});
@@ -63,7 +63,7 @@ function downFighter(def,att){
 function killFighter(def,att,dir){
   if(game.practice){def.hp=100;def.flash=1;ring(def.chest(new V3()),0xff8a1a,2.6,.4,false,2.4);return;}
   if(game.mode==='duos'&&game.rules!=='arena'&&!def.downed&&mates(def).some(m=>!m.dead&&!m.downed)){downFighter(def,att);return;}
-  def.downed=false;def.dead=true;def.hp=0;def.rig.frame.visible=false;def.set('fly');def.onGround=false;def.pos.y+=.05;
+  def.downed=false;def.dead=true;def.hp=0;emitEv('kill',def,att);def.rig.frame.visible=false;def.set('fly');def.onGround=false;def.pos.y+=.05;
   if(dir){def.vel.copy(dir).multiplyScalar(14);def.vel.y=11;}else{def.vel.set(0,8,0);}
   if(def.rig.whip)def.rig.whip.group.visible=false;if(def.rig.beam)def.rig.beam.group.visible=false;
   dultOpen(def,att);game.onElim(def,att);

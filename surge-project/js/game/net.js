@@ -89,8 +89,8 @@ function clientRecv(m){
 }
 // --- snapshots ---
 const SPKN=STEALABLE;
-function pressBits(I){return (I.light?1:0)|(I.heavy?2:0)|(I.special?4:0)|(I.ult?8:0)|(I.jump?16:0)|(I.dash?32:0)|(I.spB?64:0)|(I.ultB?128:0)|(I.x1?256:0)|(I.x2?512:0);}
-function applyBits(I,b){I.light=!!(b&1);I.heavy=!!(b&2);I.special=!!(b&4);I.ult=!!(b&8);I.jump=!!(b&16);I.dash=!!(b&32);I.spB=!!(b&64);I.ultB=!!(b&128);I.x1=!!(b&256);I.x2=!!(b&512);}
+function pressBits(I){return (I.light?1:0)|(I.heavy?2:0)|(I.special?4:0)|(I.ult?8:0)|(I.jump?16:0)|(I.dash?32:0)|(I.spB?64:0)|(I.ultB?128:0)|(I.x1?256:0)|(I.x2?512:0)|(I.awk?1024:0)|(I.team?2048:0);}
+function applyBits(I,b){I.light=!!(b&1);I.heavy=!!(b&2);I.special=!!(b&4);I.ult=!!(b&8);I.jump=!!(b&16);I.dash=!!(b&32);I.spB=!!(b&64);I.ultB=!!(b&128);I.x1=!!(b&256);I.x2=!!(b&512);I.awk=!!(b&1024);I.team=!!(b&2048);}
 function buildSnap(){
   const f=FS.map(x=>{const I=x.intent;const a=[x.id,r2(x.pos.x),r2(x.pos.y),r2(x.pos.z),r2(x.vel.x),r2(x.vel.y),r2(x.vel.z),r2(x.face),STATES.indexOf(x.state),r2(x.stateT),
     x.state==='attack'?MOVEK.indexOf(x.moveName):-1,POSEK.indexOf(x.poseKey),r2(x.hp),r2(x.meter),x.dead?1:0,r2(I.wx||0),r2(I.wz||0),r2(I.aim||0),
@@ -138,6 +138,7 @@ function applySnap(m){
     else if(e.k==='rev'){const v=byId(e.v);if(v)revived(v);}
     else if(e.k==='pick'){const o=ORBS.find(x=>x.id===e.id);if(o)removeOrb(o,true);}
     else if(e.k==='zone'){zoneMsg();}
+    else emitEv('net:'+e.k,e);
   }
 }
 function netTick(rdt){

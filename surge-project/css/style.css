@@ -310,3 +310,59 @@ h3.big{font-family:'Bebas Neue';font-size:46px;letter-spacing:.12em;margin:4px 0
 .mark .md.dn{color:#ff4a5a;text-shadow:0 0 8px #ff2040;animation:mfl .4s infinite alternate}
 .mark .mh{width:54px;height:4px;margin:2px auto 0;background:rgba(0,0,0,.6)}
 .mark .mh div{height:100%;background:#3dff8a}
+
+/* ---- missions, objectives, rescue, awakening, team-ups, levels, touch ---- */
+.btn.mis{background:linear-gradient(135deg,#1a8a5a,#0a4a3a);border-color:#5aff8a}
+.miscards{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}.misc{width:min(380px,90vw);padding:20px;background:rgba(10,14,24,.85);border:2px solid #5aff8a;cursor:pointer;text-align:left;transition:transform .15s}
+.misc:hover{transform:translateY(-3px) scale(1.02)}.misc.ex{border-color:#ffd23f}.mict{font:900 30px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.06em;color:#5aff8a}.misc.ex .mict{color:#ffd23f}
+.micd{font:500 15px/1.4 'Rajdhani',sans-serif;color:#cfd6e6;margin:10px 0}.micb{font:700 12px/1 'Rajdhani',sans-serif;letter-spacing:.14em;color:#8a92a6}
+#objP{position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:20;display:none;padding:9px 18px;background:rgba(8,10,20,.78);border-left:4px solid #5af0ff;font:600 15px/1.35 'Rajdhani',sans-serif;color:#eef1f8;text-align:center;pointer-events:none;max-width:90vw}
+#objP.on{display:block}#objP b{letter-spacing:.12em;color:#5af0ff}#objP span{font-size:13px;color:#aab2c6}
+kbd{display:inline-block;padding:1px 7px;margin:0 2px;border:1px solid rgba(255,255,255,.5);border-bottom-width:3px;border-radius:4px;font:700 12px/1.4 'Rajdhani',sans-serif;color:#fff;background:rgba(255,255,255,.08)}
+#objArrow{position:fixed;left:50%;top:118px;z-index:20;display:none;width:40px;height:40px;transform-origin:50% 50%;pointer-events:none}#objArrow.on{display:block}
+#objArrow i{display:block;text-align:center;font:900 30px/40px sans-serif;color:#5af0ff;text-shadow:0 0 8px #000}#objArrow b{position:absolute;left:0;right:0;top:40px;text-align:center;font:700 12px/1 'Rajdhani',sans-serif;color:#fff;text-shadow:0 0 4px #000}
+#civProg{position:fixed;left:50%;top:58%;width:64px;height:64px;margin:-32px;border-radius:50%;z-index:20;display:none;background:conic-gradient(#5aff8a var(--p,0deg),rgba(255,255,255,.15) 0);-webkit-mask:radial-gradient(circle,transparent 22px,#000 23px);mask:radial-gradient(circle,transparent 22px,#000 23px)}#civProg.on{display:block}
+#civHint,#awkP,#tuP{position:fixed;left:50%;transform:translateX(-50%);z-index:20;display:none;padding:7px 16px;font:800 15px/1 'Rajdhani',sans-serif;letter-spacing:.14em;pointer-events:none}
+#civHint{top:64%;background:rgba(8,40,20,.8);color:#5aff8a}#civHint.on{display:block}
+#awkP{bottom:150px;background:linear-gradient(90deg,#ff2a4a,#ffd23f);color:#111;animation:awkPulse .6s ease-in-out infinite alternate}#awkP.on{display:block}#awkP kbd{color:#111;border-color:#111}
+#tuP{bottom:190px;background:linear-gradient(90deg,#3a8aff,#ffd23f);color:#111;animation:awkPulse .3s ease-in-out infinite alternate}#tuP.on{display:block}#tuP kbd{color:#111;border-color:#111}
+@keyframes awkPulse{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.07)}}
+.lvb{position:absolute;right:4px;top:4px;padding:2px 5px;font:800 10px/1 'Rajdhani',sans-serif;letter-spacing:.08em;background:rgba(0,0,0,.65);color:#ffd23f;border:1px solid rgba(255,210,63,.5);z-index:2}
+#pvLv{position:relative;margin:4px auto 0;width:min(240px,80%);padding:3px 0;font:800 12px/1 'Rajdhani',sans-serif;letter-spacing:.14em;color:#ffd23f;text-align:center;background:linear-gradient(90deg,rgba(255,210,63,.35) var(--p,0%),rgba(255,255,255,.08) var(--p,0%))}
+.ptpop.xp{color:#8ad8ff}.shit.lockd{opacity:.55}.shit.lockd .shp{color:#ff8a8a}
+#touch{position:fixed;inset:0;z-index:15;display:none;touch-action:none}#touch.on{display:block}
+#tStick{position:absolute;width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);display:none;pointer-events:none}#tStick.on{display:block}
+#tStick i{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.4)}
+#touch .tb{position:absolute;width:62px;height:62px;border-radius:50%;border:2px solid rgba(255,255,255,.45);background:rgba(10,14,24,.55);color:#fff;font:800 12px/1 'Rajdhani',sans-serif;letter-spacing:.04em;touch-action:none}
+#touch .tb.dn{background:rgba(90,240,255,.5)}
+#tAtk{right:24px;bottom:110px;width:78px!important;height:78px!important}#tHvy{right:112px;bottom:80px}#tJump{right:40px;bottom:24px}#tDash{right:118px;bottom:12px}#tBlock{right:190px;bottom:40px}
+#tUlt{right:24px;bottom:198px;border-color:#ffd23f!important}#touch #tM1,#touch #tM2,#touch #tM3,#touch #tM4{width:50px;height:50px;bottom:168px}#tM1{right:104px}#tM2{right:160px}#tM3{right:216px}#tM4{right:272px}
+body.touchdev #slots{display:none}
+#tAwk{left:24px;top:110px;font-size:10px!important;border-color:#ff2a4a!important}#tRes{left:24px;top:182px;font-size:10px!important;border-color:#5aff8a!important}
+#tPause{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:44px;height:36px;background:rgba(10,14,24,.6);color:#fff;border:1px solid rgba(255,255,255,.4)}
+body.touchdev #hint{display:none!important}
+
+/* ---- title / game modes / settings ---- */
+.btn.big{font-size:30px;padding:16px 70px;letter-spacing:.2em}
+.gmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;width:min(1000px,92vw);margin:14px auto 0}
+.gm{padding:18px 18px 16px;background:rgba(10,14,24,.85);border:2px solid #ff3a6a;cursor:pointer;text-align:left;transition:transform .15s,background .15s;transform:skewX(-6deg)}
+.gm:hover{transform:skewX(-6deg) translateY(-3px) scale(1.03);background:rgba(30,36,60,.92)}.gm>div{transform:skewX(6deg)}
+.gm.cy{border-color:#3ad8ff}.gm.st{border-color:#ffd23f}.gm.ms{border-color:#5aff8a}.gm.pr{border-color:#b57bff}
+.gmt{font:900 28px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.08em}.gm .gmt{color:#ff6a8a}.gm.cy .gmt{color:#3ad8ff}.gm.st .gmt{color:#ffd23f}.gm.ms .gmt{color:#5aff8a}.gm.pr .gmt{color:#b57bff}
+.gmd{font:500 14px/1.35 'Rajdhani',sans-serif;color:#cfd6e6;margin-top:8px}
+.setgrid{width:min(720px,92vw);margin:10px auto 0;max-height:62vh;overflow:auto;text-align:left;padding-right:6px}
+.seth{font:800 12px/1 'Rajdhani',sans-serif;letter-spacing:.3em;color:#ffd23f;margin:16px 0 6px;padding-bottom:5px;border-bottom:1px solid rgba(255,210,63,.3)}
+.setrow{display:flex;align-items:center;gap:12px;padding:7px 10px;background:rgba(10,14,24,.6);margin-bottom:4px;flex-wrap:wrap}
+.setl{flex:1;min-width:200px;font:700 14px/1 'Rajdhani',sans-serif;letter-spacing:.1em;color:#e8ecf6}.setrow input[type=range]{width:180px;accent-color:#ffd23f}.setv{width:34px;text-align:right;font:800 14px/1 'Rajdhani',sans-serif;color:#ffd23f}
+.setrow .chip.on,#storyTabs .chip.on,#misDiff .chip.on{background:#ffd23f;color:#111;border-color:#ffd23f}
+body.nohint #hint{display:none!important}
+#slIcon{position:fixed;right:16px;bottom:16px;z-index:20;display:none;padding:6px 10px;background:rgba(8,10,20,.75);border:1px solid #ffd23f;font:800 12px/1 'Rajdhani',sans-serif;letter-spacing:.12em;color:#ffd23f;pointer-events:none}#slIcon.on{display:block}
+/* ---- controller button icons ---- */
+.pg{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;font:900 13px/1 'Rajdhani',system-ui,sans-serif;font-style:normal;color:#fff;background:#2a2e3a;border:2px solid #fff;border-radius:7px;box-shadow:0 2px 0 #000;vertical-align:middle;-webkit-text-stroke:0}
+.pg.fa{border-radius:50%;width:26px;padding:0}.pg.a{background:#1f9a3a}.pg.b{background:#c4202a}.pg.x{background:#2a6ad8}.pg.y{background:#d8a820;color:#111}
+.pg.ps-x{background:#2a6ad8}.pg.ps-o{background:#c4202a}.pg.ps-s{background:#c84aa8}.pg.ps-t{background:#1f9a7a}
+.pg.tr{border-radius:7px 7px 12px 12px}.pg.sh{border-radius:12px 12px 6px 6px}.pg.dp{background:#3a3e4a;border-radius:4px;font-size:15px}.pg.st{border-radius:50%;font-size:10px}
+body.padui #slots{bottom:56px}body.padui .slot{overflow:visible;margin-top:30px}
+.slot .pgw{position:absolute;left:50%;top:-34px;transform:translateX(-50%) skewX(12deg);font-size:14px;min-width:30px;height:28px;text-shadow:0 1px 0 #000}
+body.padui .slot b{display:none}body.padui .slot{padding-left:12px}
+body.padui #hint{display:none!important}

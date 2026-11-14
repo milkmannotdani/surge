@@ -36,8 +36,20 @@ js/
     ui.js             menus, screens, main loop
     practice.js       practice mode
   story/
-    chapters.js       the story script: chapters, dialogue, cutscene staging, missions
-    story.js          story engine: anime cutscenes, missions, saving progress
+    chapters.js       hero story script (SURGE: ORIGIN): chapters, dialogue, cutscene staging, missions
+    training.js       TRAINING ARC: the tutorial chapter (TUT_STEPS lists each lesson)
+    villain.js        villain story script (THE SEVERANCE)
+    story.js          story engine: campaigns (CAMPS), anime cutscenes, missions, saving progress
+  features/           add-ons that plug in through event hooks (see below)
+    music.js          procedural soundtrack: THEMES (menu/story/dark/battle/boss/exam) + stings
+    awaken.js         power awakening (X at low HP with a full BREAK bar)
+    teamup.js         team-up combos when partners ult together (TU_NAMES for named combos)
+    destruct.js       craters, wall cracks, extra breakable street furniture
+    civilians.js      civilians to rescue, objective panel, compass arrow
+    missions.js       MISSIONS screen: Rescue + Hero License Exam
+    progress.js       fighter levels/XP and unlockable costumes (UNLOCKS)
+    input.js          gamepad + touch controls
+    settings.js       settings menu (SET_DEF / SET_ROWS), game modes menu, shift lock, Tab lock-on, controller button icons
   main.js             starts the game (always loaded last)
 tools/bundle.py       optional: packs everything back into one HTML file
 ```
@@ -52,6 +64,19 @@ tools/bundle.py       optional: packs everything back into one HTML file
 - **Keep the city seeded.** World generation uses `srnd()`/`sr()`, not `Math.random`,
   so online players get the same map.
 
+## Event hooks (the easy way to add features)
+
+Instead of editing core files, a new file can listen for game events:
+
+```js
+onEv('kill', (victim, attacker) => { /* ... */ });
+```
+
+Events: `frame(dt)` every frame · `input(dt)` before controls are read · `intent(dt)` after ·
+`tick(dt)` every game step in a match · `hit(att, def, dmg, opts)` · `kill(def, att)` · `ult(fighter)` ·
+`matchStart()` · `matchEnd()` · `win(winner)` · `missionEnd(win, mission)` · `net:<kind>(event)` for custom online events
+(send them from the host with `netEvent({k:'kind', ...})`). Every file in `features/` is built this way.
+
 ## Common additions
 
 **New fighter** — add an entry to `HEROES` in `fighters/roster.js` (copy a similar one;
@@ -62,7 +87,12 @@ of adding six fighters with their own moves, ults, sounds and body parts.
 
 **New extra move (keys 3/4)** — add to `XMOVES` in `fighters/mha.js`.
 
-**New story chapter** — add an object to `STORY` in `story/chapters.js`. Lines are
+**New mission type** — build a mission object and pass it to `storyStart(S)`. Besides the story fields
+(`player`/`playerIdx`, `enemies`, `allies`, `diff`, `goal`) it can have `setup(x,z)`, `tick(dt)` (return true/false to
+win/lose), `custom:true` (don't auto-win when enemies die), `hud()`, `end(win)`, `done(win)` and `music`.
+`features/missions.js` has two full examples.
+
+**New story chapter** — add an object to `STORY` in `story/chapters.js` (or `VSTORY` in `story/villain.js`). Lines are
 `SL(speaker, text, {pose, fx, at, enter, exit, cam})`; `sPre`/`sPost` stage the 3D
 cutscene (`where` = street position, `actors` = `[id, dx, dz, hidden]`).
 

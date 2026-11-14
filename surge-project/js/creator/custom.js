@@ -147,4 +147,4 @@ function saveCustoms(){store.set('surge.customs',JSON.stringify(CSPECS));}
 const CUST0=1000;
 function heroAt(i){return i>=CUST0?(CSPECS[i-CUST0]?customHero(CSPECS[i-CUST0]):HEROES[0]):(HEROES[i]||HEROES[0]);}
 function selEntry(){const cos=myCos();return mySel>=CUST0&&CSPECS[mySel-CUST0]?{hero:0,cos,cust:Object.assign({},CSPECS[mySel-CUST0],{text:''})}:{hero:Math.min(mySel,HEROES.length-1),cos};}
-function rosterHero(r){if(r&&r.dummy)return dummyHero();if(r&&r.cust)return customHero(r.cust);const h=HEROES[clamp(r.hero|0,0,HEROES.length-1)];return r&&r.cos&&r.cos.skin?skinHero(h,r.cos.skin):h;}
+function rosterHero(r){if(r&&r.heroObj)return r.heroObj;if(r&&r.dummy)return dummyHero();if(r&&r.cust)return customHero(r.cust);const h=HEROES[clamp(r.hero|0,0,HEROES.length-1)];return r&&r.cos&&r.cos.skin?skinHero(h,r.cos.skin):h;}

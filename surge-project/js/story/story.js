@@ -1,13 +1,20 @@
 /* Story mode engine: 3D anime cutscenes, missions, progress */
-const STG={on:false,ch:0,st:0,boss:null};
-function storyProg(){try{const v=JSON.parse(store.get(STORY_KEY)||'null');if(v&&Array.isArray(v.done))return v;}catch(e){}return {done:[]};}
-function storyDone(i){const p=storyProg();if(p.done.indexOf(i)<0){p.done.push(i);store.set(STORY_KEY,JSON.stringify(p));return true;}return false;}
+const STG={on:false,ch:0,st:0,boss:null,camp:'hero',S:null};
+// campaigns: each has its own chapter list, save slot, menu title and cutscene music
+const CAMPS={train:{arr:TRAIN_ARC,key:'surge.train',name:'TRAINING ARC',sub:'PROLOGUE · LEARN TO FIGHT LIKE A HERO',music:'story',ep:'LESSON'},
+  hero:{arr:STORY,key:STORY_KEY,name:'SURGE: ORIGIN',sub:'THE TALE OF THE HERO TITAN',music:'story',ep:'EPISODE'},
+  villain:{arr:VSTORY,key:'surge.vstory',name:'THE SEVERANCE',sub:'VILLAIN STORY · THE RISE OF ENTROPY',music:'dark',ep:'VILLAIN ARC'}};
+function CAMP(){return CAMPS[STG.camp]||CAMPS.hero;}function CAMPA(){return CAMP().arr;}
+function storyProg(){try{const v=JSON.parse(store.get(CAMP().key)||'null');if(v&&Array.isArray(v.done))return v;}catch(e){}return {done:[]};}
+function storyDone(i){const p=storyProg();if(p.done.indexOf(i)<0){p.done.push(i);store.set(CAMP().key,JSON.stringify(p));return true;}return false;}
 function heroIdx(id){return HEROES.findIndex(h=>h.id===id);}
 function spkInfo(id){if(NPC[id])return NPC[id];const i=heroIdx(id);const h=HEROES[i];return h?{name:h.name,css:h.css,img:PV.portraits[i]}:NPC.narr;}
 
 /* ---- chapter menu ---- */
-function showStory(){showScreen('story');const p=storyProg();const el=$('storyList');
-  el.innerHTML=STORY.map((c,i)=>{const done=p.done.indexOf(i)>=0,open=i===0||p.done.indexOf(i-1)>=0;
+function showStory(){showScreen('story');const p=storyProg();const el=$('storyList');const C=CAMP();$('storyH').textContent=C.name;$('storySub').textContent=C.sub;
+  const tb=$('storyTabs');tb.innerHTML=Object.keys(CAMPS).map(k=>`<button class="chip ${k===STG.camp?'on':''}" data-c="${k}">${CAMPS[k].name}</button>`).join('');
+  [...tb.children].forEach(b=>b.onclick=()=>{AU.ui();STG.camp=b.dataset.c;showStory();});
+  el.innerHTML=CAMPA().map((c,i)=>{const done=p.done.indexOf(i)>=0,open=i===0||p.done.indexOf(i-1)>=0;
     return `<div class="stc ${done?'done':''} ${open?'':'lock'}" data-i="${i}"><b>${i+1}</b><div><div class="stt">${c.t}</div><div class="stl">${c.loc}${done?' · CLEARED':''}</div></div><span>${open?(done?'REPLAY':'PLAY'):'🔒'}</span></div>`;}).join('');
   [...el.children].forEach(d=>d.onclick=()=>{if(d.classList.contains('lock'))return;AU.ui();storyChapter(+d.dataset.i);});}
 
@@ -111,7 +118,7 @@ function cineUpdate(dt){CINE.t+=dt;const t=CINE.t,sp=CINE.sp;updIce(dt);
   anDraw(dt);}
 /* ---- dialogue box over the scene ---- */
 let CUT=null;
-function cutscene(lines,done,scene,ep){if(!lines||!lines.length){done();return;}if(ep){const E=$('cutEp');E.querySelector('small').textContent=ep[0];E.querySelector('b').textContent=ep[1];E.classList.remove('on');E.onanimationend=()=>E.classList.remove('on');requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>E.classList.add('on'))));try{AU.swell(.8,.3,'bandpass',200,2400,2);}catch(e){}}if(scene)cineStart(scene);$('cut').classList.toggle('cine',!!scene);CUT={lines,i:-1,done,tt:0};$('cut').classList.add('on');cutNext();}
+function cutscene(lines,done,scene,ep){if(!lines||!lines.length){done();return;}if(AU.setTheme&&AU.ctx)AU.setTheme(CAMP().music);if(ep){const E=$('cutEp');E.querySelector('small').textContent=ep[0];E.querySelector('b').textContent=ep[1];E.classList.remove('on');E.onanimationend=()=>E.classList.remove('on');requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>E.classList.add('on'))));try{AU.swell(.8,.3,'bandpass',200,2400,2);}catch(e){}}if(scene)cineStart(scene);$('cut').classList.toggle('cine',!!scene);CUT={lines,i:-1,done,tt:0};$('cut').classList.add('on');cutNext();}
 function cutNext(){if(!CUT)return;const C=CUT;
   if(C.i>=0&&C.typing){C.typing=false;$('cutTxt').textContent=C.lines[C.i][1];return;}
   C.i++;if(C.i>=C.lines.length){cutEnd();return;}
@@ -124,12 +131,14 @@ $('cut').onclick=e=>{if(e.target.id==='cutSkip'){cutEnd();return;}cutNext();};
 addEventListener('keydown',e=>{if(!CUT)return;if(e.code==='Space'||e.code==='Enter'){e.preventDefault();cutNext();}else if(e.code==='Escape'){cutEnd();}},true);
 
 /* ---- missions ---- */
-function storyChapter(i){STG.ch=i;STG.st=0;const c=STORY[i];showScreen(null);cutscene(c.pre,()=>storyStage(),c.sPre,['EPISODE '+(i+1),c.t]);}
-function storyStage(){const c=STORY[STG.ch],S=c.stages[STG.st];cutscene(S.pre||[],()=>storyStart(S),S.sPre);}
+function storyChapter(i){STG.ch=i;STG.st=0;const c=CAMPA()[i];showScreen(null);cutscene(c.pre,()=>storyStage(),c.sPre,[CAMP().ep+' '+(i+1),c.t]);}
+function storyStage(){const c=CAMPA()[STG.ch],S=c.stages[STG.st];cutscene(S.pre||[],()=>storyStart(S),S.sPre);}
 function storyStart(S){AU.init();store.set('surge.name',myName());netShutdown();NET.role='off';NET.myId=0;
-  const cos=myCos(),R=[{id:0,name:myName(),bot:false,team:0,hero:heroIdx(S.player),cos}];
-  (S.allies||[]).forEach((a,k)=>R.push({id:100+k,name:HEROES[heroIdx(a)].name,hero:heroIdx(a),bot:true,team:0}));
-  S.enemies.forEach((e,k)=>R.push({id:200+k,name:e.name||HEROES[heroIdx(e.h)].name,hero:heroIdx(e.h),bot:true,team:1}));
+  STG.S=S;const cos=myCos(),R=[{id:0,name:myName(),bot:false,team:0,hero:S.playerIdx!=null?S.playerIdx:heroIdx(S.player),cos}];
+  (S.allies||[]).forEach((a,k)=>R.push({id:100+k,name:(npcHero(a)||HEROES[heroIdx(a)]).name,hero:Math.max(0,heroIdx(a)),bot:true,team:0}));
+  if(S.playerIdx!=null&&S.playerIdx>=CUST0&&CSPECS[S.playerIdx-CUST0])R[0].cust=CSPECS[S.playerIdx-CUST0];
+  (S.allies||[]).forEach((a,k)=>{const r=R[1+k];if(r&&npcHero(a))r.heroObj=npcHero(a);});
+  S.enemies.forEach((e,k)=>R.push({id:200+k,name:e.name||(npcHero(e.h)||HEROES[heroIdx(e.h)]).name,hero:Math.max(0,heroIdx(e.h)),heroObj:npcHero(e.h)||undefined,bot:true,team:1}));
   // heroes start together on a street; the enemies wait down the road
   const a=INNER[1+Math.floor(Math.random()*(INNER.length-2))],b=INNER[1+Math.floor(Math.random()*(INNER.length-2))],sw=[];
   R.forEach((r,k)=>{if(r.team===0)sw.push([a+(k%3-1)*2.5,b-14+Math.floor(k/3)*2]);else{const j=k-(1+(S.allies||[]).length);sw.push([a+(j%3-1)*3,b+14+Math.floor(j/3)*3]);}});
@@ -137,7 +146,8 @@ function storyStart(S){AU.init();store.set('surge.name',myName());netShutdown();
   STG.on=true;STG.over=false;STG.boss=null;STG.flee=0;
   FS.forEach(f=>{if(f.team!==1)return;const e=S.enemies[f.id-200];f.take=e.take||1;f.flee=e.flee||0;f.boss=!!e.boss;f.face=Math.atan2(-(f.pos.x-a),-(f.pos.z-(b-14)));if(f.boss)STG.boss=f;});
   FS.forEach(f=>{if(f.team===0)f.face=0;});if(ME)camYaw=0;
-  setTimeout(()=>{if(STG.on)announceSmall(S.goal.toUpperCase());},3800);}
+  if(S.setup)S.setup(a,b);
+  setTimeout(()=>{if(STG.on&&S.goal)announceSmall(S.goal.toUpperCase());},3800);}
 function storyEnemies(){return FS.filter(f=>f.team===1);}
 function storyTick(dt){if(!game.story||!STG.on||game.phase!=='fight'||STG.over)return;
   for(const f of storyEnemies()){if(f.dead||!f.flee||f.hp>f.flee*100)continue;
@@ -145,18 +155,20 @@ function storyTick(dt){if(!game.story||!STG.on||game.phase!=='fight'||STG.over)r
     f.fled=true;f.dead=true;f.vel.set(0,0,0);portal(f.chest(new V3()),2.4,true,1.2);if(f.pet)f.pet.visible=false;f.rig.root.visible=false;feed(`<b style="--c:${f.hero.css}">${esc(f.name)}</b> escaped through a portal!`);
     announceSmall(f.name+' ESCAPED!');AU.tone('sine',300,1400,.45,.08);}
   const B=STG.boss,bb=$('bossBar');if(B){bb.classList.add('on');$('bossName').textContent=B.name;$('bossFill').style.width=Math.max(0,B.hp)+'%';$('bossFill').style.background=B.hero.css;}else bb.classList.remove('on');
+  const S=STG.S;if(S&&S.tick){const r=S.tick(dt);if(r===true||r===false){storyEnd(r);return;}}
   if(ME&&ME.dead){storyEnd(false);return;}
-  if(storyEnemies().every(f=>f.dead))storyEnd(true);}
-function storyEnd(win){if(STG.over)return;STG.over=true;game.phase='over';game.slowT=1.2;$('bossBar').classList.remove('on');
-  announce(win?'MISSION CLEAR':'MISSION FAILED',win?'#ffd23f':'#ff4a3f');AU.scale=1;win?AU.bell():AU.ko();
-  setTimeout(()=>{const c=STORY[STG.ch];STG.on=false;endMatchCleanup();$('hud').classList.remove('on');$('hint').style.display='none';
+  if(!(S&&S.custom)&&storyEnemies().every(f=>f.dead))storyEnd(true);}
+function storyEnd(win){if(STG.over)return;STG.over=true;emitEv('missionEnd',win,STG.S);game.phase='over';game.slowT=1.2;$('bossBar').classList.remove('on');if(STG.S&&STG.S.end)STG.S.end(win);
+  announce(win?(STG.S&&STG.S.winText||'MISSION CLEAR'):(STG.S&&STG.S.loseText||'MISSION FAILED'),win?'#ffd23f':'#ff4a3f');AU.scale=1;win?AU.bell():AU.ko();
+  setTimeout(()=>{const c=STG.S&&STG.S.done?null:CAMPA()[STG.ch],S0=STG.S;STG.on=false;endMatchCleanup();$('hud').classList.remove('on');$('hint').style.display='none';
+    if(S0&&S0.done){S0.done(win);return;}
     if(!win){storyFailPanel();return;}
     STG.st++;if(STG.st<c.stages.length){storyStage();return;}
-    cutscene(c.post,()=>{const first=storyDone(STG.ch);if(first)addPoints(50,'STORY');showStory();if(first&&STG.ch<STORY.length-1)announceSmall('CHAPTER '+(STG.ch+2)+' UNLOCKED');},c.sPost);},2600);}
-function storyFailPanel(){showScreen('story');$('storyList').innerHTML=`<div class="stfail"><div class="stt">MISSION FAILED</div><div class="stl">${STORY[STG.ch].t} · ${STORY[STG.ch].stages[STG.st].goal}</div>
+    cutscene(c.post,()=>{const first=storyDone(STG.ch);if(first)addPoints(50,'STORY');showStory();if(first&&STG.ch<CAMPA().length-1)announceSmall('CHAPTER '+(STG.ch+2)+' UNLOCKED');},c.sPost);},2600);}
+function storyFailPanel(){showScreen('story');$('storyList').innerHTML=`<div class="stfail"><div class="stt">MISSION FAILED</div><div class="stl">${CAMPA()[STG.ch].t} · ${CAMPA()[STG.ch].stages[STG.st].goal}</div>
   <div class="rowb" style="margin-top:16px"><button class="btn cy" id="stRetry">RETRY</button><button class="btn" id="stBack">CHAPTERS</button></div></div>`;
-  $('stRetry').onclick=()=>{AU.ui();showScreen(null);storyStart(STORY[STG.ch].stages[STG.st]);};$('stBack').onclick=()=>{AU.ui();showStory();};}
+  $('stRetry').onclick=()=>{AU.ui();showScreen(null);storyStart(CAMPA()[STG.ch].stages[STG.st]);};$('stBack').onclick=()=>{AU.ui();showStory();};}
 $('bStory').onclick=()=>{AU.init();AU.ui();showStory();};
-$('bStoryBack').onclick=()=>{AU.ui();showScreen('title');};
-window.__story={STG,STORY,storyChapter,storyStart,cutNext,cutEnd,CINE};
+$('bStoryBack').onclick=()=>{AU.ui();showScreen('gmodes');};
+window.__story={STG,STORY,CAMPS,showStory,storyChapter,storyStart,cutNext,cutEnd,CINE};
 window.__cutTest=(ch,k)=>{const c=STORY[ch];showScreen(null);if(k==='post')cutscene(c.post,()=>{},c.sPost);else{const S=c.stages[1];cutscene(S.pre,()=>{},S.sPre);}};

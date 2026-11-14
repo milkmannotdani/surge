@@ -16,6 +16,11 @@ const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},
 /* ================= AUDIO (synthesized) ================= */
 // which fighter a piece of kit comes from: built-in fighters use their own id;
 // created fighters borrow each slot (look, element, weapon, alt ultimate) from a built-in one
+// event hooks: add-on files listen with onEv('name',fn) instead of editing core code.
+// events: input(dt) before player controls are read, tick(dt) each sim step in a match, frame(dt) every frame,
+// hit(att,def,dmg,o), kill(def,att), ult(f), matchStart(), matchEnd(), win(w)
+const EVH={};function onEv(n,fn){(EVH[n]||(EVH[n]=[])).push(fn);}
+function emitEv(n,a,b,c,d){const L=EVH[n];if(!L)return;for(const fn of L){try{fn(a,b,c,d);}catch(e){console.error('['+n+']',e);}}}
 function KIT(h,slot){return h.as?(h.as[slot]||h.as.elem||h.id):h.id;}
 function HAS(h,x){return h.id===x||(!!h.as&&(h.as.look===x||(h.as.parts||[]).indexOf(x)>=0));}
 const AU={ctx:null,on:true,music:true,timer:null,scale:1,pan:0,intensity:0};

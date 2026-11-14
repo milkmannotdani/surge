@@ -10,7 +10,7 @@ class AI{
     f.aiVar={dir,k,until:game.time+.4,holdUntil:game.time+hold};}
   setRel(dirO,mz,mx){const I=this.f.intent;I.wx=dirO.x*mz-dirO.z*mx;I.wz=dirO.z*mz+dirO.x*mx;}
   goTo(x,z){const f=this.f,I=f.intent;const dx=x-f.pos.x,dz=z-f.pos.z,d=Math.hypot(dx,dz)||1;I.wx=dx/d;I.wz=dz/d;return d;}
-  think(dt){this.think0(dt);const f=this.f,I=f.intent;if(f.dead)return;
+  think(dt){if(this.f.hold){Object.assign(this.f.intent,blankIntent());return;}this.think0(dt);const f=this.f,I=f.intent;if(f.dead)return;
     // walking into a building wall: slide along it (toward a door or corner) instead of pushing forever
     const n=f.wallN;if(n&&f.onGround&&f.state!=='climb'&&game.time-(f.wallT||0)<.25){const into=-(I.wx*n.x+I.wz*n.z);
       if(into>.3){const T=f.tgt,up=T&&T.pos.y-f.pos.y>2.5;if(!up){if(!this.slideT||game.time>this.slideT){this.slideT=game.time+1.6;const tx=-n.z,tz=n.x;

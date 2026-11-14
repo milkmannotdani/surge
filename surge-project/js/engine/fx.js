@@ -112,7 +112,7 @@ function updateFX(dt){
   if(typeof updateFX2==='function')updateFX2(dt);if(typeof updateSlashes==='function')updateSlashes(dt);
 }
 let shakeAmt=0;
-function shake(a,pos){if(pos&&ME){const d=Math.hypot(pos.x-ME.pos.x,pos.z-ME.pos.z);a*=clamp(1-d/40,0,1);}shakeAmt=Math.max(shakeAmt,a);}
+function shake(a,pos){if(typeof SET!=='undefined')a*=SET.shake/100;if(pos&&ME){const d=Math.hypot(pos.x-ME.pos.x,pos.z-ME.pos.z);a*=clamp(1-d/40,0,1);}shakeAmt=Math.max(shakeAmt,a);}
 function screenFlash(o,pos){if(pos&&ME&&Math.hypot(pos.x-ME.pos.x,pos.z-ME.pos.z)>30)return;const f=$('flash');f.style.transition='none';f.style.opacity=o;requestAnimationFrame(()=>{f.style.transition='opacity .35s';f.style.opacity=0;});}
 function sndAt(p){if(!p){AU.pan=0;return 1;}const e=camera.matrixWorld.elements,dx=p.x-camera.position.x,dz=p.z-camera.position.z,dc=Math.hypot(dx,dz)||1;AU.pan=(dx*e[0]+dz*e[2])/dc*Math.min(1,dc/8);
   if(!ME)return 1;const d=Math.hypot(p.x-ME.pos.x,p.z-ME.pos.z);return clamp(1-d/55,0,1)*(d<6?1:.85);}
