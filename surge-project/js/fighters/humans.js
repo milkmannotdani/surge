@@ -12,7 +12,7 @@ const HUMAN={
   strobe:[0,0xff8a3a,'pony',0x3fe0c5,'freckles'],pyre:[1,0xb8682a,'slick',0x3a8aff],warp:[3,0x6a6a7a,'buzz',0x8a5aff,'shades'],hex:[2,0x2a8a4a,'twin',0x5aff8a],
   scathe:[3,0xc4202a,'mohawk',0xff4a1a,'earring'],solstice:[0,0x1a2a5a,'short',0x9ae8ff],piston:[2,0xd86a2a,'mohawk',0xffb03a,'glasses'],snare:[1,0xb89a5a,'bun',0x5a5a62,'stubble'],
   marble:[1,0x14141a,'slick',0x9ae8ff,'beard'],legion:[2,0xd8822a,'curly',0x8a8e9a],recoil:[0,0xe8e8f2,'short',0xff3a96,'earring'],crimson:[1,0x14060a,'pony',0xff1a3a],
-  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble']};
+  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble'],decree:[2,0xe8d8b0,'long',0x3ad8ff]};
 function humanLook(h){const id=h.as&&h.as.look&&HUMAN[h.as.look]?h.as.look:h.id;if(HUMAN[id])return HUMAN[id];let k=0;for(const c of (h.name||'x'))k=(k*31+c.charCodeAt(0))|0;k=Math.abs(k);
   return [k%6,[0x14141a,0x3a2414,0xa8401a,0xe8c84a,h.accent][k%5],['short','spiky','pony','curly','slick'][k%5],h.accent];}
 function geoKind(m){const g=m.geometry;if(!g)return '';const p=g.parameters||{};const t=g.type;

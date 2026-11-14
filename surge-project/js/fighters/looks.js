@@ -33,6 +33,7 @@ const LOOKS={
   recoil:{em:'target',belt:'ammo',br:'band',bt:'armor',sh:'plate',sig:X=>headset(X)},
   crimson:{em:'drop',belt:1,br:'band',bt:'cuff',sh:'none'},
   sawback:{em:'blade',belt:2,br:'spike',bt:'armor',sh:'spike'},
+  decree:{em:'rune',belt:2,br:'band',bt:'armor',sh:'plate'},
   verdict:{em:'blade',belt:1,br:'band',bt:'cuff',sh:'none'},
   resect:{em:'hex',belt:1,br:'glove',bt:'cuff',sh:'none'},
   cushion:{em:'heart',emY:-.02,emZ:.47,belt:2,br:'pad',bt:'armor',sh:'pad'},

@@ -406,3 +406,22 @@ body:not(.inmatch) #wxBadge{display:none}
 .crs{font-size:13px!important;color:#9aa2b6!important}.crl{font-size:14px!important}
 .insp{margin-top:8px;font:700 12px/1.3 'Rajdhani',sans-serif;letter-spacing:.06em;color:#ffd23f;opacity:.9}
 #nodTip{margin-top:16px;font:600 14px/1.3 'Rajdhani',sans-serif;letter-spacing:.06em;color:#cfd6e6;opacity:.85;min-height:18px}
+
+/* SURGE EVENTS chip */
+#surgeChip{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:12;pointer-events:none;display:flex;align-items:center;gap:10px;padding:6px 16px;border:2px solid var(--c,#ffd23f);background:rgba(8,10,24,.78);font-family:inherit;color:#fff;box-shadow:0 0 18px var(--c,#ffd23f);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+#surgeChip i{font-size:11px;letter-spacing:.15em;opacity:.75;font-style:normal}
+#surgeChip b{font-size:18px;letter-spacing:.08em;color:var(--c,#ffd23f)}
+#surgeChip span{font-size:15px;font-weight:700;min-width:28px;text-align:right}
+
+/* DECREE order panel + order slots */
+#decreeBox{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);z-index:30;width:min(620px,92vw);background:rgba(8,14,20,.9);border:2px solid #ffd86a;box-shadow:0 0 24px rgba(255,216,106,.5);padding:12px 14px;color:#fff;font-family:inherit}
+#decreeBox .dt{font-size:20px;letter-spacing:.1em;color:#ffd86a}#decreeBox .dt span{font-size:12px;color:#fff;opacity:.75;letter-spacing:0}
+#decreeBox .dh{font-size:14px;margin:4px 0 8px;opacity:.9;min-height:18px}
+#decreeBox .dg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#decreeBox .dg b{background:rgba(255,216,106,.12);border:1px solid rgba(255,216,106,.5);padding:6px 4px;text-align:center;font-size:13px;letter-spacing:.06em;cursor:pointer;pointer-events:auto}
+#decreeBox .dg b:hover{background:rgba(255,216,106,.35)}#decreeBox .dg i{font-style:normal;color:#ffd86a;margin-right:5px}
+#decreeBox .ds{font-size:11px;opacity:.6;margin-top:6px}
+#decreeHud{position:fixed;left:22px;bottom:178px;z-index:11;display:flex;gap:6px;align-items:center;pointer-events:none;color:#fff}
+#decreeHud i{font-style:normal;font-size:11px;letter-spacing:.15em;color:#ffd86a}
+#decreeHud b{background:rgba(8,14,20,.8);border:1px solid #ffd86a;padding:3px 10px;font-size:13px;letter-spacing:.08em}#decreeHud b span{margin-left:6px;opacity:.7}
+#decreeHud b.em{opacity:.4}

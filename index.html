@@ -415,6 +415,25 @@ body:not(.inmatch) #wxBadge{display:none}
 .crs{font-size:13px!important;color:#9aa2b6!important}.crl{font-size:14px!important}
 .insp{margin-top:8px;font:700 12px/1.3 'Rajdhani',sans-serif;letter-spacing:.06em;color:#ffd23f;opacity:.9}
 #nodTip{margin-top:16px;font:600 14px/1.3 'Rajdhani',sans-serif;letter-spacing:.06em;color:#cfd6e6;opacity:.85;min-height:18px}
+
+/* SURGE EVENTS chip */
+#surgeChip{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:12;pointer-events:none;display:flex;align-items:center;gap:10px;padding:6px 16px;border:2px solid var(--c,#ffd23f);background:rgba(8,10,24,.78);font-family:inherit;color:#fff;box-shadow:0 0 18px var(--c,#ffd23f);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+#surgeChip i{font-size:11px;letter-spacing:.15em;opacity:.75;font-style:normal}
+#surgeChip b{font-size:18px;letter-spacing:.08em;color:var(--c,#ffd23f)}
+#surgeChip span{font-size:15px;font-weight:700;min-width:28px;text-align:right}
+
+/* DECREE order panel + order slots */
+#decreeBox{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);z-index:30;width:min(620px,92vw);background:rgba(8,14,20,.9);border:2px solid #ffd86a;box-shadow:0 0 24px rgba(255,216,106,.5);padding:12px 14px;color:#fff;font-family:inherit}
+#decreeBox .dt{font-size:20px;letter-spacing:.1em;color:#ffd86a}#decreeBox .dt span{font-size:12px;color:#fff;opacity:.75;letter-spacing:0}
+#decreeBox .dh{font-size:14px;margin:4px 0 8px;opacity:.9;min-height:18px}
+#decreeBox .dg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#decreeBox .dg b{background:rgba(255,216,106,.12);border:1px solid rgba(255,216,106,.5);padding:6px 4px;text-align:center;font-size:13px;letter-spacing:.06em;cursor:pointer;pointer-events:auto}
+#decreeBox .dg b:hover{background:rgba(255,216,106,.35)}#decreeBox .dg i{font-style:normal;color:#ffd86a;margin-right:5px}
+#decreeBox .ds{font-size:11px;opacity:.6;margin-top:6px}
+#decreeHud{position:fixed;left:22px;bottom:178px;z-index:11;display:flex;gap:6px;align-items:center;pointer-events:none;color:#fff}
+#decreeHud i{font-style:normal;font-size:11px;letter-spacing:.15em;color:#ffd86a}
+#decreeHud b{background:rgba(8,14,20,.8);border:1px solid #ffd86a;padding:3px 10px;font-size:13px;letter-spacing:.08em}#decreeHud b span{margin-left:6px;opacity:.7}
+#decreeHud b.em{opacity:.4}
 </style>
 </head>
 <body>
@@ -492,7 +511,7 @@ body:not(.inmatch) #wxBadge{display:none}
     <p>Some fighters are also inspired by <b>Jujutsu Kaisen</b> — created by <b>Gege Akutami</b>, published by Shueisha.</p>
     <p class="crs">SURGE is an unofficial, non-commercial fan game. It is not affiliated with or endorsed by Kōhei Horikoshi, Gege Akutami, Shueisha, or the anime studios. All fighters, names, story and designs in SURGE are original creations.</p>
     <div class="crh">FIGHTERS INSPIRED BY MY HERO ACADEMIA</div>
-    <p class="crl">Solstice ← Shoto Todoroki · Piston ← Tenya Iida · Snare ← Shota Aizawa · Marble ← Mr. Compress · Legion ← Twice · Recoil ← Lady Nagant · Crimson ← Himiko Toga · Sawback ← Spinner · Resect ← Overhaul · Cushion ← Fat Gum · Verdict ← Stain · Corrosa ← Mina Ashido</p>
+    <p class="crl">Solstice ← Shoto Todoroki · Piston ← Tenya Iida · Snare ← Shota Aizawa · Marble ← Mr. Compress · Legion ← Twice · Recoil ← Lady Nagant · Crimson ← Himiko Toga · Sawback ← Spinner · Resect ← Overhaul · Cushion ← Fat Gum · Verdict ← Stain · Decree ← Star and Stripe · Corrosa ← Mina Ashido</p>
     <div class="crh">BUILT WITH</div>
     <p class="crl">three.js (3D graphics, MIT license) · PeerJS (online play and voice chat, MIT license)</p>
   </div>
@@ -1799,7 +1818,9 @@ const HEROES=[
  {id:'corrosa',bulk:.9,pat:'circuit',patK:.5,faction:'hero',name:'CORROSA',power:'Acid',cls:'Rushdown',diff:'Medium',tags:['Acid','Speed'],color:0xff7ad8,accent:0xb8ff3a,suit:0x14061a,mainCol:0x2a0a3a,css:'#ff8ae0',
   desc:'A bubbly, pink-skinned hero who makes acid. Acid Slide skates forward on a trail of acid that burns and slows anyone who steps in it. Ultimate ACID VEIL throws up a wall of acid and rains corrosive drops all around.',spd:1.14,pow:.95,scale:.96,special:'acidslide',specCD:2.2,ult:'acidveil',ultName:'ACID VEIL',altName:'ACID SHOWER'},
  {id:'verdict',bulk:.94,pat:'circuit',patK:.35,faction:'villain',name:'VERDICT',power:'Blood Judgment',cls:'Assassin',diff:'Hard',tags:['Paralyze','Blades'],color:0xc4102a,accent:0xff3a3a,suit:0x0c0a0e,mainCol:0x1e1a22,css:'#ff3a4a',
-  desc:'A self-appointed judge who hunts heroes he thinks are fakes. A taste of a foe\'s blood freezes them in place. Condemn lunges in with a blade and PARALYZES whoever it cuts. Knife Volley (2) throws a fan of knives. Ultimate HERO HUNT blinks behind up to four foes, paralyzing each, then finishes them with one cross slash; alt ult BLOOD OATH makes every cut paralyze.',spd:1.1,pow:1.02,scale:1,special:'condemn',specCD:2.6,ult:'execution',ultName:'HERO HUNT',altName:'BLOOD OATH'}
+  desc:'A self-appointed judge who hunts heroes he thinks are fakes. A taste of a foe\'s blood freezes them in place. Condemn lunges in with a blade and PARALYZES whoever it cuts. Knife Volley (2) throws a fan of knives. Ultimate HERO HUNT blinks behind up to four foes, paralyzing each, then finishes them with one cross slash; alt ult BLOOD OATH makes every cut paralyze.',spd:1.1,pow:1.02,scale:1,special:'condemn',specCD:2.6,ult:'execution',ultName:'HERO HUNT',altName:'BLOOD OATH'},
+ {id:'decree',bulk:1.08,pat:'circuit',patK:.25,faction:'hero',name:'DECREE',power:'Command Law',cls:'Commander',diff:'Hard',tags:['Voice Orders','Rewrite Rules'],color:0xe8c24a,accent:0xfff2b0,suit:0x0e3a3a,mainCol:0xf2f0ea,css:'#ffd86a',
+  desc:'A commander whose spoken orders become rules of the world. Press 1 and SAY an order into your mic: “Rise!”, “Faster!”, “Iron!”, “Halt!”, “Silence!”, “Kneel!”, “Begone!”… (or pick one with the number keys). Two orders stand at once; a third replaces the oldest. Revoke (2) strips a foe\'s buffs. Ultimate ABSOLUTE DECREE makes every foe nearby kneel, then strikes each with a pillar of light; alt ult TWIN DECREE fills both orders with IRON and MIGHT.',spd:1,pow:1.05,scale:1.1,special:'decree',specCD:3.5,ult:'absolute',ultName:'ABSOLUTE DECREE',altName:'TWIN DECREE'}
 ];
 const SPNAME={rend:'REND',sigil:'CURSE SIGIL',fireball:'FIREBALL',blade:'TIDE BLADE',cyclone:'CYCLONE',fault:'FAULT LINE',erode:'EROSION',bubble:'GRAVITY BUBBLE',airburst:'AIR BURST',featherfan:'FEATHER FAN',chainbolt:'CHAIN BOLT',bluelash:'BLUE LASH'};
 const STEALABLE=Object.keys(SPNAME);
@@ -4344,6 +4365,7 @@ const SKINS_H={cinder:[['Blue Flame',0x0e1a3a,0x2a6aff,0x9ad0ff,0x4fd2ff],['Magm
   snare:[['Underground',0x0a0a0c,0x16161a,0x8a8e9a,0xffd23f],['Pro Hero',0x0a1430,0x2a4aa8,0xffffff,0x8ad8ff]],marble:[['Ringmaster',0x2a0606,0xc4102a,0xffd23f,0xffe08a],['Emerald Act',0x061a0e,0x0a4a2a,0x1ab86a,0x8affc0]],
   crimson:[['School Uniform',0x0a0a1a,0x2a3a6a,0xd81a3a,0xffd23f],['Vampire',0x06000a,0x1a0010,0xff2a4a,0xff8a9a]],sawback:[['Reptile Gold',0x14100a,0x6a5a2a,0xffd23f,0xfff2b0],['Rusted',0x1a0a06,0x5a2a1a,0xa86a3a,0xffb070]],
   resect:[['Plague White',0xe8e8ee,0x8a8a96,0x2a2a32,0xff3a4a],['Eight Bullets',0x0a0a0c,0x2a0a0e,0xffd23f,0xffe08a]],cushion:[['Slim Mode',0x0a1a2a,0x2a4a8a,0xffd23f,0xffffff],['Gold Medal',0x1a1406,0xd8a820,0xffffff,0xfff2b0]],
+  decree:[['Night Court',0x0a0a14,0x1a1a2a,0x9a8aff,0xe0d8ff],['Marble Hall',0xe8e4da,0xbab4a8,0x3ad8c8,0xb0fff0]],
   verdict:[['Bone White',0xe8e4da,0x8a8a92,0xc4102a,0xff3a3a],['Night Judge',0x05050a,0x14141e,0x6a6ad8,0xb0b0ff]],
   corrosa:[['Alien Queen',0x0a1406,0x3aa82a,0xff7ad8,0xe0ff8a],['Pinky Pop',0x1a0614,0xff4ab8,0x2a0a3a,0xffd0f0]],
   legion:[['Mud Brown',0x1a1006,0x5a4a32,0x8a7a58,0xffd27a],['Sanctuary',0x0a0a1a,0x2a2a4a,0xff3a6a,0xff8ab8]],recoil:[['Pink Bullet',0x1a0614,0xff6ad8,0xffffff,0xffd0f0],['Steel Sight',0x0a0c10,0x3a3e48,0x9aa0aa,0x8ad8ff]]};
@@ -5474,6 +5496,134 @@ mhaParts=function(h,X){const out=_mhaParts1(h,X);if(h.id!=='verdict')return out;
   [lF,rF].forEach((F,i)=>{if(!F)return;const sh=M(new THREE.BoxGeometry(.06,.3,.05),new THREE.MeshStandardMaterial({color:0x1a1a20,roughness:.6}));sh.position.set(0,-.12,-.05);F.add(sh);
     const bl=M(new THREE.BoxGeometry(.012,.42,.05),steel);bl.position.set(0,-.2,-.09);F.add(bl);});
   return out;};
+/* DECREE — a commander whose spoken orders become rules of the world. Up to two orders stand at once;
+   a third replaces the oldest. Press 1 and SAY an order into your mic (uses the browser's speech recognition —
+   the same mic as voice chat), or pick one with 1–9 / a click while the order panel is open.
+   Original design; credited in credits.js as inspired by Star and Stripe (My Hero Academia, Kōhei Horikoshi).
+   To add an order: add an entry to ORDERS with the words that trigger it and what it does. */
+Object.assign(SPNAME,{decree:'ISSUE ORDER'});
+Object.assign(HERO_SND,{decree:'power'});
+Object.assign(ULT_RANGE,{absolute:16});
+Object.assign(SPECIAL_AI,{decree:[0,16,.5]});
+Object.assign(XSPK,{decree:1});
+Object.assign(DULT_OF,{decree:'nova'});
+COPY_BAN.decree=1;
+
+const DGOLD=0xffd86a,DGLOW=0xfff2b0;
+const ORDERS={
+  rise:{name:'RISE',say:'Rise!',words:['fly','float','rise','soar','levitate','up','air','sky','lift'],self:true,dur:10,
+    start(f){f.vel.y=Math.max(f.vel.y,11);f.onGround=false;f.pos.y+=.1;},tick(f,dt){if(!f.onGround)f.vel.y+=30*.82*dt;if(Math.random()<dt*8)dGlow(f);}},
+  swift:{name:'SWIFT',say:'Faster!',words:['fast','faster','speed','quick','quickly','run','hurry','swift','haste'],self:true,dur:12,tick(f){f.hasteT=Math.max(f.hasteT||0,.2);}},
+  might:{name:'MIGHT',say:'Strength!',words:['strong','stronger','power','strength','punch','hit','mighty','might','smash','attack'],self:true,dur:12,tick(f){f.powT=Math.max(f.powT||0,.2);}},
+  iron:{name:'IRON',say:'Iron body!',words:['shield','armor','armour','hard','harden','protect','defend','iron','tough','block'],self:true,dur:9,tick(f){f.armorT=Math.max(f.armorT||0,.2);}},
+  mend:{name:'MEND',say:'Heal!',words:['heal','recover','regenerate','mend','life','health','fix','cure'],self:true,dur:8,start(f){f.hp=Math.min(100,f.hp+10);},tick(f,dt){f.hp=Math.min(100,f.hp+5*dt);}},
+  halt:{name:'HALT',say:'Halt!',words:['stop','freeze','halt','stay','still','dont move','wait','pause'],dur:2.6,
+    start(f){const T=tgtOf(f,18);if(T){dLine(f,T);hitO(f,T,{dmg:4,kb:0,up:0,stun:.2,frame:2.4,noSpark:true});}}},
+  silence:{name:'SILENCE',say:'Silence!',words:['silence','silent','quiet','erase','cancel','no powers','powerless','shut up','mute'],dur:5,
+    start(f){const T=tgtOf(f,18);if(T){dLine(f,T);T.eraseT=Math.max(T.eraseT||0,5);hitO(f,T,{dmg:3,kb:2,stun:.4});}}},
+  kneel:{name:'KNEEL',say:'Kneel!',words:['kneel','fall','down','drop','sit','bow','ground','crash'],dur:1.6,
+    start(f){ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),DGOLD,10,.5,true,2.6);foes(f,10).forEach(o=>{o.vel.y=-22;hitO(f,o,{dmg:8,kb:0,up:-6,stun:1.4,heavy:true});dust(o.pos,6,.8);});shake(.35,f.pos);}},
+  repel:{name:'REPEL',say:'Begone!',words:['push','away','back','repel','go','begone','leave','get out','blast'],dur:1,
+    start(f){ring(f.chest(new V3()),DGOLD,12,.45,false,2.6);foes(f,12).forEach(o=>hitO(f,o,{dmg:9,kb:24,up:8,launch:true,heavy:true}));}},
+  summon:{name:'SUMMON',say:'Come here!',words:['come','pull','here','closer','approach','summon'],dur:1,
+    start(f){const T=tgtOf(f,20);if(T){dLine(f,T);const fw=f.fwd();T.pos.set(f.pos.x+fw.x*1.6,f.pos.y,f.pos.z+fw.z*1.6);hitO(f,T,{dmg:6,kb:0,up:2,stun:.9});}}},
+  slow:{name:'SLOW',say:'Slow down!',words:['slow','slower','heavy','crawl','sluggish','weak'],dur:6,
+    start(f){foes(f,14).forEach(o=>{o.slowT=Math.max(o.slowT||0,6);dLine(f,o);});}},
+  ignite:{name:'IGNITE',say:'Burn!',words:['burn','fire','ignite','explode','blow up','flame','boom'],dur:4,
+    start(f){const T=tgtOf(f,18);if(T){dLine(f,T);explosion(T.chest(new V3()),1.8,[0xffa21a,DGOLD,0xff5a10]);burnOn(T,4,5);hitO(f,T,{dmg:12,kb:8,up:6,launch:true});}}}};
+const ORDER_KEYS=Object.keys(ORDERS);
+
+function dGlow(f){burst(ADD,TMP2.set(f.pos.x+rand(-.4,.4),f.pos.y+rand(.1,1.9),f.pos.z+rand(-.4,.4)),1,{colors:[DGOLD,DGLOW],speed:.4,up:1.4,life:.5,size:.22,size1:0,bright:2});}
+function dLine(f,o){cutLine(f.chest(new V3()),o.chest(new V3()),DGOLD,.06,.35);ring(o.chest(new V3()),DGOLD,1.6,.3,false,2.4);}
+
+/* match spoken / typed words to an order (the order that matches the most words wins; unknown = MIGHT) */
+function parseOrder(text){const t=' '+String(text||'').toLowerCase().replace(/[^a-z ]/g,' ').replace(/\s+/g,' ')+' ';let best=null,bs=0;
+  for(const k of ORDER_KEYS){let s=0;for(const w of ORDERS[k].words)if(t.indexOf(' '+w+' ')>=0||t.indexOf(' '+w+'s ')>=0)s+=w.indexOf(' ')>0?2:1;if(s>bs){bs=s;best=k;}}return best;}
+
+/* apply an order to fighter f (host/offline only; clients ask the host) */
+function giveOrder(f,k,heard){const O=ORDERS[k];if(!O||!f||f.dead)return;f.orders=f.orders||[];
+  if(f.orders.length>=2){const old=f.orders.shift();if(ORDERS[old.k].end)ORDERS[old.k].end(f);}
+  f.orders.push({k,t:O.dur});if(O.start)O.start(f);
+  burst(ADD,f.chest(new V3()),26,{colors:[DGOLD,DGLOW,0xffffff],speed:5,life:.5,size:.26,size1:0,bright:2.4});ring(f.chest(new V3()),DGOLD,2.4,.35,false,2.6);
+  xSnd(f.pos,()=>SND.power.hit(1.2));showOrder(f,k,heard);}
+function showOrder(f,k,heard){const O=ORDERS[k];if(!O)return;if(f===ME||(ME&&f.pos.distanceTo(ME.pos)<25)){
+  announceSmall(`${f.name.toUpperCase()}: “${(heard||O.say).toUpperCase()}” → NEW ORDER: ${O.name}`);if(typeof sayLine==='function'&&!heard)sayLine(f,O.say,{rate:.95,vol:1.1});}}
+function requestOrder(f,k,heard){if(NET.role==='client'){netSay({k:'decree',id:f.id,o:k,h:heard||''});showOrder(f,k,heard);}else{giveOrder(f,k,heard);if(NET.role==='host')netSay({k:'decreeFx',id:f.id,o:k,h:heard||''});}}
+onEv('x:decree',e=>{if(NET.role==='host'&&e.from!==NET.myId){const f=FS.find(q=>q.id===e.id);if(f)giveOrder(f,e.o,e.h);}});
+onEv('x:decreeFx',e=>{if(NET.role==='client'){const f=FS.find(q=>q.id===e.id);if(f&&f!==ME)showOrder(f,e.o,e.h);}});
+onEv('tick',dt=>{for(const f of FS){if(!f.orders||!f.orders.length)continue;if(f.dead||!inMatch()||f.eraseT>0){f.orders.forEach(o=>ORDERS[o.k].end&&ORDERS[o.k].end(f));f.orders=[];continue;}
+  for(let i=f.orders.length-1;i>=0;i--){const o=f.orders[i],O=ORDERS[o.k];o.t-=dt;if(O.tick)O.tick(f,dt);if(o.t<=0){f.orders.splice(i,1);if(O.end)O.end(f);}}}
+  dOrdersHUD();});
+onEv('matchStart',()=>{FS.forEach(f=>f.orders=[]);dListenStop();});
+onEv('matchEnd',()=>{FS.forEach(f=>f.orders=[]);dListenStop();});
+
+/* ---------- the order panel + speech recognition ---------- */
+const DL={on:false,rec:null,t:0,heard:''};
+function dPanel(){let e=$('decreeBox');if(!e){e=document.createElement('div');e.id='decreeBox';document.body.appendChild(e);
+  e.addEventListener('mousedown',ev=>{const b=ev.target.closest('[data-o]');if(b){ev.preventDefault();ev.stopPropagation();dPick(b.dataset.o,'');}},true);}return e;}
+function dPanelDraw(msg){const e=dPanel();e.style.display='';const sr=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+  e.innerHTML=`<div class="dt">${sr?'🎙 SAY AN ORDER':'PICK AN ORDER'} <span>${msg||''}</span></div><div class="dh">${DL.heard?'“'+esc(DL.heard)+'”':(sr?'e.g. “Rise!”, “Halt!”, “Faster!”, “Kneel!” — or press a number':'press a number or click')}</div>`+
+  `<div class="dg">${ORDER_KEYS.map((k,i)=>`<b data-o="${k}">${i<9?'<i>'+(i+1)+'</i>':''}${ORDERS[k].name}</b>`).join('')}</div><div class="ds">Up to 2 orders stand at once · the oldest is replaced</div>`;}
+function dListen(){if(DL.on)return;DL.on=true;DL.t=5;DL.heard='';dPanelDraw('');const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR||SET.decreeVoice===false)return;try{const r=new SR();DL.rec=r;r.lang='en-US';r.interimResults=true;r.maxAlternatives=3;r.continuous=false;
+    r.onresult=ev=>{let txt='';for(const res of ev.results)txt+=res[0].transcript+' ';DL.heard=txt.trim();dPanelDraw('');
+      const last=ev.results[ev.results.length-1];if(last.isFinal){let k=null;for(let a=0;a<last.length&&!k;a++)k=parseOrder(last[a].transcript);if(!k)k=parseOrder(DL.heard);dPick(k||'might',DL.heard);}};
+    r.onerror=ev=>{if(DL.on)dPanelDraw(ev.error==='not-allowed'?'(mic blocked — pick one)':'(didn’t catch that — pick one)');};
+    r.onend=()=>{DL.rec=null;};r.start();}catch(e){dPanelDraw('(speech not available — pick one)');}}
+function dListenStop(){DL.on=false;if(DL.rec){try{DL.rec.abort();}catch(e){}DL.rec=null;}const e=$('decreeBox');if(e)e.style.display='none';}
+function dPick(k,heard){if(!DL.on||!ME)return;dListenStop();requestOrder(ME,k,heard);}
+addEventListener('keydown',e=>{if(!DL.on)return;const m=/^(Digit|Numpad)([1-9])$/.exec(e.code);if(m){const k=ORDER_KEYS[+m[2]-1];if(k){e.preventDefault();e.stopImmediatePropagation();dPick(k,'');}}
+  else if(e.code==='Escape'){e.stopImmediatePropagation();dListenStop();}},true);
+onEv('tick',dt=>{if(!DL.on)return;DL.t-=dt;if(DL.t<=0||!ME||ME.dead||!inMatch()){const h=DL.heard;if(h&&ME&&!ME.dead&&inMatch()){dPick(parseOrder(h)||'might',h);}else dListenStop();}});
+
+function dOrdersHUD(){let e=$('decreeHud');const on=ME&&ME.hero.id==='decree'&&inMatch()&&!ME.dead;if(!e){if(!on)return;e=document.createElement('div');e.id='decreeHud';document.body.appendChild(e);}
+  if(!on){e.style.display='none';return;}e.style.display='';const L=ME.orders||[];
+  e.innerHTML='<i>ORDERS</i>'+[0,1].map(i=>L[i]?`<b>${ORDERS[L[i].k].name}<span>${Math.ceil(L[i].t)}s</span></b>`:'<b class="em">—</b>').join('');}
+
+/* ---------- kit ---------- */
+SPECIALS.decree=function(f){const t=f.stateT,V=f.vf;f.poseKey=t<.25?'command':'spech';
+  once(f,.05,()=>{ring(f.chest(new V3()),DGOLD,2,.3,false,2.4);
+    if(f===ME)dListen();
+    else if(f.isBot&&NET.role!=='client'){const T=tgtOf(f,16),d=T?f.pos.distanceTo(T.pos):99;let k;
+      if(f.hp<45&&Math.random()<.6)k='mend';else if(d<9&&Math.random()<.4)k=pick(['kneel','repel','halt']);else if(d<18&&Math.random()<.5)k=pick(['halt','silence','ignite','summon','slow']);else k=pick(['might','swift','iron','rise']);
+      giveOrder(f,k);}});
+  if(t>.5)f.set(f.onGround?'idle':'air');return 10;};
+// move 2: REVOKE — strip a foe's buffs and borrowed powers
+SPECVAR.decree={alt:['REVOKE',f=>{once(f,.15,()=>{const T=tgtOf(f,16);if(!T)return;dLine(f,T);
+    T.armorT=0;T.powT=0;T.hasteT=0;T.fieldT=0;T.vowT=0;T.bladeT=0;T.stolenT=0;T.oathT=0;T.ovT=0;if(T.orders){T.orders=[];}
+    hitO(f,T,{dmg:8,kb:4,up:2,stun:.7});burst(ADD,T.chest(new V3()),24,{colors:[DGOLD,0xffffff],speed:6,life:.4,size:.24,size1:0,bright:2.4});if(f===ME)announceSmall('REVOKED: '+T.name.toUpperCase()+'\'S BUFFS ARE GONE');xSnd(f.pos,()=>SND.power.spec());});
+  vpose(f,.15,'command','spech');endAt(f,.5);return 10;}]};
+// ULT: ABSOLUTE DECREE — every foe nearby must kneel, then pillars of gold light strike each one
+ULTX.absolute={r:16,s(f){f.vf.L=foes(f,16);f.uEnd=2.3;f.poseKey='command';f.invuln=Math.max(f.invuln,.6);},
+  u(f,t){const V=f.vf;f.poseKey=t<.7?'command':'spech';
+    atT(f,'kneel',.5,()=>{ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),DGOLD,16,.6,true,2.8);shake(.5,f.pos);if(f===ME)announceSmall('“KNEEL.”');
+      V.L.forEach(o=>{if(o.dead)return;dLine(f,o);o.vel.y=-20;hitO(f,o,{dmg:6,kb:0,up:-5,stun:.3,frame:1.6,noSpark:true});});});
+    V.L.forEach((o,i)=>atT(f,'p'+i,1.3+i*.08,()=>{if(o.dead)return;const p=o.pos.clone();if(o.state==='framed')o.framedT=0;
+      const col=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,30,16,1,true),new THREE.MeshBasicMaterial({color:DGOLD,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+      col.position.set(p.x,p.y+15,p.z);scene.add(col);let k=0;const iv=setInterval(()=>{k+=.06;col.material.opacity=.8*(1-k);col.scale.set(1+k,1,1+k);if(k>=1){clearInterval(iv);scene.remove(col);col.geometry.dispose();col.material.dispose();}},30);
+      burst(ADD,new V3(p.x,p.y+1,p.z),30,{colors:[DGOLD,DGLOW,0xffffff],speed:8,up:6,life:.6,size:.3,size1:0,bright:2.6});
+      hitO(f,o,{dmg:24,kb:8,up:14,launch:true,heavy:true,stun:.9});xSnd(p,()=>AU.boom(false));}));
+    return 10;}};
+// ALT ULT: TWIN DECREE — instantly fills both order slots with IRON and MIGHT, plus a burst of speed
+ALTULT.decree={name:'TWIN DECREE',r:10,s(f){f.uEnd=1;f.poseKey='command';},u(f,t){atT(f,'o',.45,()=>{if(NET.role==='client')return;f.orders=[];giveOrder(f,'iron');giveOrder(f,'might');f.hasteT=Math.max(f.hasteT||0,8);
+  if(f===ME)announceSmall('TWIN DECREE: IRON + MIGHT');});return 10;}};
+Object.assign(PFX,{decree(a,d,t){if(t>=2)d.slowT=Math.max(d.slowT||0,1.2);}});
+Object.assign(PFX_DESC,{decree:'charged hits slow the target'});
+Object.assign(XMOVES,{decree:[['LAW SPEAR','beam','light','arrow',['pierce']],['EDICT WAVE','wave','light','ring',['push']]]});
+
+/* ---------- look: ivory + deep teal commander coat, gold epaulettes, high collar, glowing script halo (original design) ---------- */
+const _mhaPartsD=mhaParts;
+mhaParts=function(h,X){const out=_mhaPartsD(h,X);if(h.id!=='decree')return out;const {M,head,spine,lS,rS}=X;
+  const gold=new THREE.MeshStandardMaterial({color:0xe8c24a,metalness:.9,roughness:.25}),coat=new THREE.MeshStandardMaterial({color:0x0e3a3a,roughness:.7,side:THREE.DoubleSide}),
+    glow=new THREE.MeshBasicMaterial({color:DGLOW,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false});
+  const halo=M(new THREE.TorusGeometry(.26,.012,8,48),glow);halo.position.set(0,.16,-.16);head.add(halo);
+  for(let k=0;k<12;k++){const a=k/12*6.283,g=M(new THREE.BoxGeometry(.035,.014,.01),glow);g.position.set(Math.cos(a)*.3,.16+Math.sin(a)*.3,-.16);g.rotation.z=a;head.add(g);}
+  const collar=M(new THREE.CylinderGeometry(.16,.2,.14,20,1,true,Math.PI*.25,Math.PI*1.5),coat);collar.position.set(0,.62,0);collar.rotation.y=Math.PI;spine.add(collar);
+  const tail=M(new THREE.CylinderGeometry(.27,.42,.9,18,1,true,Math.PI/2+.25,Math.PI-.5),coat);tail.position.set(0,-.25,-.02);spine.add(tail);
+  [lS,rS].forEach(S=>{if(!S)return;const ep=M(new THREE.CylinderGeometry(.11,.11,.03,16),gold);ep.position.set(0,.04,0);S.add(ep);
+    for(let k=0;k<5;k++){const fr=M(new THREE.CylinderGeometry(.008,.008,.07,4),gold);const a=k/5*Math.PI-Math.PI/2;fr.position.set(Math.sin(a)*.1,0,Math.cos(a)*.1);S.add(fr);}});
+  const sash=M(new THREE.BoxGeometry(.06,.62,.02),gold);sash.position.set(0,.3,.2);sash.rotation.z=.6;spine.add(sash);
+  return out;};
 /* COSTUME UPGRADE: an extra layer of original costume detail on every fighter, themed to their power.
    Each entry in LOOKS picks: em (chest emblem shape), belt, br (bracers), bt (boot style), sh (shoulders), col (collar)
    and an optional sig(X,h) function for one signature accessory. Colors come from the fighter (so shop skins recolor it).
@@ -5509,6 +5659,7 @@ const LOOKS={
   recoil:{em:'target',belt:'ammo',br:'band',bt:'armor',sh:'plate',sig:X=>headset(X)},
   crimson:{em:'drop',belt:1,br:'band',bt:'cuff',sh:'none'},
   sawback:{em:'blade',belt:2,br:'spike',bt:'armor',sh:'spike'},
+  decree:{em:'rune',belt:2,br:'band',bt:'armor',sh:'plate'},
   verdict:{em:'blade',belt:1,br:'band',bt:'cuff',sh:'none'},
   resect:{em:'hex',belt:1,br:'glove',bt:'cuff',sh:'none'},
   cushion:{em:'heart',emY:-.02,emZ:.47,belt:2,br:'pad',bt:'armor',sh:'pad'},
@@ -5620,7 +5771,7 @@ const HUMAN={
   strobe:[0,0xff8a3a,'pony',0x3fe0c5,'freckles'],pyre:[1,0xb8682a,'slick',0x3a8aff],warp:[3,0x6a6a7a,'buzz',0x8a5aff,'shades'],hex:[2,0x2a8a4a,'twin',0x5aff8a],
   scathe:[3,0xc4202a,'mohawk',0xff4a1a,'earring'],solstice:[0,0x1a2a5a,'short',0x9ae8ff],piston:[2,0xd86a2a,'mohawk',0xffb03a,'glasses'],snare:[1,0xb89a5a,'bun',0x5a5a62,'stubble'],
   marble:[1,0x14141a,'slick',0x9ae8ff,'beard'],legion:[2,0xd8822a,'curly',0x8a8e9a],recoil:[0,0xe8e8f2,'short',0xff3a96,'earring'],crimson:[1,0x14060a,'pony',0xff1a3a],
-  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble']};
+  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble'],decree:[2,0xe8d8b0,'long',0x3ad8ff]};
 function humanLook(h){const id=h.as&&h.as.look&&HUMAN[h.as.look]?h.as.look:h.id;if(HUMAN[id])return HUMAN[id];let k=0;for(const c of (h.name||'x'))k=(k*31+c.charCodeAt(0))|0;k=Math.abs(k);
   return [k%6,[0x14141a,0x3a2414,0xa8401a,0xe8c84a,h.accent][k%5],['short','spiky','pony','curly','slick'][k%5],h.accent];}
 function geoKind(m){const g=m.geometry;if(!g)return '';const p=g.parameters||{};const t=g.type;
@@ -7323,7 +7474,7 @@ onEv('frame',()=>{const T=$('touch');if(T)T.classList.toggle('on',TOUCH.on&&inMa
 buildTouch();
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true};
+const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,decreeVoice:true};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];
@@ -7335,6 +7486,8 @@ const SET_ROWS=[
   ['WORLD (OFFLINE MATCHES)'],
   ['tod','TIME OF DAY','choice',[['random','RANDOM'],['dusk','DUSK'],['day','DAY'],['night','NIGHT']]],['weather','WEATHER','choice',[['random','RANDOM'],['clear','CLEAR'],['rain','RAIN'],['storm','STORM']]],
   ['crowds','CIVILIAN CROWDS','toggle'],
+  ['surgeEv','SURGE EVENTS','toggle'],
+  ['decreeVoice','DECREE: SPOKEN ORDERS (MIC)','toggle'],
   ['CAMERA & CONTROLS'],
   ['cursorLock','LOCK CURSOR WHEN YOU CLICK INTO THE GAME','toggle'],['sens','MOUSE SENSITIVITY','range',10,150],['invertY','INVERT CAMERA Y','toggle'],['shake','SCREEN SHAKE','range',0,150],
   ['shiftLock','SHIFT LOCK ON AT START','toggle'],['slKey','SHIFT LOCK KEY','choice',SL_KEYS],
@@ -7700,10 +7853,31 @@ onEv('frame',dt=>{for(let i=PINGS.length-1;i>=0;i--){const P=PINGS[i];if(game.ti
   const v=p.clone().project(camera);const on=v.z<1;const x=clamp((v.x+1)/2*innerWidth,20,innerWidth-20),y=clamp((1-v.y)/2*innerHeight,20,innerHeight-20);
   P.e.style.transform=`translate(${on?x:(v.x>0?20:innerWidth-20)}px,${y}px) translate(-50%,-140%)`;P.e.textContent=(P.tf?'⚠ ':'◆ ')+(ME?Math.round(ME.pos.distanceTo(p))+'m':'');}});
 /* ---- voice lines (browser speech) ---- */
-function sayLine(f,text){if(SET.voiceLines===false||!window.speechSynthesis)return;try{const u=new SpeechSynthesisUtterance(text);const h=hashStr(f.hero.id||f.hero.name);
-  u.pitch=f.hero.faction==='villain'?.55+(h%20)/100:.9+(h%40)/100;if(f.hero.scale>1.6)u.pitch=.3;u.rate=1.15;u.volume=Math.min(1,(SET.sfx||85)/100);
-  speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
-onEv('ult',f=>{if(f===ME||(ME&&f.pos.distanceTo(ME.pos)<16&&Math.random()<.5))sayLine(f,(f.hero.ultName||'ULTIMATE').toLowerCase()+'!');});
+/* ---------- voices ----------
+   Each fighter gets one consistent voice: the best-sounding voice on this device for their build (natural/neural voices first),
+   a pitch and speed of their own, and a personal battle cry before each ultimate. */
+const VOICE_LOW={titan:1,bastion:1,quake:1,marrow:1,sovereign:1,sawback:1,resect:1,cushion:1,verdict:1,legion:1,snare:1,piston:1,nitro:1,umbra:1,scathe:1,void:1,marble:1,ronin:1,pyre:1,hex:1};
+const ULT_CRY={cinder:'Everything burns!',riptide:'Ride the current!',gale:'Feel the storm!',nitro:'Light it up!',titan:'Stand aside!',volta:'Full voltage!',umbra:'From the dark!',
+  drift:'Look up!',bastion:'Nothing gets through!',quill:'Take flight!',void:'Into nothing!',ronin:'One clean cut.',quake:'Shake the earth!',marrow:'Bones of steel!',entropy:'All things fade.',
+  sovereign:'Your power is mine!',strobe:'Time is up!',pyre:'Blue and bright!',warp:'Nowhere to run!',hex:'You are cursed!',scathe:'You never saw it.',solstice:'Fire and frost!',
+  piston:'Full throttle!',snare:'Your power is gone.',marble:'And now, the finale!',legion:'All of us!',recoil:'Target locked.',crimson:'Let me taste it!',sawback:'Feel every blade!',
+  resect:'Fall apart.',cushion:'Right back at you!',corrosa:'Melt away!',verdict:'Judgment is here.',decree:'By my order!'};
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));}catch(e){}}
+if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+const V_MALE=/male\b|guy|davis|tony|jason|ryan|christopher|eric|roger|brian|thomas|daniel|george|alex|fred|mark|david|james|liam|andrew/i,V_FEM=/female|aria|jenny|sonia|libby|natasha|samantha|zira|susan|karen|moira|tessa|victoria|serena|emma|ava|michelle|hazel|fiona/i;
+function voiceFor(f){if(!VOICES.length)loadVoices();if(!VOICES.length)return null;const id=f.hero.id||f.hero.name,low=!!VOICE_LOW[id]||f.hero.scale>1.3;
+  const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
+  let L=VOICES.filter(v=>low?V_MALE.test(v.name):V_FEM.test(v.name));if(!L.length)L=VOICES;L=L.slice().sort((a,b)=>q(b)-q(a));const top=L.filter(v=>q(v)===q(L[0]));
+  return top[hashStr(id)%top.length];}
+function vSpeak(f,text,o){const u=new SpeechSynthesisUtterance(text);const v=voiceFor(f);if(v)u.voice=v;const h=hashStr(f.hero.id||f.hero.name),low=!!VOICE_LOW[f.hero.id]||f.hero.scale>1.3;
+  u.pitch=Math.max(.1,Math.min(2,(low?.75:1.05)+((h%21)-10)/100+(f.hero.faction==='villain'?-.12:0)+(o.dp||0)));if(f.hero.scale>1.6)u.pitch=.35;
+  u.rate=(o.rate||1.05)+((h>>3)%9-4)/100;u.volume=Math.min(1,(SET.sfx||85)/100*(o.vol||1));return u;}
+function duckMusic(sec){if(!AU.ctx||!AU.mus)return;try{const g=AU.mus.gain,t=AU.ctx.currentTime;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(g.value*.35,t+.15);g.linearRampToValueAtTime(g.value,t+sec);}catch(e){}}
+function sayLine(f,text,o){if(SET.voiceLines===false||!window.speechSynthesis)return;try{speechSynthesis.cancel();speechSynthesis.speak(vSpeak(f,text,o||{}));}catch(e){}}
+// ultimates: personal battle cry, then the ult name called out slower and louder, music dips underneath
+function ultCry(f){if(SET.voiceLines===false||!window.speechSynthesis)return;try{speechSynthesis.cancel();const name=(f.ultAlt&&f.hero.altName?f.hero.altName:f.hero.ultName||'ultimate').toLowerCase();
+  const cry=ULT_CRY[f.hero.id];if(cry)speechSynthesis.speak(vSpeak(f,cry,{rate:1.12}));speechSynthesis.speak(vSpeak(f,name+'!',{rate:.82,dp:-.08,vol:1.15}));duckMusic(2.6);}catch(e){}}
+onEv('ult',f=>{if(f===ME||(ME&&f.pos.distanceTo(ME.pos)<16&&Math.random()<.5))setTimeout(()=>ultCry(f),30);});
 onEv('teamupMe',()=>{if(ME)setTimeout(()=>sayLine(ME,'Team up! Plus Ultra!'),100);});
 onEv('awakenMe',()=>{if(ME)sayLine(ME,'I won\'t lose here!');});
 onEv('win',w=>{if(w&&ME&&ally(w,ME))setTimeout(()=>sayLine(ME,ME.hero.faction==='villain'?'Too easy.':'That\'s what heroes do!'),1200);});
@@ -7849,13 +8023,89 @@ function showProgress(tab){if(tab)PG.tab=tab;chRefresh();showScreen('prog');cons
 $('bProgress').onclick=()=>{AU.init();AU.ui();PG.hero=Math.min(mySel,HEROES.length-1);showProgress('ch');};
 $('pgBack').onclick=()=>{AU.ui();showScreen('title');};
 chRefresh();
+/* SURGE EVENTS — every so often in a battle royale or arena match, the whole map gets a 20-second twist.
+   LOW GRAVITY · POWER SWAP · OVERCHARGE · METEOR SHOWER · GOLD RUSH
+   The host (or the offline game) picks the event; clients get it through netEvent({k:'surge'}).
+   To add an event: add an entry to SURGE_EV with name/col/desc and any of start/tick/end. */
+const SURGE={ev:null,t:0,next:0,dur:20,warn:0,pending:null,orbs:[],mT:0,meteors:[]};
+const SURGE_EV={
+  lowgrav:{name:'LOW GRAVITY',col:'#9ad8ff',desc:'Jumps go sky-high. Fights move to the rooftops!'},
+  swap:{name:'POWER SWAP',col:'#ff9af0',desc:'Everyone borrows a random power for 20 s.',
+    start(){if(NET.role==='client')return;for(const f of FS){if(f.dead)continue;const L=STEALABLE.filter(s=>s!==f.hero.special);f.stolen=pick(L);f.stolenT=SURGE.dur;
+      burst(ADD,f.chest(new V3()),24,{colors:[0xff9af0,0xffffff],speed:5,life:.5,size:.25,size1:0,bright:2.2});if(f===ME)announceSmall('YOUR SPECIAL IS NOW '+(SPNAME[f.stolen]||f.stolen).toUpperCase());}}},
+  overcharge:{name:'OVERCHARGE',col:'#ffe03a',desc:'Cooldowns fly by and ultimates charge fast.',
+    tick(dt){for(const f of FS){if(f.dead)continue;f.specCD=Math.max(0,(f.specCD||0)-dt*1.5);if(f.xcd)f.xcd=f.xcd.map(c=>Math.max(0,c-dt*1.5));if(NET.role!=='client')f.meter=Math.min(100,f.meter+dt*4);
+      if(Math.random()<dt*3&&nearCam(f.pos,50))burst(ADD,TMP2.set(f.pos.x+rand(-.4,.4),f.pos.y+rand(.2,1.8),f.pos.z+rand(-.4,.4)),1,{colors:[0xffe03a,0xffffff],speed:.6,up:2,life:.4,size:.2,size1:0,bright:2});}}},
+  meteors:{name:'METEOR SHOWER',col:'#ff7a20',desc:'Watch the ground for red circles!',
+    tick(dt){if(NET.role==='client')return;SURGE.mT-=dt;if(SURGE.mT>0)return;SURGE.mT=.45;const L=FS.filter(f=>!f.dead&&!f.dormant);if(!L.length)return;
+      const f=pick(L),x=f.pos.x+rand(-7,7),z=f.pos.z+rand(-7,7);surgeMeteor(x,z);netEvent({k:'surgeM',x,z});}},
+  gold:{name:'GOLD RUSH',col:'#ffd23f',desc:'Grab the golden orbs for meter and health!',
+    start(){if(NET.role==='client')return;const L=FS.filter(f=>!f.dead);const P=[];for(let i=0;i<14;i++){const f=pick(L);if(!f)break;P.push([f.pos.x+rand(-12,12),f.pos.z+rand(-12,12)]);}
+      surgeGold(P);netEvent({k:'surgeG',p:P});},
+    tick(dt){for(const o of SURGE.orbs){if(!o.m.visible)continue;o.m.position.y=o.y+1+Math.sin(game.time*3+o.x)*.25;o.m.rotation.y+=dt*2;
+      if(NET.role==='client')continue;for(const f of FS){if(f.dead||f.dormant)continue;if(Math.hypot(f.pos.x-o.x,f.pos.z-o.z)<1.4&&Math.abs(f.pos.y-o.y)<2.5){surgeTake(o.i,f);netEvent({k:'surgeT',i:o.i,f:f.id});break;}}}},
+    end(){SURGE.orbs.forEach(o=>scene.remove(o.m));SURGE.orbs.length=0;}}};
+const SURGE_KEYS=Object.keys(SURGE_EV);
+
+function surgeOn(){return !game.story&&!game.practice&&game.rules!=='raid'&&!PR.on;}
+
+/* ---------- meteors ---------- */
+const mtrGeo=new THREE.DodecahedronGeometry(.9,0),mtrMat=new THREE.MeshStandardMaterial({color:0x3a2a20,emissive:0xff5a10,emissiveIntensity:1.4,flatShading:true});
+function surgeMeteor(x,z){const y=floorAt(x,z,60);const warn=new THREE.Mesh(new THREE.RingGeometry(1.6,2.2,32),new THREE.MeshBasicMaterial({color:0xff3a1a,transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false}));
+  warn.rotation.x=-Math.PI/2;warn.position.set(x,y+.06,z);scene.add(warn);const rock=new THREE.Mesh(mtrGeo,mtrMat);rock.position.set(x+14,y+45,z+6);scene.add(rock);
+  SURGE.meteors.push({x,z,y,t:0,warn,rock});}
+function surgeMeteorTick(dt){for(let i=SURGE.meteors.length-1;i>=0;i--){const m=SURGE.meteors[i];m.t+=dt;const k=Math.min(1,m.t/1.2);
+  m.rock.position.set(m.x+14*(1-k),m.y+45*(1-k)+.5,m.z+6*(1-k));m.rock.rotation.x+=dt*6;m.warn.material.opacity=.4+.4*Math.sin(m.t*20);m.warn.scale.setScalar(1-k*.4);
+  if(Math.random()<.6&&nearCam(m.rock.position,90))burst(ADD,m.rock.position,2,{colors:[0xff7a20,0xffd23f],speed:1,life:.4,size:.5,size1:0,bright:2});
+  if(m.t>=1.2||!inMatch()){SURGE.meteors.splice(i,1);scene.remove(m.warn);scene.remove(m.rock);m.warn.geometry.dispose();if(!inMatch())continue;
+    const p=new V3(m.x,m.y+.5,m.z);explosion(p,2.6,[0xff7a20,0xffc24a,0xff3b10]);shake(.35,p);if(typeof crater==='function')crater(m.x,m.z,1.6);xSnd(p,()=>AU.boom(false));
+    if(NET.role!=='client')for(const f of FS){if(f.dead||f.dormant||f.invuln>0)continue;const d=Math.hypot(f.pos.x-m.x,f.pos.z-m.z);if(d<2.6&&Math.abs(f.pos.y-m.y)<3){
+      f.hp-=16*DMG_SCALE*(f.take||1);const dir=new V3(f.pos.x-m.x,0,f.pos.z-m.z).normalize();f.vel.set(dir.x*9,12,dir.z*9);f.onGround=false;
+      if(f.hp<=0&&!f.dead){f.hp=0;killFighter(f,null,dir);}else if(f===ME)announceSmall('HIT BY A METEOR!');}}}}}
+
+/* ---------- gold orbs ---------- */
+const goldGeo=new THREE.OctahedronGeometry(.45,0),goldMat=new THREE.MeshStandardMaterial({color:0xffd23f,emissive:0xffa21a,emissiveIntensity:1.6,metalness:.8,roughness:.2});
+function surgeGold(P){P.forEach((p,i)=>{const y=floorAt(p[0],p[1],60);const m=new THREE.Mesh(goldGeo,goldMat);m.position.set(p[0],y+1,p[1]);scene.add(m);SURGE.orbs.push({i,x:p[0],z:p[1],y,m});
+  ring(new V3(p[0],y+.2,p[1]),0xffd23f,1.6,.4,true,2);});}
+function surgeTake(i,f){const o=SURGE.orbs.find(q=>q.i===i);if(!o||!o.m.visible)return;o.m.visible=false;const c=o.m.position.clone();
+  burst(ADD,c,24,{colors:[0xffd23f,0xffffff],speed:5,life:.45,size:.25,size1:0,bright:2.4});ring(c,0xffd23f,2,.3,false,2.4);xSnd(c,()=>AU.levelUp&&AU.levelUp());
+  if(f&&NET.role!=='client'){f.meter=Math.min(100,f.meter+25);f.hp=Math.min(100,f.hp+10);}if(f===ME)announceSmall('GOLD! +25 METER · +10 HP');}
+
+/* ---------- HUD chip ---------- */
+function surgeChip(){let e=$('surgeChip');if(!e){e=document.createElement('div');e.id='surgeChip';document.body.appendChild(e);}return e;}
+function surgeHUD(){const e=surgeChip();if(!inMatch()||(!SURGE.ev&&!SURGE.pending)){e.style.display='none';return;}e.style.display='';
+  if(SURGE.ev){const E=SURGE_EV[SURGE.ev];e.style.setProperty('--c',E.col);e.innerHTML=`<i>SURGE EVENT</i><b>${E.name}</b><span>${Math.ceil(SURGE.t)}s</span>`;}
+  else{const E=SURGE_EV[SURGE.pending];e.style.setProperty('--c',E.col);e.innerHTML=`<i>SURGE INCOMING</i><b>${E.name}</b><span>${Math.ceil(SURGE.warn)}…</span>`;}}
+
+/* ---------- flow ---------- */
+function surgeWarn(key){SURGE.pending=key;SURGE.warn=3;const E=SURGE_EV[key];announceSmall('SURGE INCOMING: '+E.name+' — '+E.desc);AU.sting&&AU.sting();}
+function surgeStart(key,dur){const E=SURGE_EV[key];if(!E)return;surgeEnd();SURGE.pending=null;SURGE.ev=key;SURGE.t=dur||SURGE.dur;SURGE.mT=.6;
+  announce(E.name,E.col);if(E.start)E.start();if(typeof AU!=='undefined'&&AU.fanfare)AU.fanfare();}
+function surgeEnd(){const E=SURGE.ev&&SURGE_EV[SURGE.ev];if(E&&E.end)E.end();if(SURGE.ev==='swap')FS.forEach(f=>{if(f.stolenT>0&&NET.role!=='client')f.stolenT=Math.min(f.stolenT,.1);});SURGE.ev=null;}
+onEv('net:surgeW',e=>surgeWarn(e.e));
+onEv('net:surge',e=>surgeStart(e.e,e.t));
+onEv('net:surgeEnd',()=>surgeEnd());
+onEv('net:surgeM',e=>surgeMeteor(e.x,e.z));
+onEv('net:surgeG',e=>surgeGold(e.p));
+onEv('net:surgeT',e=>surgeTake(e.i,FS.find(f=>f.id===e.f)));
+onEv('matchStart',()=>{surgeEnd();SURGE.pending=null;SURGE.next=35;SURGE.last=null;SURGE.meteors.forEach(m=>{scene.remove(m.warn);scene.remove(m.rock);});SURGE.meteors.length=0;});
+onEv('matchEnd',()=>{surgeEnd();SURGE.pending=null;surgeHUD();});
+onEv('tick',dt=>{surgeMeteorTick(dt);
+  if(SURGE.ev){const E=SURGE_EV[SURGE.ev];if(E.tick&&game.phase==='fight')E.tick(dt);SURGE.t-=dt;if(SURGE.t<=0&&NET.role!=='client'){surgeEnd();netEvent({k:'surgeEnd'});announceSmall('SURGE OVER');}}
+  if(SURGE.pending){SURGE.warn-=dt;if(SURGE.warn<=0&&NET.role!=='client'){const k=SURGE.pending;surgeStart(k);netEvent({k:'surge',e:k,t:SURGE.dur});}}
+  if(NET.role!=='client'&&game.phase==='fight'&&surgeOn()&&!SURGE.ev&&!SURGE.pending&&SET.surgeEv!==false){SURGE.next-=dt;
+    if(SURGE.next<=0){SURGE.next=50;const k=pick(SURGE_KEYS.filter(x=>x!==SURGE.last));SURGE.last=k;surgeWarn(k);netEvent({k:'surgeW',e:k});}}
+  surgeHUD();});
+// low gravity: give back most of the fall speed gravity took this frame
+const _surgePhys=Fighter.prototype.physics;
+Fighter.prototype.physics=function(dt,fr,grav){if(SURGE.ev==='lowgrav'&&grav&&!this.onGround)this.vel.y+=(this.state==='fly'?26:30)*.62*dt;return _surgePhys.call(this,dt,fr,grav);};
 /* CREDITS + little nods to My Hero Academia (by Kōhei Horikoshi).
    SURGE is an unofficial, fan-made game. Its fighters, story and designs are original; some are inspired by
    characters from My Hero Academia (Kōhei Horikoshi, published by Shueisha) and Jujutsu Kaisen (Gege Akutami, Shueisha).
    The nods: the CREDITS screen, "Inspired by" notes on fighters, Musutafu street signs, a Plus Ultra comeback call-out,
    loading/title tips, and a couple of bot names. */
 const INSPIRED={solstice:'Shoto Todoroki',piston:'Tenya Iida',snare:'Shota Aizawa (Eraser Head)',marble:'Mr. Compress',legion:'Twice',recoil:'Lady Nagant',
-  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)'};
+  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe'};
 // "Inspired by" note under a fighter's description
 const _previewHeroC=previewHero;
 previewHero=function(i){_previewHeroC(i);const h=heroAt(i),d=$('pvDesc');if(!d||!h||!INSPIRED[h.id])return;

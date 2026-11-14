@@ -1,6 +1,6 @@
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true};
+const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,decreeVoice:true};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];
@@ -12,6 +12,8 @@ const SET_ROWS=[
   ['WORLD (OFFLINE MATCHES)'],
   ['tod','TIME OF DAY','choice',[['random','RANDOM'],['dusk','DUSK'],['day','DAY'],['night','NIGHT']]],['weather','WEATHER','choice',[['random','RANDOM'],['clear','CLEAR'],['rain','RAIN'],['storm','STORM']]],
   ['crowds','CIVILIAN CROWDS','toggle'],
+  ['surgeEv','SURGE EVENTS','toggle'],
+  ['decreeVoice','DECREE: SPOKEN ORDERS (MIC)','toggle'],
   ['CAMERA & CONTROLS'],
   ['cursorLock','LOCK CURSOR WHEN YOU CLICK INTO THE GAME','toggle'],['sens','MOUSE SENSITIVITY','range',10,150],['invertY','INVERT CAMERA Y','toggle'],['shake','SCREEN SHAKE','range',0,150],
   ['shiftLock','SHIFT LOCK ON AT START','toggle'],['slKey','SHIFT LOCK KEY','choice',SL_KEYS],

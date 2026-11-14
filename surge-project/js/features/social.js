@@ -76,10 +76,31 @@ onEv('frame',dt=>{for(let i=PINGS.length-1;i>=0;i--){const P=PINGS[i];if(game.ti
   const v=p.clone().project(camera);const on=v.z<1;const x=clamp((v.x+1)/2*innerWidth,20,innerWidth-20),y=clamp((1-v.y)/2*innerHeight,20,innerHeight-20);
   P.e.style.transform=`translate(${on?x:(v.x>0?20:innerWidth-20)}px,${y}px) translate(-50%,-140%)`;P.e.textContent=(P.tf?'⚠ ':'◆ ')+(ME?Math.round(ME.pos.distanceTo(p))+'m':'');}});
 /* ---- voice lines (browser speech) ---- */
-function sayLine(f,text){if(SET.voiceLines===false||!window.speechSynthesis)return;try{const u=new SpeechSynthesisUtterance(text);const h=hashStr(f.hero.id||f.hero.name);
-  u.pitch=f.hero.faction==='villain'?.55+(h%20)/100:.9+(h%40)/100;if(f.hero.scale>1.6)u.pitch=.3;u.rate=1.15;u.volume=Math.min(1,(SET.sfx||85)/100);
-  speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
-onEv('ult',f=>{if(f===ME||(ME&&f.pos.distanceTo(ME.pos)<16&&Math.random()<.5))sayLine(f,(f.hero.ultName||'ULTIMATE').toLowerCase()+'!');});
+/* ---------- voices ----------
+   Each fighter gets one consistent voice: the best-sounding voice on this device for their build (natural/neural voices first),
+   a pitch and speed of their own, and a personal battle cry before each ultimate. */
+const VOICE_LOW={titan:1,bastion:1,quake:1,marrow:1,sovereign:1,sawback:1,resect:1,cushion:1,verdict:1,legion:1,snare:1,piston:1,nitro:1,umbra:1,scathe:1,void:1,marble:1,ronin:1,pyre:1,hex:1};
+const ULT_CRY={cinder:'Everything burns!',riptide:'Ride the current!',gale:'Feel the storm!',nitro:'Light it up!',titan:'Stand aside!',volta:'Full voltage!',umbra:'From the dark!',
+  drift:'Look up!',bastion:'Nothing gets through!',quill:'Take flight!',void:'Into nothing!',ronin:'One clean cut.',quake:'Shake the earth!',marrow:'Bones of steel!',entropy:'All things fade.',
+  sovereign:'Your power is mine!',strobe:'Time is up!',pyre:'Blue and bright!',warp:'Nowhere to run!',hex:'You are cursed!',scathe:'You never saw it.',solstice:'Fire and frost!',
+  piston:'Full throttle!',snare:'Your power is gone.',marble:'And now, the finale!',legion:'All of us!',recoil:'Target locked.',crimson:'Let me taste it!',sawback:'Feel every blade!',
+  resect:'Fall apart.',cushion:'Right back at you!',corrosa:'Melt away!',verdict:'Judgment is here.',decree:'By my order!'};
+let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));}catch(e){}}
+if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+const V_MALE=/male\b|guy|davis|tony|jason|ryan|christopher|eric|roger|brian|thomas|daniel|george|alex|fred|mark|david|james|liam|andrew/i,V_FEM=/female|aria|jenny|sonia|libby|natasha|samantha|zira|susan|karen|moira|tessa|victoria|serena|emma|ava|michelle|hazel|fiona/i;
+function voiceFor(f){if(!VOICES.length)loadVoices();if(!VOICES.length)return null;const id=f.hero.id||f.hero.name,low=!!VOICE_LOW[id]||f.hero.scale>1.3;
+  const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
+  let L=VOICES.filter(v=>low?V_MALE.test(v.name):V_FEM.test(v.name));if(!L.length)L=VOICES;L=L.slice().sort((a,b)=>q(b)-q(a));const top=L.filter(v=>q(v)===q(L[0]));
+  return top[hashStr(id)%top.length];}
+function vSpeak(f,text,o){const u=new SpeechSynthesisUtterance(text);const v=voiceFor(f);if(v)u.voice=v;const h=hashStr(f.hero.id||f.hero.name),low=!!VOICE_LOW[f.hero.id]||f.hero.scale>1.3;
+  u.pitch=Math.max(.1,Math.min(2,(low?.75:1.05)+((h%21)-10)/100+(f.hero.faction==='villain'?-.12:0)+(o.dp||0)));if(f.hero.scale>1.6)u.pitch=.35;
+  u.rate=(o.rate||1.05)+((h>>3)%9-4)/100;u.volume=Math.min(1,(SET.sfx||85)/100*(o.vol||1));return u;}
+function duckMusic(sec){if(!AU.ctx||!AU.mus)return;try{const g=AU.mus.gain,t=AU.ctx.currentTime;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(g.value*.35,t+.15);g.linearRampToValueAtTime(g.value,t+sec);}catch(e){}}
+function sayLine(f,text,o){if(SET.voiceLines===false||!window.speechSynthesis)return;try{speechSynthesis.cancel();speechSynthesis.speak(vSpeak(f,text,o||{}));}catch(e){}}
+// ultimates: personal battle cry, then the ult name called out slower and louder, music dips underneath
+function ultCry(f){if(SET.voiceLines===false||!window.speechSynthesis)return;try{speechSynthesis.cancel();const name=(f.ultAlt&&f.hero.altName?f.hero.altName:f.hero.ultName||'ultimate').toLowerCase();
+  const cry=ULT_CRY[f.hero.id];if(cry)speechSynthesis.speak(vSpeak(f,cry,{rate:1.12}));speechSynthesis.speak(vSpeak(f,name+'!',{rate:.82,dp:-.08,vol:1.15}));duckMusic(2.6);}catch(e){}}
+onEv('ult',f=>{if(f===ME||(ME&&f.pos.distanceTo(ME.pos)<16&&Math.random()<.5))setTimeout(()=>ultCry(f),30);});
 onEv('teamupMe',()=>{if(ME)setTimeout(()=>sayLine(ME,'Team up! Plus Ultra!'),100);});
 onEv('awakenMe',()=>{if(ME)sayLine(ME,'I won\'t lose here!');});
 onEv('win',w=>{if(w&&ME&&ally(w,ME))setTimeout(()=>sayLine(ME,ME.hero.faction==='villain'?'Too easy.':'That\'s what heroes do!'),1200);});

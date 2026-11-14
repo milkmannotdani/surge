@@ -22,6 +22,7 @@ js/
     abilities.js      ability engine used by created fighters
     gear.js           weapons and gear
     mha.js            Solstice, Piston, Snare, Marble, Legion, Recoil; extra moves (XMOVES); death ults
+    decree.js         Decree: spoken orders via speech recognition (ORDERS table — add your own)
     mha2.js           Crimson, Sawback, Resect, Cushion, Corrosa, Verdict (another worked example of adding fighters)
     looks.js          costume layer for every fighter: chest emblem, belt, bracers, boots, shoulders, collar, signature item (LOOKS)
     humans.js         ARMOR OFF mode: each fighter's face and hair under the suit (HUMAN table)
@@ -52,6 +53,7 @@ js/
     missions.js       MISSIONS screen: Rescue + Hero License Exam
     progress.js       fighter levels/XP and unlockable costumes (UNLOCKS)
     input.js          gamepad + touch controls
+    surge.js          SURGE EVENTS: 20-second map-wide twists (SURGE_EV table — add your own)
     credits.js        CREDITS screen + small My Hero Academia nods (INSPIRED notes, tips, Plus Ultra call-out)
     settings.js       settings menu (SET_DEF / SET_ROWS), game modes menu, shift lock, Tab lock-on, controller button icons
     netx.js           netSay(): send add-on events to everyone in an online match
