@@ -1,6 +1,6 @@
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true};
+const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];
@@ -8,7 +8,7 @@ const SET_ROWS=[
   ['AUDIO'],
   ['music','MUSIC VOLUME','range',0,100],['sfx','SOUND EFFECTS VOLUME','range',0,100],
   ['CAMERA & CONTROLS'],
-  ['sens','MOUSE SENSITIVITY','range',10,150],['invertY','INVERT CAMERA Y','toggle'],['shake','SCREEN SHAKE','range',0,150],
+  ['cursorLock','LOCK CURSOR WHEN YOU CLICK INTO THE GAME','toggle'],['sens','MOUSE SENSITIVITY','range',10,150],['invertY','INVERT CAMERA Y','toggle'],['shake','SCREEN SHAKE','range',0,150],
   ['shiftLock','SHIFT LOCK ON AT START','toggle'],['slKey','SHIFT LOCK KEY','choice',SL_KEYS],
   ['pad','CONTROLLER BUTTONS','choice',[['xbox','XBOX (A B X Y)'],['ps','PLAYSTATION (✕ ○ □ △)']]],
   ['touch','TOUCH CONTROLS','choice',[['auto','AUTO'],['on','ALWAYS ON'],['off','OFF']]],
@@ -35,9 +35,10 @@ const _auInitS=AU.init;AU.init=function(){const first=!this.ctx;_auInitS.call(th
 /* ---- shift lock (toggle with the shift lock key) ---- */
 function toggleShiftLock(force){SET.shiftLock=force!=null?force:!SET.shiftLock;setSave();
   if(SET.shiftLock){try{const r=cvs.requestPointerLock&&cvs.requestPointerLock();if(r&&r.catch)r.catch(()=>{game.plFail=true;});}catch(e){game.plFail=true;}game.plTried=true;}
-  else if(document.pointerLockElement)document.exitPointerLock();
+  else if(document.pointerLockElement&&!SET.cursorLock)document.exitPointerLock();
   announceSmall(SET.shiftLock?'SHIFT LOCK ON':'SHIFT LOCK OFF');AU.ui();}
-onEv('frame',()=>{const e=$('slIcon');if(e)e.classList.toggle('on',inMatch()&&SET.shiftLock&&!!ME);const x=$('xh');if(x&&inMatch())x.style.display=(SET.shiftLock&&document.pointerLockElement)?'block':'none';});
+onEv('frame',()=>{const e=$('slIcon');if(e)e.classList.toggle('on',inMatch()&&SET.shiftLock&&!!ME);const x=$('xh');if(x&&inMatch())x.style.display=document.pointerLockElement?'block':'none';
+  const cp=$('clickLock');if(cp)cp.classList.toggle('on',inMatch()&&game.phase!=='over'&&!paused&&!!ME&&!ME.dead&&(SET.cursorLock||SET.shiftLock)&&!document.pointerLockElement&&!game.plFail&&!TOUCH.on);});
 // with shift lock on, your fighter faces where the camera points (unless you're locked on with Tab)
 onEv('tick',dt=>{if(!ME||ME.dead||!SET.shiftLock||ME.hardLock)return;if(['idle','run','air','block'].indexOf(ME.state)<0)return;ME.face=angLerp(ME.face,camYaw,Math.min(1,14*dt));});
 /* ---- lock-on (Tab / R3): locks onto the nearest enemy, then cycles; after the last one it lets go ---- */
@@ -46,7 +47,7 @@ function lockOnCycle(silent){if(!ME||ME.dead)return;const L=enemiesOf(ME).filter
   if(!ME.hardLock||!ME.tgt||ME.tgt.dead){ME.hardLock=true;ME.tgt=L[0];}
   else{const i=L.indexOf(ME.tgt);if(i<0)ME.tgt=L[0];else if(i===L.length-1){ME.hardLock=false;if(!silent){announceSmall('LOCK-ON OFF');AU.ui();}return;}else ME.tgt=L[i+1];}
   manualTgtT=game.time;if(!silent){announceSmall('LOCKED ON: '+ME.tgt.name.toUpperCase());AU.ui();}}
-onEv('matchStart',()=>{if(ME)ME.hardLock=false;if(SET.shiftLock)game.plTried=false;});
+onEv('matchStart',()=>{if(ME)ME.hardLock=false;if(SET.shiftLock||SET.cursorLock)game.plTried=false;});
 
 /* ---- button prompts: keyboard keys, or controller buttons when you're playing on a gamepad ---- */
 const INDEV={dev:'kb'};

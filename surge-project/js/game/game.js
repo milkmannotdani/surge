@@ -139,7 +139,7 @@ function inMatch(){return ['countdown','fight','over'].indexOf(game.phase)>=0;}
 const cvs=renderer.domElement;
 cvs.addEventListener('mousedown',e=>{
   if(!inMatch()||paused)return;
-  if(!SET.shiftLock){if(e.button===2){game.rDrag={x:e.clientX,y:e.clientY,moved:0};return;}if(e.button===0){pressed.add('MouseL');keys.MouseL=true;}return;}
+  if(!SET.shiftLock&&!SET.cursorLock){if(e.button===2){game.rDrag={x:e.clientX,y:e.clientY,moved:0};return;}if(e.button===0){pressed.add('MouseL');keys.MouseL=true;}return;}
   if(!document.pointerLockElement&&cvs.requestPointerLock&&!game.plTried){try{const r=cvs.requestPointerLock();if(r&&r.catch)r.catch(()=>{game.plFail=true;});}catch(err){game.plFail=true;}game.plTried=true;return;}
   if(!document.pointerLockElement&&game.plTried&&!game.plFail){try{const r=cvs.requestPointerLock();if(r&&r.catch)r.catch(()=>{game.plFail=true;});}catch(err){}}
   if(e.button===0){pressed.add('MouseL');keys.MouseL=true;}if(e.button===2){pressed.add('MouseR');keys.MouseR=true;}
@@ -147,7 +147,7 @@ cvs.addEventListener('mousedown',e=>{
 addEventListener('mouseup',e=>{if(e.button===0)keys.MouseL=false;if(e.button===2){keys.MouseR=false;if(game.rDrag&&game.rDrag.moved<6&&inMatch())pressed.add('MouseR');game.rDrag=null;}});
 addEventListener('mousemove',e=>{if(!inMatch()||paused)return;const locked=document.pointerLockElement===cvs;
   const drag=!locked&&(e.buttons&2)&&game.rDrag;if(drag)game.rDrag.moved+=Math.abs(e.movementX)+Math.abs(e.movementY);
-  if(locked||drag||(e.buttons&&game.plFail&&SET.shiftLock)){const s=SET.sens/50;camYaw-=e.movementX*.0026*s;camPitch=clamp(camPitch+e.movementY*.002*s*(SET.invertY?-1:1),-.25,1.1);lastMouseT=game.time;}});
+  if(locked||drag||(e.buttons&&game.plFail&&(SET.shiftLock||SET.cursorLock))){const s=SET.sens/50;camYaw-=e.movementX*.0026*s;camPitch=clamp(camPitch+e.movementY*.002*s*(SET.invertY?-1:1),-.25,1.1);lastMouseT=game.time;}});
 document.addEventListener('pointerlockchange',()=>{$('xh').style.display=document.pointerLockElement===cvs?'block':'none';if(!document.pointerLockElement&&inMatch()&&!paused&&game.phase!=='over'&&game.plTried&&!game.plFail){/* user pressed Esc */}});
 document.addEventListener('pointerlockerror',()=>{game.plFail=true;});
 addEventListener('contextmenu',e=>e.preventDefault());

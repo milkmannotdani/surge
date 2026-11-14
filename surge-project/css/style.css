@@ -366,3 +366,4 @@ body.padui #slots{bottom:56px}body.padui .slot{overflow:visible;margin-top:30px}
 .slot .pgw{position:absolute;left:50%;top:-34px;transform:translateX(-50%) skewX(12deg);font-size:14px;min-width:30px;height:28px;text-shadow:0 1px 0 #000}
 body.padui .slot b{display:none}body.padui .slot{padding-left:12px}
 body.padui #hint{display:none!important}
+#clickLock{position:fixed;left:50%;top:42%;transform:translateX(-50%);z-index:20;display:none;padding:9px 18px;background:rgba(8,10,20,.78);border:1px solid rgba(255,255,255,.35);font:800 14px/1 'Rajdhani',sans-serif;letter-spacing:.14em;color:#fff;pointer-events:none}#clickLock.on{display:block}
