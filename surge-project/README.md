@@ -22,8 +22,9 @@ js/
     abilities.js      ability engine used by created fighters
     gear.js           weapons and gear
     mha.js            Solstice, Piston, Snare, Marble, Legion, Recoil; extra moves (XMOVES); death ults
+    skitter.js        Skitter: surface-glide slides, wall slides, skim shot, Street Surge
     decree.js         Decree: spoken orders via speech recognition, named targets and IF-laws (ORDERS / PUNISH tables)
-    mha2.js           Crimson, Sawback, Resect, Cushion, Corrosa, Verdict (another worked example of adding fighters)
+    mha2.js           Crimson, Sawback, Resect, Cushion, Corrosa, Verdict, Decree, Skitter (another worked example of adding fighters)
     looks.js          costume layer for every fighter: chest emblem, belt, bracers, boots, shoulders, collar, signature item (LOOKS)
     humans.js         ARMOR OFF mode: each fighter's face and hair under the suit (HUMAN table)
   creator/

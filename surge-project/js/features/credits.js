@@ -3,12 +3,13 @@
    characters from My Hero Academia (Kōhei Horikoshi, published by Shueisha) and Jujutsu Kaisen (Gege Akutami, Shueisha).
    The nods: the CREDITS screen, "Inspired by" notes on fighters, Musutafu street signs, a Plus Ultra comeback call-out,
    loading/title tips, and a couple of bot names. */
+const INSPIRED_SRC={skitter:'My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)'};
 const INSPIRED={solstice:'Shoto Todoroki',piston:'Tenya Iida',snare:'Shota Aizawa (Eraser Head)',marble:'Mr. Compress',legion:'Twice',recoil:'Lady Nagant',
-  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe'};
+  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe',skitter:'Koichi Haimawari (The Crawler)'};
 // "Inspired by" note under a fighter's description
 const _previewHeroC=previewHero;
 previewHero=function(i){_previewHeroC(i);const h=heroAt(i),d=$('pvDesc');if(!d||!h||!INSPIRED[h.id])return;
-  const n=document.createElement('div');n.className='insp';n.textContent=`Inspired by ${INSPIRED[h.id]} from My Hero Academia by Kōhei Horikoshi`;d.appendChild(n);};
+  const n=document.createElement('div');n.className='insp';n.textContent=`Inspired by ${INSPIRED[h.id]} from ${INSPIRED_SRC[h.id]||'My Hero Academia by Kōhei Horikoshi'}`;d.appendChild(n);};
 // the credits screen
 function showCredits(){showScreen('credits');}
 $('bCredits').onclick=()=>{AU.init();AU.ui();showCredits();};$('crBack').onclick=()=>{AU.ui();showScreen('title');};
