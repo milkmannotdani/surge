@@ -107,3 +107,45 @@ onEv('win',w=>{if(w&&ME&&ally(w,ME))setTimeout(()=>sayLine(ME,ME.hero.faction===
 /* shop: emotes are owned, not equipped */
 const _rsS=renderShop;renderShop=function(){_rsS();if(SH.tab==='emotes'){const b=$('shBuy');if(owns('emote:'+SH.sel)){b.textContent='OWNED · PRESS B IN A MATCH';b.disabled=true;}$('shBig').innerHTML='<div class="mdnote">Emotes play with the emote wheel (B, or View on a controller). Everyone nearby sees them.</div>';}
   else if(SH.tab==='poses')$('shBig').innerHTML='<div class="mdnote">Your fighter strikes this pose when you win a match. Other players see it too.</div>';};
+
+/* ---------- inspired fighters: voices closer to their inspirations ----------
+   Each gets a matching voice (male/female), pitch, pace and loudness, and an ultimate battle cry written in that
+   character's personality (original lines — not quotes from the show). A line can be a list of [text, pitch shift]
+   parts spoken back-to-back (Legion argues with himself). Edit VPROF / VCRY to tune them. */
+const VPROF={ // sex: m/f · p: pitch · r: rate · v: volume
+  solstice:{sex:'m',p:.9,r:.92},piston:{sex:'m',p:1,r:1.22,v:1.1},snare:{sex:'m',p:.78,r:.82,v:.85},marble:{sex:'m',p:1.05,r:.92},
+  legion:{sex:'m',p:.95,r:1.15},recoil:{sex:'f',p:.82,r:.86},crimson:{sex:'f',p:1.55,r:1.12},sawback:{sex:'m',p:.82,r:1.08},
+  resect:{sex:'m',p:.7,r:.86,v:.9},cushion:{sex:'m',p:.6,r:.95,v:1.1},corrosa:{sex:'f',p:1.35,r:1.15},verdict:{sex:'m',p:.5,r:.84},
+  decree:{sex:'f',p:.98,r:1,v:1.15},skitter:{sex:'m',p:1.12,r:1.1},oldguard:{sex:'m',p:.58,r:.88},hopstar:{sex:'f',p:1.45,r:1.15,v:1.1},
+  headliner:{sex:'m',p:.92,r:1.02,v:1.15},zanshin:{sex:'m',p:.88,r:1.05,v:1.1}};
+const VCRY={
+  solstice:'This time I\'ll use all of it. Ice... and fire.',
+  piston:'Engines at full output! Everyone, please stand clear!',
+  snare:'Sigh... Let\'s make this quick. I\'m tired.',
+  marble:'Ladies and gentlemen... the grand finale!',
+  legion:[['Leave it to me!',.15],['No — leave it to us!',-.2],['We\'ve totally got this!',.15],['We\'re doomed!',-.25]],
+  recoil:'Hold still. I don\'t miss.',
+  crimson:[['Ehehe~',.25],['Hold still... I just want a little taste!',0]],
+  sawback:'This is for everyone the world threw away!',
+  resect:'Filthy. I\'ll take you apart... and put you back together properly.',
+  cushion:'Hah! Took all that and I\'m still hungry! Here it comes!',
+  corrosa:'Let\'s dance! Acid style!',
+  verdict:'Fakes. Only a true hero may stand before me.',
+  decree:'New rule — you lose!',
+  skitter:'Coming through — watch your step!',
+  oldguard:'Listen up, kid. Power isn\'t everything.',
+  hopstar:'Showtime! Everybody, eyes on me!',
+  headliner:'Smile for the cameras, folks — the star has arrived!',
+  zanshin:'I\'ll protect them. No matter what!'};
+const _vfOld=voiceFor;
+voiceFor=function(f){const P=VPROF[KIT(f.hero,'elem')];if(!P)return _vfOld(f);if(!VOICES.length)loadVoices();if(!VOICES.length)return null;
+  const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
+  let L=VOICES.filter(v=>P.sex==='f'?V_FEM.test(v.name):V_MALE.test(v.name));if(!L.length)L=VOICES;L=L.slice().sort((a,b)=>q(b)-q(a));const top=L.filter(v=>q(v)===q(L[0]));
+  return top[hashStr(f.hero.id)%top.length];};
+const _vsOld=vSpeak;
+vSpeak=function(f,text,o){const P=VPROF[KIT(f.hero,'elem')];if(!P)return _vsOld(f,text,o);o=o||{};const u=new SpeechSynthesisUtterance(text);const v=voiceFor(f);if(v)u.voice=v;
+  u.pitch=Math.max(.1,Math.min(2,P.p+(o.dp||0)));u.rate=Math.max(.5,Math.min(2,(P.r||1)*((o.rate||1.05)/1.05)));u.volume=Math.min(1,(SET.sfx||85)/100*(P.v||1)*(o.vol||1));return u;};
+const _ucOld=ultCry;
+ultCry=function(f){const id=KIT(f.hero,'elem'),C=VCRY[id];if(!C)return _ucOld(f);if(SET.voiceLines===false||!window.speechSynthesis)return;
+  try{speechSynthesis.cancel();const parts=Array.isArray(C)?C:[[C,0]];parts.forEach(([t,dp])=>speechSynthesis.speak(vSpeak(f,t,{rate:1.05,dp})));
+    const name=(f.ultAlt&&f.hero.altName?f.hero.altName:f.hero.ultName||'ultimate').toLowerCase();speechSynthesis.speak(vSpeak(f,name+'!',{rate:.88,dp:-.06,vol:1.15}));duckMusic(3.4);}catch(e){}};
