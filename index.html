@@ -1823,7 +1823,7 @@ const HEROES=[
  {id:'decree',bulk:1.08,pat:'circuit',patK:.25,faction:'hero',name:'DECREE',power:'Command Law',cls:'Commander',diff:'Hard',tags:['Voice Orders','Rewrite Rules'],color:0xe8c24a,accent:0xfff2b0,suit:0x0e3a3a,mainCol:0xf2f0ea,css:'#ffd86a',
   desc:'A commander whose spoken orders become rules of the world. Press 1 and SAY an order into your mic: “Rise!”, “Faster!”, “Iron!”, “Halt!”, “Silence!”, “Kneel!”, “Begone!”… (or pick one with the number keys). Two orders stand at once; a third replaces the oldest. Revoke (2) strips a foe\'s buffs. Ultimate ABSOLUTE DECREE makes every foe nearby kneel, then strikes each with a pillar of light; alt ult TWIN DECREE fills both orders with IRON and MIGHT.',spd:1,pow:1.05,scale:1.1,special:'decree',specCD:3.5,ult:'absolute',ultName:'ABSOLUTE DECREE',altName:'TWIN DECREE'},
  {id:'skitter',bulk:.9,pat:'circuit',patK:.3,faction:'hero',name:'SKITTER',power:'Surface Glide',cls:'Skirmisher',diff:'Medium',tags:['Wall Slide','Speed'],color:0x1a8a7a,accent:0x3affc8,suit:0x0e2a2a,mainCol:0x2a4a48,css:'#3affc8',
-  desc:'A street-level vigilante who slides over any surface on three points of contact — along the ground, straight up walls and across rooftops. Skid Run (1) surfs forward fast (steer it!), knocks foes into the air and rides up any wall it meets. Skim Shot (2) flicks a pebble that skims along the ground and pops up into a foe. Ultimate STREET SURGE skids through up to five foes and finishes with a spinning launch kick; alt ult ROOFTOP RUN lets him glide anywhere for 10 s.',spd:1.18,pow:.94,scale:.95,special:'skate',specCD:2.4,ult:'streetsurge',ultName:'STREET SURGE',altName:'ROOFTOP RUN'}
+  desc:'A street-level vigilante who slides over any surface on three points of contact — along the ground, straight up walls and across rooftops. HOLD SHIFT to glide instead of dashing — steer with the movement keys, and glide into any wall to ride straight up it. Skid Run (1) surfs forward fast (steer it!), knocks foes into the air and rides up any wall it meets. Skim Shot (2) flicks a pebble that skims along the ground and pops up into a foe. Ultimate STREET SURGE skids through up to five foes and finishes with a spinning launch kick; alt ult ROOFTOP RUN lets him glide anywhere for 10 s.',spd:1.18,pow:.94,scale:.95,special:'skate',specCD:2.4,ult:'streetsurge',ultName:'STREET SURGE',altName:'ROOFTOP RUN'}
 ];
 const SPNAME={rend:'REND',sigil:'CURSE SIGIL',fireball:'FIREBALL',blade:'TIDE BLADE',cyclone:'CYCLONE',fault:'FAULT LINE',erode:'EROSION',bubble:'GRAVITY BUBBLE',airburst:'AIR BURST',featherfan:'FEATHER FAN',chainbolt:'CHAIN BOLT',bluelash:'BLUE LASH'};
 const STEALABLE=Object.keys(SPNAME);
@@ -5763,6 +5763,40 @@ mhaParts=function(h,X){const out=_mhaPartsK(h,X);if(h.id!=='skitter')return out;
   const sat=M(new THREE.BoxGeometry(.28,.22,.1),bag);sat.position.set(.22,-.02,-.12);if(hips)hips.add(sat);else spine.add(sat);
   [lF,rF].forEach(F=>{if(!F)return;const p=M(new THREE.CylinderGeometry(.05,.05,.015,12),pad);p.position.set(0,-.33,.035);p.rotation.x=Math.PI/2;F.add(p);});
   return out;};
+
+/* GLIDE (Skitter's dash): HOLD Shift to drop to three points and glide — steer with the movement keys.
+   He only keeps moving while it's held. Gliding into a wall carries him straight up it and over the top.
+   A quick tap (and bot dashes) gives a short burst of glide. */
+const GLIDE_OK={idle:1,run:1,air:1,dash:1,climb:1};
+function isSkitter(f){return f&&f.hero&&KIT(f.hero,'elem')==='skitter';}
+const _skDash=Fighter.prototype.startDash;
+Fighter.prototype.startDash=function(mv,dirO){if(!isSkitter(this))return _skDash.call(this,mv,dirO);
+  this.glideKick=.45;this.dashCD=.25;if(mv&&mv.lengthSq()>.05)this.face=Math.atan2(mv.x,mv.z);xSnd(this.pos,()=>AU.whoosh(false));};
+const _skPhys=Fighter.prototype.physics;
+Fighter.prototype.physics=function(dt,fr,grav){
+  if(isSkitter(this)){const I=this.intent||{};this.glideKick=Math.max(0,(this.glideKick||0)-dt);
+    const want=!this.dead&&!this.downed&&inMatch()&&GLIDE_OK[this.state]&&(I.sprint||this.glideKick>0);
+    if(want){if(!this.glideOn){this.glideOn=true;this.glUp=0;this.glFresh=false;dust(this.pos,6,.6);}
+      if(this.state==='climb'||this.state==='dash')this.set(this.onGround?'run':'air');
+      let dx=I.wx||0,dz=I.wz||0;const m=Math.hypot(dx,dz);if(m>.1){dx/=m;dz/=m;}else{const fw=this.fwd();dx=fw.x;dz=fw.z;}
+      this.face=angLerp(this.face,Math.atan2(dx,dz),Math.min(1,10*dt));
+      const sp=17*(this.hasteT>0?1.25:1)*(this.slowT>0?.6:1);
+      if(!this.glDir)this.glDir=new V3(dx,0,dz);if(!this.glFresh){this.glDir.set(dx,0,dz);}this.glFresh=true;
+      this.glDir.lerp(TMP2.set(dx,0,dz),Math.min(1,8*dt)).normalize();dx=this.glDir.x;dz=this.glDir.z;
+      const onWall=this.wallT&&game.time-this.wallT<.12;
+      if(onWall){                                   // ride straight up the wall
+        this.vel.y=Math.max(this.vel.y,18);this.vel.x=dx*4;this.vel.z=dz*4;this.onGround=false;this.glUp=.3;
+        if(Math.random()<.6)burst(ADD,TMP2.set(this.pos.x+dx*.4,this.pos.y+.4,this.pos.z+dz*.4),2,{colors:[SKC,0xffffff],speed:.8,life:.3,size:.2,size1:0,bright:2});}
+      else{this.vel.x=dx*sp;this.vel.z=dz*sp;
+        if(this.glUp>0){this.glUp-=dt;this.vel.y=Math.max(this.vel.y,6);}   // pop over the top edge
+        else if(!this.onGround)this.vel.y=Math.max(this.vel.y,-3.5);}     // glide instead of dropping
+      if(Math.hypot(this.vel.x,this.vel.z)>6)skTrail(this);}
+    else if(this.glideOn){this.glideOn=false;this.glFresh=false;this.vel.x*=.55;this.vel.z*=.55;}}
+  return _skPhys.call(this,dt,fr,grav);};
+const _skPose=Fighter.prototype.targetPose;
+Fighter.prototype.targetPose=function(dt){if(this.glideOn&&isSkitter(this))return POSES.crawl;return _skPose.call(this,dt);};
+onEv('matchEnd',()=>FS.forEach(f=>{f.glideOn=false;f.glideKick=0;}));
+onEv('matchStart',()=>setTimeout(()=>{if(ME&&isSkitter(ME))announceSmall('SKITTER: HOLD SHIFT TO GLIDE — GLIDE INTO A WALL TO RIDE UP IT');},2500));
 /* COSTUME UPGRADE: an extra layer of original costume detail on every fighter, themed to their power.
    Each entry in LOOKS picks: em (chest emblem shape), belt, br (bracers), bt (boot style), sh (shoulders), col (collar)
    and an optional sig(X,h) function for one signature accessory. Colors come from the fighter (so shop skins recolor it).
