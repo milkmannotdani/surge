@@ -356,6 +356,7 @@ class Fighter{
   doUlt(dt,dirO,dist,tg){
     const H=this.hero,t=this.stateT,c=this.chest(new V3()),E=enemiesOf(this);
     if(t<.9){this.poseKey='charge';this.invuln=Math.max(this.invuln,.2);
+      if(typeof ultOpening==='function'&&ultOpening(this,t,c,dt))return 10;
       for(let k=0;k<4;k++){const a=rand(0,6.28),r=rand(2,3.5),p=new V3(c.x+Math.cos(a)*r,c.y+rand(-1.2,1.2),c.z+Math.sin(a)*r);
         ADD.spawn(p.x,p.y,p.z,(c.x-p.x)*3,(c.y-p.y)*3,(c.z-p.z)*3,..._rgb(pick([H.color,H.accent,0xffffff]),2.2),.33,.3,.05,0,0);}
       if(Math.random()<.2)ring(c,H.color,rand(1.5,2.5),.3,false,2);return 10;}

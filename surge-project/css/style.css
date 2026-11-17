@@ -426,3 +426,36 @@ body:not(.inmatch) #wxBadge{display:none}
 #decreeHud b{background:rgba(8,14,20,.8);border:1px solid #ffd86a;padding:3px 10px;font-size:13px;letter-spacing:.08em}#decreeHud b span{margin-left:6px;opacity:.7}
 #decreeHud b.em{opacity:.4}
 #decreeBox .dn{font-size:12px;opacity:.85;margin:-2px 0 8px;line-height:1.5}#decreeBox .dn b{color:#ffd86a;font-weight:600}
+#ctxLost{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(5,6,14,.92);color:#fff;cursor:pointer;font-family:inherit;text-align:center}#ctxLost b{font-size:34px;letter-spacing:.12em;color:#ffd23f}#ctxLost span{font-size:16px;opacity:.85;max-width:520px}
+#teamWipe{position:fixed;inset:0;z-index:998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(circle,rgba(120,0,0,.92),rgba(10,0,0,.97));color:#fff;text-align:center;font-family:inherit}#teamWipe b{font-size:46px;letter-spacing:.12em;color:#ff4a3a;text-shadow:0 0 24px #ff3a1a}#teamWipe span{max-width:560px;font-size:17px;opacity:.9}#teamWipe i{font-style:normal;opacity:.6;letter-spacing:.2em}
+
+/* kill cam + recap */
+#kcam{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0;transition:opacity .25s}#kcam.on{opacity:1}
+#kcam .kcb{position:absolute;left:0;right:0;height:11vh;background:#000}#kcam .kcb.t{top:0}#kcam .kcb.b{bottom:0}
+#kcam .kct{position:absolute;bottom:3vh;left:0;right:0;text-align:center;color:#fff;font-size:20px;letter-spacing:.08em}#kcam .kct i{display:block;font-style:normal;color:#ff4a3f;font-size:13px;letter-spacing:.3em}
+#recap{position:fixed;right:18px;top:50%;transform:translate(120%,-50%);transition:transform .35s;z-index:41;width:300px;background:rgba(8,10,24,.92);border:1px solid rgba(255,255,255,.18);border-left:4px solid #ffd23f;padding:14px 16px;color:#fff;font-family:inherit}
+#recap.on{transform:translate(0,-50%)}#recap h4{margin:0 0 10px;font-size:18px;letter-spacing:.14em}#recap h4 em{display:block;font-style:normal;font-size:12px;opacity:.6;letter-spacing:.1em}
+#recap div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px}#recap div span{opacity:.7}#recap .btn{margin-top:10px;width:100%}
+#spec #specPrev,#spec #specNext{min-width:44px;padding:6px 10px}
+
+/* achievements / ranked / mastery */
+.achpop{position:fixed;left:50%;top:90px;transform:translateX(-50%);z-index:60;background:rgba(8,10,24,.94);border:2px solid #ffd23f;box-shadow:0 0 24px rgba(255,210,63,.5);padding:10px 22px;text-align:center;color:#fff;animation:achIn 4.2s ease forwards;pointer-events:none}
+.achpop i{display:block;font-style:normal;font-size:11px;letter-spacing:.25em;color:#ffd23f}.achpop b{display:block;font-size:22px;letter-spacing:.1em}.achpop span{font-size:13px;opacity:.8}
+@keyframes achIn{0%{opacity:0;transform:translate(-50%,-20px)}8%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
+.achgrid,.mastgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.ach{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:8px 10px;opacity:.55}.ach.got{opacity:1;border-color:#ffd23f;background:rgba(255,210,63,.08)}
+.ach b{display:block;font-size:14px;letter-spacing:.06em}.ach span{font-size:12px;opacity:.8}
+.ranktiers{display:flex;gap:6px;margin:12px 0}.ranktiers div{flex:1;text-align:center;padding:8px 4px;border:1px solid rgba(255,255,255,.12);opacity:.5}.ranktiers div.got{opacity:1;border-color:var(--c);box-shadow:inset 0 0 14px var(--c)}
+.ranktiers b{display:block;color:var(--c);letter-spacing:.08em}.ranktiers span{font-size:11px;opacity:.7}
+.mast{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:8px 10px}.mast b{display:block;letter-spacing:.08em}.mast span{font-size:12px;opacity:.8}
+.mtitle{font-size:.7em;letter-spacing:.12em;opacity:.8;margin-left:4px}.mtitle.gold{color:#ffd23f;opacity:1;text-shadow:0 0 8px rgba(255,210,63,.6)}
+/* accessibility */
+body.bigtext #hud,body.bigtext #feed,body.bigtext #toast,body.bigtext #announce,body.bigtext #recap,body.bigtext #decreeBox,body.bigtext #surgeChip,body.bigtext .achpop{zoom:1.22}
+body.bigtext .screen{font-size:118%}
+body.calm #flash{display:none!important}
+
+#tutBox{position:fixed;left:50%;top:70px;transform:translate(-50%,-30px);opacity:0;pointer-events:none;transition:.3s;z-index:45;width:min(560px,92vw);background:rgba(8,10,24,.93);border:2px solid #4fd2ff;box-shadow:0 0 22px rgba(79,210,255,.35);padding:12px 18px;color:#fff;text-align:center}
+#tutBox.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}#tutBox .tn{display:block;font-style:normal;font-size:11px;letter-spacing:.25em;color:#4fd2ff}
+#tutBox b{display:block;font-size:26px;letter-spacing:.1em;margin:2px 0}#tutBox span{font-size:15px;opacity:.9}#tutBox span b{display:inline;font-size:inherit;color:#ffd23f;letter-spacing:0}
+#tutBox .tdots{display:flex;gap:4px;justify-content:center;margin-bottom:6px}#tutBox .tdots i{width:16px;height:4px;background:rgba(255,255,255,.2)}#tutBox .tdots i.d{background:#4fd2ff}#tutBox .tdots i.c{background:#ffd23f}
+#tutBox .tbtn{display:flex;gap:8px;justify-content:center;margin-top:10px}

@@ -54,7 +54,7 @@ function trainPlace(){const span=TRAINX.len*(TRAINX.carL+.6);TRAINX.g.position.x
   for(let i=0;i<TRAINX.len;i++){const cx=TRAINX.x+TRAINX.dir*i*(TRAINX.carL+.6),b=TRAINX.boxes[i];b.x0=cx-TRAINX.carL/2;b.x1=cx+TRAINX.carL/2;}
   const on=Math.abs(TRAINX.x)<BOUND+span;DYNB.length=0;if(on&&TRAINX.state==='run')TRAINX.boxes.forEach(b=>DYNB.push(b));
   DYNR.x0=Math.min(TRAINX.x,TRAINX.x+TRAINX.dir*span)-14;DYNR.x1=Math.max(TRAINX.x,TRAINX.x+TRAINX.dir*span)+14;DYNR.z0=TRAINX.z-14;DYNR.z1=TRAINX.z+14;}
-onEv('frame',dt=>{if(!inMatch()||game.story||(typeof PR!=='undefined'&&PR.on)){TRAINX.g.visible=false;DYNB.length=0;return;}TRAINX.g.visible=true;
+onEv('frame',dt=>{if(!inMatch()||game.story||(typeof PR!=='undefined'&&PR.on)||(typeof MAP_CUR!=='undefined'&&MAP_CUR!=='city')){TRAINX.g.visible=false;DYNB.length=0;return;}TRAINX.g.visible=true;
   const T=TRAINX;if(T.state==='wait'){T.t-=dt;if(T.t<=0){T.state='run';T.dir=-T.dir;T.x=T.dir>0?-BOUND-40:BOUND+40;if(ME&&Math.abs(ME.pos.z-T.z)<40){announceSmall('🚆 TRAINX INCOMING');AU.scale=.6;AU.tone('square',660,660,.25,.08);AU.tone('square',550,550,.3,.08,.3);AU.scale=1;}}}
   else{const dx=T.speed*T.dir*dt;T.x+=dx;const span=T.len*(T.carL+.6);
     // riders move with the roof; anyone in front gets launched (host decides)
@@ -99,7 +99,7 @@ function makeWalker(x,z,ax){const g=new THREE.Group(),sh=civMat(CIV_SHIRTS[Math.
 function crowdSpawn(){crowdClear();let n=0;for(let k=0;k<200&&n<30;k++){const a=INNER[Math.floor(Math.random()*INNER.length)],sd=Math.random()<.5?-1:1,along=rand(-BOUND+10,BOUND-10);
   const ax=Math.random()<.5?'x':'z';const x=ax==='x'?along:a+sd*7.6,z=ax==='x'?a+sd*7.6:along;if(insideBld(x,z,.6))continue;makeWalker(x,z,ax);n++;}}
 function crowdClear(){CROWD.forEach(w=>scene.remove(w.g));CROWD.length=0;}
-onEv('matchStart',()=>{if(game.story||(typeof PR!=='undefined'&&PR.on)||SET.crowds===false){crowdClear();return;}crowdSpawn();});
+onEv('matchStart',()=>{if(game.story||(typeof PR!=='undefined'&&PR.on)||SET.crowds===false||(typeof MAP_CUR!=='undefined'&&MAP_CUR!=='city')){crowdClear();return;}crowdSpawn();});
 onEv('matchEnd',crowdClear);
 onEv('frame',dt=>{if(!CROWD.length)return;const t=game.time;
   for(const W of CROWD){const g=W.g;if(!nearCam(g.position,90)){g.visible=false;continue;}g.visible=true;

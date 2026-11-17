@@ -75,7 +75,7 @@ function hostStartMatch(){
     if(new Set(roster.map(r=>r.team)).size<2){const t=[0,1,2,3].find(x=>!roster.some(r=>r.team===x));roster.push({id:bid++,name:botName(),hero:0,bot:true,team:t},{id:bid++,name:botName(),hero:1,bot:true,team:t});}}
   else{const want=NET.fill?8:Math.max(2,roster.length);while(roster.length<want){const id=bid++;roster.push({id,name:botName(),hero:Math.floor(Math.random()*HEROES.length),bot:true,team:id});}}
   const spawns=(duo?teamSpawns(roster):spawnPoints(roster.length)).map(s=>[r2(s[0]),r2(s[1])]);
-  decorateBots(roster);const msg={t:'start',roster,spawns,diff:NET.diff,mode:NET.mode,rules:NET.rules||'br'};NET.conns.forEach(c=>c.send(msg));
+  decorateBots(roster);const msg={t:'start',roster,spawns,diff:NET.diff,mode:NET.mode,rules:NET.rules||'br',map:game._mapNext||'city'};NET.conns.forEach(c=>c.send(msg));
   startMatch(roster,spawns,NET.diff,NET.mode,NET.rules||'br');
 }
 function clientRecv(m){
@@ -85,7 +85,7 @@ function clientRecv(m){
   if(m.t==='full'){netShutdown();netStatus('That room is full (8 players).');return;}
   if(m.t==='closed'){hostLost();return;}
   if(m.t==='lobby'){NET.lobby=m.players;NET.fill=m.fill;NET.diff=m.diff;NET.rules=normRules(m.rules);NET.mode=m.mode||'solo';if(inMatch()){endMatchCleanup();}if(game.phase!=='lobby')showLobby();else renderLobby();return;}
-  if(m.t==='start'){startMatch(m.roster,m.spawns,m.diff,m.mode,m.rules);return;}
+  if(m.t==='start'){game._mapNext=m.map||'city';startMatch(m.roster,m.spawns,m.diff,m.mode,m.rules);return;}
   if(m.t==='s'){applySnap(m);return;}
   emitEv('cmsg',m);
 }

@@ -3,9 +3,10 @@
    characters from My Hero Academia (Kōhei Horikoshi, published by Shueisha) and Jujutsu Kaisen (Gege Akutami, Shueisha).
    The nods: the CREDITS screen, "Inspired by" notes on fighters, Musutafu street signs, a Plus Ultra comeback call-out,
    loading/title tips, and a couple of bot names. */
-const INSPIRED_SRC={skitter:'My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)'};
+const VIG_SRC='My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)';
+const INSPIRED_SRC={zanshin:'Bleach by Tite Kubo',oldguard:VIG_SRC,hopstar:VIG_SRC,headliner:VIG_SRC,skitter:'My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)'};
 const INSPIRED={solstice:'Shoto Todoroki',piston:'Tenya Iida',snare:'Shota Aizawa (Eraser Head)',marble:'Mr. Compress',legion:'Twice',recoil:'Lady Nagant',
-  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe',skitter:'Koichi Haimawari (The Crawler)'};
+  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe',skitter:'Koichi Haimawari (The Crawler)',oldguard:'Knuckleduster',hopstar:'Pop☆Step (Kazuho Haneyama)',headliner:'Captain Celebrity',zanshin:'Ichigo Kurosaki'};
 // "Inspired by" note under a fighter's description
 const _previewHeroC=previewHero;
 previewHero=function(i){_previewHeroC(i);const h=heroAt(i),d=$('pvDesc');if(!d||!h||!INSPIRED[h.id])return;

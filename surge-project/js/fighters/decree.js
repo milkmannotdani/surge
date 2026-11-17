@@ -24,19 +24,19 @@ const ORDERS={
   silence:{name:'SILENCE',say:'Silence!',words:['silence','silent','quiet','erase','cancel','no powers','powerless','shut up','mute'],dur:5,
     start(f){const T=dTgt(f,18);if(T){dLine(f,T);T.eraseT=Math.max(T.eraseT||0,5);hitO(f,T,{dmg:3,kb:2,stun:.4});}}},
   kneel:{name:'KNEEL',say:'Kneel!',words:['kneel','fall','down','drop','sit','bow','ground','crash'],dur:1.6,
-    start(f){ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),DGOLD,10,.5,true,2.6);dFoes(f,10).forEach(o=>{o.vel.y=-22;hitO(f,o,{dmg:8,kb:0,up:-6,stun:1.4,heavy:true});dust(o.pos,6,.8);});shake(.35,f.pos);}},
+    start(f){ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),DGOLD,10,.5,true,2.6);decFoes(f,10).forEach(o=>{o.vel.y=-22;hitO(f,o,{dmg:8,kb:0,up:-6,stun:1.4,heavy:true});dust(o.pos,6,.8);});shake(.35,f.pos);}},
   repel:{name:'REPEL',say:'Begone!',words:['push','away','back','repel','go','begone','leave','get out','blast'],dur:1,
-    start(f){ring(f.chest(new V3()),DGOLD,12,.45,false,2.6);dFoes(f,12).forEach(o=>hitO(f,o,{dmg:9,kb:24,up:8,launch:true,heavy:true}));}},
+    start(f){ring(f.chest(new V3()),DGOLD,12,.45,false,2.6);decFoes(f,12).forEach(o=>hitO(f,o,{dmg:9,kb:24,up:8,launch:true,heavy:true}));}},
   summon:{name:'SUMMON',say:'Come here!',words:['come','pull','here','closer','approach','summon'],dur:1,
     start(f){const T=dTgt(f,20);if(T){dLine(f,T);const fw=f.fwd();T.pos.set(f.pos.x+fw.x*1.6,f.pos.y,f.pos.z+fw.z*1.6);hitO(f,T,{dmg:6,kb:0,up:2,stun:.9});}}},
   slow:{name:'SLOW',say:'Slow down!',words:['slow','slower','heavy','crawl','sluggish','weak'],dur:6,
-    start(f){dFoes(f,14).forEach(o=>{o.slowT=Math.max(o.slowT||0,6);dLine(f,o);});}},
+    start(f){decFoes(f,14).forEach(o=>{o.slowT=Math.max(o.slowT||0,6);dLine(f,o);});}},
   ignite:{name:'IGNITE',say:'Burn!',words:['burn','fire','ignite','explode','blow up','flame','boom'],dur:4,
     start(f){const T=dTgt(f,18);if(T){dLine(f,T);explosion(T.chest(new V3()),1.8,[0xffa21a,DGOLD,0xff5a10]);burnOn(T,4,5);hitO(f,T,{dmg:12,kb:8,up:6,launch:true});}}}};
 const ORDER_KEYS=Object.keys(ORDERS);
 // a named order hits exactly that fighter (anywhere within 35 m); otherwise the usual target / area
 function dTgt(f,r){const T=f.dNamed;if(T&&!T.dead&&T.pos.distanceTo(f.pos)<35)return T;return tgtOf(f,r);}
-function dFoes(f,r){const T=f.dNamed;if(T&&!T.dead&&T.pos.distanceTo(f.pos)<35)return [T];return foes(f,r);}
+function decFoes(f,r){const T=f.dNamed;if(T&&!T.dead&&T.pos.distanceTo(f.pos)<35)return [T];return foes(f,r);}
 
 /* ---------- named + conditional orders ----------
    Say a fighter's name to aim an order at them:   "Kairo, kneel!"   "Solstice — silence!"
@@ -95,13 +95,13 @@ function giveOrder(f,k,heard,opt){const O=ORDERS[k];if(!O||!f||f.dead)return;f.o
   else{f.dNamed=T;try{if(O.start)O.start(f);}finally{f.dNamed=null;}if(!O.self)ord.t=Math.min(ord.t,O.dur);}
   burst(ADD,f.chest(new V3()),26,{colors:[DGOLD,DGLOW,0xffffff],speed:5,life:.5,size:.26,size1:0,bright:2.4});ring(f.chest(new V3()),DGOLD,2.4,.35,false,2.6);
   xSnd(f.pos,()=>SND.power.hit(1.2));showOrder(f,k,heard,opt);}
-function cleanName(o){return String(o.name||'').replace(/\s*\(bot\)\s*/i,'');}
-function orderText(k,opt){const T=opt&&opt.tid>=0?FS.find(q=>q.id===opt.tid):null;if(k==='law'&&T){const c={move:'MOVES',attack:'ATTACKS',jump:'JUMPS'}[opt.cond];return `IF ${cleanName(T).toUpperCase()} ${c}: ${PUNISH[opt.p].name}`;}
-  return ORDERS[k].name+(T?' → '+cleanName(T).toUpperCase():'');}
+function decName(o){return String(o.name||'').replace(/\s*\(bot\)\s*/i,'');}
+function orderText(k,opt){const T=opt&&opt.tid>=0?FS.find(q=>q.id===opt.tid):null;if(k==='law'&&T){const c={move:'MOVES',attack:'ATTACKS',jump:'JUMPS'}[opt.cond];return `IF ${decName(T).toUpperCase()} ${c}: ${PUNISH[opt.p].name}`;}
+  return ORDERS[k].name+(T?' → '+decName(T).toUpperCase():'');}
 function showOrder(f,k,heard,opt){const O=ORDERS[k];if(!O)return;const T=opt&&opt.tid>=0?FS.find(q=>q.id===opt.tid):null;
   if(f===ME||T===ME||(ME&&f.pos.distanceTo(ME.pos)<25)){
   announceSmall(`${f.name.toUpperCase()}: “${(heard||O.say).toUpperCase()}” → ${orderText(k,opt)}`);if(T===ME&&k==='law')announce('DON\'T '+({move:'MOVE',attack:'ATTACK',jump:'JUMP'}[opt.cond])+'!','#ffd86a');
-  if(typeof sayLine==='function'&&!heard)sayLine(f,k==='law'&&T?('If '+cleanName(T)+' '+({move:'moves',attack:'attacks',jump:'jumps'}[opt.cond])+', '+PUNISH[opt.p].name.toLowerCase()+'!'):O.say,{rate:.95,vol:1.1});}}
+  if(typeof sayLine==='function'&&!heard)sayLine(f,k==='law'&&T?('If '+decName(T)+' '+({move:'moves',attack:'attacks',jump:'jumps'}[opt.cond])+', '+PUNISH[opt.p].name.toLowerCase()+'!'):O.say,{rate:.95,vol:1.1});}}
 function requestOrder(f,k,heard,opt){opt=opt||{};const pkt={id:f.id,o:k,h:heard||'',tid:opt.tid==null?-1:opt.tid,cond:opt.cond||'',p:opt.p||''};
   if(NET.role==='client'){netSay(Object.assign({k:'decree'},pkt));showOrder(f,k,heard,opt);}else{giveOrder(f,k,heard,opt);if(NET.role==='host')netSay(Object.assign({k:'decreeFx'},pkt));}}
 onEv('x:decree',e=>{if(NET.role==='host'&&e.from!==NET.myId){const f=FS.find(q=>q.id===e.id);if(f)giveOrder(f,e.o,e.h,{tid:e.tid,cond:e.cond,p:e.p});}});
@@ -120,7 +120,7 @@ function dPanelDraw(msg){const e=dPanel();e.style.display='';const sr=!!(window.
   e.innerHTML=`<div class="dt">${sr?'🎙 SAY AN ORDER':'PICK AN ORDER'} <span>${msg||''}</span></div><div class="dh">${DL.heard?'“'+esc(DL.heard)+'”':(sr?'e.g. “Rise!”, “Halt!”, “Faster!”, “Kneel!” — or press a number':'press a number or click')}</div>`+
   `<div class="dn">Say a name to aim it: <b>“${esc(dNames()[0]||'Kairo')}, kneel!”</b> · set a law: <b>“If ${esc(dNames()[0]||'Kairo')} moves, collapse!”</b><br>Nearby: ${dNames().map(esc).join(' · ')||'—'}</div>`+
   `<div class="dg">${ORDER_KEYS.filter(k=>k!=='law').map((k,i)=>`<b data-o="${k}">${i<9?'<i>'+(i+1)+'</i>':''}${ORDERS[k].name}</b>`).join('')}</div><div class="ds">Up to 2 orders stand at once · the oldest is replaced</div>`;}
-function dNames(){return ME?FS.filter(o=>o!==ME&&!o.dead&&!ally(o,ME)&&o.pos.distanceTo(ME.pos)<35).sort((a,b)=>a.pos.distanceTo(ME.pos)-b.pos.distanceTo(ME.pos)).slice(0,5).map(cleanName):[];}
+function dNames(){return ME?FS.filter(o=>o!==ME&&!o.dead&&!ally(o,ME)&&o.pos.distanceTo(ME.pos)<35).sort((a,b)=>a.pos.distanceTo(ME.pos)-b.pos.distanceTo(ME.pos)).slice(0,5).map(decName):[];}
 function dListen(){if(DL.on)return;DL.on=true;DL.t=5;DL.heard='';dPanelDraw('');const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR||SET.decreeVoice===false)return;try{const r=new SR();DL.rec=r;r.lang='en-US';r.interimResults=true;r.maxAlternatives=3;r.continuous=false;
     r.onresult=ev=>{let txt='';for(const res of ev.results)txt+=res[0].transcript+' ';DL.heard=txt.trim();dPanelDraw('');

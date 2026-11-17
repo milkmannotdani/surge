@@ -1,6 +1,6 @@
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,decreeVoice:true};
+const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];
@@ -20,7 +20,9 @@ const SET_ROWS=[
   ['pad','CONTROLLER BUTTONS','choice',[['xbox','XBOX (A B X Y)'],['ps','PLAYSTATION (✕ ○ □ △)']]],
   ['touch','TOUCH CONTROLS','choice',[['auto','AUTO'],['on','ALWAYS ON'],['off','OFF']]],
   ['INTERFACE'],
-  ['hint','SHOW CONTROLS HINT IN MATCHES','toggle']];
+  ['hint','SHOW CONTROLS HINT IN MATCHES','toggle'],
+  ['ACCESSIBILITY'],
+  ['cbMode','COLORBLIND MODE','choice',[['off','OFF'],['deut','DEUTERANOPIA (RED-GREEN)'],['prot','PROTANOPIA (RED)'],['trit','TRITANOPIA (BLUE-YELLOW)']]],['bigText','BIGGER TEXT','toggle'],['calm','REDUCE FLASHING','toggle']];
 function applySettings(){if(AU.ctx){if(AU.mus)AU.mus.gain.value=.2*SET.music/70;if(AU.sfx)AU.sfx.gain.value=SET.sfx/85;}
   if(typeof TOUCH!=='undefined'){const want=SET.touch==='on'||(SET.touch==='auto'&&(('ontouchstart' in window)||navigator.maxTouchPoints>0));if(want&&!TOUCH.on){TOUCH.on=true;buildTouch();}else if(!want){TOUCH.on=false;document.body.classList.remove('touchdev');}}
   document.body.classList.toggle('nohint',!SET.hint);refreshGlyphs();}

@@ -71,10 +71,10 @@ function renderPreview(dt){
   PV.cam.position.set(off,1.35*sc,6.8);PV.cam.lookAt(off,1.0*sc,0);PV.r.render(PV.scene,PV.cam);
 }
 function buildCards(){
-  const f=$('filters');f.innerHTML='';[['all','ALL'],['hero','HEROES'],['villain','VILLAINS'],['custom','CREATED']].forEach(([k,n])=>{const b=document.createElement('span');b.textContent=n;b.className=PV.filter===k?'sel':'';b.onclick=()=>{PV.filter=k;AU.ui();buildCards();};f.appendChild(b);});
+  const f=$('filters');f.innerHTML='';[['all','ALL'],['hero','HEROES'],['villain','VILLAINS'],['vigilante','VIGILANTES'],['custom','CREATED']].forEach(([k,n])=>{const b=document.createElement('span');b.textContent=n;b.className=PV.filter===k?'sel':'';b.onclick=()=>{PV.filter=k;AU.ui();buildCards();};f.appendChild(b);});
   const g=$('grid');g.innerHTML='';
   const ids=HEROES.map((h,k)=>k).concat(CSPECS.map((s,k)=>CUST0+k));
-  ids.forEach(i=>{const h=heroAt(i),cu=i>=CUST0;if(PV.filter==='custom'?!cu:(PV.filter!=='all'&&h.faction!==PV.filter))return;const t=document.createElement('div');t.className='tile'+(h.faction==='villain'?' vil':'')+(mySel===i?' sel':'');t.style.setProperty('--c',h.css);
+  ids.forEach(i=>{const h=heroAt(i),cu=i>=CUST0;if(PV.filter==='custom'?!cu:PV.filter==='vigilante'?!h.vig:(PV.filter!=='all'&&h.faction!==PV.filter))return;const t=document.createElement('div');t.className='tile'+(h.faction==='villain'?' vil':'')+(mySel===i?' sel':'');t.style.setProperty('--c',h.css);
     t.innerHTML=(PV.portraits[i]?`<img src="${PV.portraits[i]}" alt="">`:'')+`<div class="fx">${h.faction==='hero'?'★':'☠'}</div><div class="tn">${h.name}</div>${typeof progBadge==='function'?progBadge(i):''}<div class="bar"></div><div class="ck">✔ Selected</div>`+(cu?'<div class="del" title="Delete">✕</div>':'');
     if(cu){const d=t.querySelector('.del');d.onclick=e=>{e.stopPropagation();AU.ui();if(d.dataset.arm){deleteCustom(i);}else{d.dataset.arm=1;d.textContent='DEL?';d.style.width='44px';d.style.background='#c4102a';setTimeout(()=>{d.dataset.arm='';d.textContent='✕';d.style.width='';d.style.background='';},2500);}};}
     t.onmouseenter=()=>previewHero(i);t.onmouseleave=()=>previewHero(mySel);

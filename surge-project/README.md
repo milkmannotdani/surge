@@ -22,9 +22,14 @@ js/
     abilities.js      ability engine used by created fighters
     gear.js           weapons and gear
     mha.js            Solstice, Piston, Snare, Marble, Legion, Recoil; extra moves (XMOVES); death ults
+    zanshin.js        Zanshin: crescent waves, flash step, Final Release (sword swap)
+    ultopen.js        themed ultimate openings per fighter (UO table)
+    fx2.js            signature VFX hooked onto inspired fighters' moves (glaciers, engine flames, red eyes, mud, tracers…)
+    faithful.js       signature traits that make inspired fighters fight like their inspirations (TRAIT_DESC)
+    vigilantes.js     Old Guard, Hopstar, Headliner (vig:true in roster.js = VIGILANTES tab)
     skitter.js        Skitter: surface-glide slides, wall slides, skim shot, Street Surge
     decree.js         Decree: spoken orders via speech recognition, named targets and IF-laws (ORDERS / PUNISH tables)
-    mha2.js           Crimson, Sawback, Resect, Cushion, Corrosa, Verdict, Decree, Skitter (another worked example of adding fighters)
+    mha2.js           Crimson, Sawback, Resect, Cushion, Corrosa, Verdict, Decree, Skitter, Old Guard, Hopstar, Headliner, Zanshin (another worked example of adding fighters)
     looks.js          costume layer for every fighter: chest emblem, belt, bracers, boots, shoulders, collar, signature item (LOOKS)
     humans.js         ARMOR OFF mode: each fighter's face and hair under the suit (HUMAN table)
   creator/
@@ -55,6 +60,13 @@ js/
     progress.js       fighter levels/XP and unlockable costumes (UNLOCKS)
     input.js          gamepad + touch controls
     cinematic.js      orchestral sound + original score (CTHEMES: chords + melody per theme; OR = the instruments)
+    maps.js           Harbor / Disaster Zone / Mountain Resort + hazards (MAPS table; layouts are seeded so online matches agree)
+    killcam.js        kill cam, spectate cycling (◀ ▶), match recap
+    achieve.js        achievements (ACH), ranked tiers (TIERS), fighter mastery (MLV) + Progress tabs
+    access.js         colorblind modes, bigger text, reduce flashing
+    tutorial.js       interactive tutorial (TUTL_STEPS)
+    antiteam.js       Truce Meter: online solo matches — 3 teaming strikes = destroyed + all saved progress erased (PROGRESS_KEYS)
+    stability.js      crash guards, GPU memory cleanup between matches, graphics-reset message (errors in window.__errs)
     surge.js          SURGE EVENTS: 20-second map-wide twists (SURGE_EV table — add your own)
     credits.js        CREDITS screen + small My Hero Academia nods (INSPIRED notes, tips, Plus Ultra call-out)
     settings.js       settings menu (SET_DEF / SET_ROWS), game modes menu, shift lock, Tab lock-on, controller button icons
