@@ -87,7 +87,7 @@ const ULT_CRY={cinder:'Everything burns!',riptide:'Ride the current!',gale:'Feel
   resect:'Fall apart.',cushion:'Right back at you!',corrosa:'Melt away!',verdict:'Judgment is here.',decree:'By my order!'};
 let VOICES=[];function loadVoices(){try{VOICES=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));}catch(e){}}
 if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
-const V_MALE=/male\b|guy|davis|tony|jason|ryan|christopher|eric|roger|brian|thomas|daniel|george|alex|fred|mark|david|james|liam|andrew/i,V_FEM=/female|aria|jenny|sonia|libby|natasha|samantha|zira|susan|karen|moira|tessa|victoria|serena|emma|ava|michelle|hazel|fiona/i;
+const V_MALE=/\bmale\b|guy|davis|tony|jason|ryan|christopher|eric|roger|brian|thomas|daniel|george|alex\b|fred|mark|david|james|liam|andrew|william|rishi|ravi|prabhat|aaron|arthur|oliver|gordon|reed|rocko|eddy|ralph|albert|junior|nathan|tom\b|lee\b|connor|mitchell|duncan|neerja-male/i,V_FEM=/female|aria|jenny|sonia|libby|natasha|samantha|zira|susan|karen|moira|tessa|victoria|serena|emma|ava|michelle|hazel|fiona|catherine|heera|veena|neerja|allison|nicky|kate|zoe|martha|flo\b|sandy|shelley|clara|ana\b|jessa|aria|google us english$|linda|joanna|salli|kimberly|ivy|amy|olivia|isla|natalie/i;
 function voiceFor(f){if(!VOICES.length)loadVoices();if(!VOICES.length)return null;const id=f.hero.id||f.hero.name,low=!!VOICE_LOW[id]||f.hero.scale>1.3;
   const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
   let L=VOICES.filter(v=>low?V_MALE.test(v.name):V_FEM.test(v.name));if(!L.length)L=VOICES;L=L.slice().sort((a,b)=>q(b)-q(a));const top=L.filter(v=>q(v)===q(L[0]));
@@ -112,12 +112,36 @@ const _rsS=renderShop;renderShop=function(){_rsS();if(SH.tab==='emotes'){const b
    Each gets a matching voice (male/female), pitch, pace and loudness, and an ultimate battle cry written in that
    character's personality (original lines — not quotes from the show). A line can be a list of [text, pitch shift]
    parts spoken back-to-back (Legion argues with himself). Edit VPROF / VCRY to tune them. */
-const VPROF={ // sex: m/f · p: pitch · r: rate · v: volume
-  solstice:{sex:'m',p:.9,r:.92},piston:{sex:'m',p:1,r:1.22,v:1.1},snare:{sex:'m',p:.78,r:.82,v:.85},marble:{sex:'m',p:1.05,r:.92},
-  legion:{sex:'m',p:.95,r:1.15},recoil:{sex:'f',p:.82,r:.86},crimson:{sex:'f',p:1.55,r:1.12},sawback:{sex:'m',p:.82,r:1.08},
-  resect:{sex:'m',p:.7,r:.86,v:.9},cushion:{sex:'m',p:.6,r:.95,v:1.1},corrosa:{sex:'f',p:1.35,r:1.15},verdict:{sex:'m',p:.5,r:.84},
-  decree:{sex:'f',p:.98,r:1,v:1.15},skitter:{sex:'m',p:1.12,r:1.1},oldguard:{sex:'m',p:.58,r:.88},hopstar:{sex:'f',p:1.45,r:1.15,v:1.1},
-  headliner:{sex:'m',p:.92,r:1.02,v:1.15},zanshin:{sex:'m',p:.88,r:1.05,v:1.1}};
+const VPROF={ // sex m/f · a: accent (us gb au in) · p: pitch · r: rate · v: volume — every fighter is different
+  // heroes
+  cinder:{sex:'m',a:'us',p:1.05,r:1.12},riptide:{sex:'f',a:'au',p:1.15,r:1.05},gale:{sex:'f',a:'gb',p:1.25,r:1.12},nitro:{sex:'m',a:'us',p:1.16,r:1.25,v:1.15},
+  titan:{sex:'m',a:'gb',p:.62,r:.85,v:1.15},volta:{sex:'f',a:'us',p:1.2,r:1.2},umbra:{sex:'m',a:'gb',p:.72,r:.92},drift:{sex:'f',a:'gb',p:1.05,r:.92},
+  bastion:{sex:'m',a:'us',p:.68,r:.9,v:1.1},quill:{sex:'m',a:'au',p:1.08,r:1.05},void:{sex:'m',a:'gb',p:.8,r:.8},ronin:{sex:'m',a:'gb',p:.86,r:.88},
+  // villains
+  quake:{sex:'m',a:'us',p:.52,r:.85,v:1.1},marrow:{sex:'m',a:'au',p:.66,r:1},entropy:{sex:'f',a:'in',p:.85,r:.85},sovereign:{sex:'m',a:'gb',p:.76,r:.9},
+  strobe:{sex:'f',a:'us',p:1.38,r:1.25},pyre:{sex:'m',a:'us',p:.96,r:1.18},warp:{sex:'m',a:'in',p:.98,r:1.1},hex:{sex:'f',a:'gb',p:.9,r:.88},scathe:{sex:'m',a:'au',p:.7,r:1.05},
+  // inspired fighters: matched to their inspiration's voice type and manner
+  solstice:{sex:'m',a:'us',p:.9,r:.92},          // calm, quiet, reserved
+  piston:{sex:'m',a:'gb',p:1,r:1.22,v:1.1},      // formal, fast, loud
+  snare:{sex:'m',a:'us',p:.78,r:.82,v:.85},      // tired, low, flat
+  marble:{sex:'m',a:'gb',p:1.08,r:.94},          // theatrical showman
+  legion:{sex:'m',a:'us',p:.95,r:1.15},          // two-sided, flips pitch mid-line
+  recoil:{sex:'f',a:'us',p:.82,r:.86},           // cold, precise
+  crimson:{sex:'f',a:'us',p:1.55,r:1.12},        // high, giggly
+  sawback:{sex:'m',a:'us',p:.84,r:1.08},         // rough rebel
+  resect:{sex:'m',a:'gb',p:.7,r:.86,v:.9},       // cold, clipped
+  cushion:{sex:'m',a:'au',p:.6,r:.95,v:1.1},     // big, deep, jolly
+  corrosa:{sex:'f',a:'us',p:1.3,r:1.15},         // bubbly, upbeat
+  verdict:{sex:'m',a:'us',p:.5,r:.84},           // very low, harsh
+  decree:{sex:'f',a:'us',p:.98,r:1,v:1.15},      // commanding
+  skitter:{sex:'m',a:'us',p:1.12,r:1.1},         // earnest, friendly
+  oldguard:{sex:'m',a:'gb',p:.58,r:.88},         // gruff veteran
+  hopstar:{sex:'f',a:'au',p:1.45,r:1.15,v:1.1},  // bright idol
+  headliner:{sex:'m',a:'us',p:.92,r:1.02,v:1.15},// big American showman
+  zanshin:{sex:'m',a:'us',p:.88,r:1.06,v:1.1}};  // determined, protective
+// spread fighters across the installed voices so two fighters with the same gender/accent still sound different
+(function(){const n={};Object.keys(VPROF).forEach(k=>{const P=VPROF[k],key=P.sex+P.a;P.vi=n[key]=(n[key]||0)+1;});})();
+const ACC={us:/en[-_]US/i,gb:/en[-_]GB/i,au:/en[-_]AU/i,in:/en[-_]IN/i};
 const VCRY={
   solstice:'This time I\'ll use all of it. Ice... and fire.',
   piston:'Engines at full output! Everyone, please stand clear!',
@@ -140,8 +164,9 @@ const VCRY={
 const _vfOld=voiceFor;
 voiceFor=function(f){const P=VPROF[KIT(f.hero,'elem')];if(!P)return _vfOld(f);if(!VOICES.length)loadVoices();if(!VOICES.length)return null;
   const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
-  let L=VOICES.filter(v=>P.sex==='f'?V_FEM.test(v.name):V_MALE.test(v.name));if(!L.length)L=VOICES;L=L.slice().sort((a,b)=>q(b)-q(a));const top=L.filter(v=>q(v)===q(L[0]));
-  return top[hashStr(f.hero.id)%top.length];};
+  const sx=v=>P.sex==='f'?V_FEM.test(v.name):V_MALE.test(v.name);
+  let L=VOICES.filter(v=>sx(v)&&ACC[P.a]&&ACC[P.a].test(v.lang));if(!L.length)L=VOICES.filter(sx);if(!L.length)L=VOICES;
+  L=L.slice().sort((a,b)=>q(b)-q(a)||a.name.localeCompare(b.name));const best=L.filter(v=>q(v)>=q(L[0])-2);return best[(P.vi||0)%best.length];};
 const _vsOld=vSpeak;
 vSpeak=function(f,text,o){const P=VPROF[KIT(f.hero,'elem')];if(!P)return _vsOld(f,text,o);o=o||{};const u=new SpeechSynthesisUtterance(text);const v=voiceFor(f);if(v)u.voice=v;
   u.pitch=Math.max(.1,Math.min(2,P.p+(o.dp||0)));u.rate=Math.max(.5,Math.min(2,(P.r||1)*((o.rate||1.05)/1.05)));u.volume=Math.min(1,(SET.sfx||85)/100*(P.v||1)*(o.vol||1));return u;};
@@ -149,3 +174,8 @@ const _ucOld=ultCry;
 ultCry=function(f){const id=KIT(f.hero,'elem'),C=VCRY[id];if(!C)return _ucOld(f);if(SET.voiceLines===false||!window.speechSynthesis)return;
   try{speechSynthesis.cancel();const parts=Array.isArray(C)?C:[[C,0]];parts.forEach(([t,dp])=>speechSynthesis.speak(vSpeak(f,t,{rate:1.05,dp})));
     const name=(f.ultAlt&&f.hero.altName?f.hero.altName:f.hero.ultName||'ultimate').toLowerCase();speechSynthesis.speak(vSpeak(f,name+'!',{rate:.88,dp:-.06,vol:1.15}));duckMusic(3.4);}catch(e){}};
+
+// fighter select: 🔊 plays the fighter's ultimate battle cry
+const _vpPv=previewHero;previewHero=function(i){const r=_vpPv.apply(this,arguments);try{const h=heroAt(i);let b=$('pvVoice');
+  if(!b){b=document.createElement('button');b.id='pvVoice';b.className='chip';b.title='Hear their voice';b.textContent='🔊 VOICE';const n=$('pvName');if(n&&n.parentNode)n.parentNode.insertBefore(b,n.nextSibling);}
+  b.onclick=e=>{e.stopPropagation();loadVoices();ultCry({hero:h,ultAlt:false,name:h.name});};}catch(e){}return r;};

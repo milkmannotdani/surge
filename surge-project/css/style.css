@@ -459,3 +459,4 @@ body.calm #flash{display:none!important}
 #tutBox b{display:block;font-size:26px;letter-spacing:.1em;margin:2px 0}#tutBox span{font-size:15px;opacity:.9}#tutBox span b{display:inline;font-size:inherit;color:#ffd23f;letter-spacing:0}
 #tutBox .tdots{display:flex;gap:4px;justify-content:center;margin-bottom:6px}#tutBox .tdots i{width:16px;height:4px;background:rgba(255,255,255,.2)}#tutBox .tdots i.d{background:#4fd2ff}#tutBox .tdots i.c{background:#ffd23f}
 #tutBox .tbtn{display:flex;gap:8px;justify-content:center;margin-top:10px}
+#pvVoice{margin:6px 0 0;font-size:12px;padding:3px 10px;cursor:pointer}
