@@ -469,6 +469,21 @@ body.calm #flash{display:none!important}
 #tutBox .tdots{display:flex;gap:4px;justify-content:center;margin-bottom:6px}#tutBox .tdots i{width:16px;height:4px;background:rgba(255,255,255,.2)}#tutBox .tdots i.d{background:#4fd2ff}#tutBox .tdots i.c{background:#ffd23f}
 #tutBox .tbtn{display:flex;gap:8px;justify-content:center;margin-top:10px}
 #pvVoice{margin:6px 0 0;font-size:12px;padding:3px 10px;cursor:pointer}
+#dreadDark{position:fixed;inset:0;pointer-events:none;z-index:9;opacity:0;transition:opacity .6s;background:radial-gradient(circle at 50% 50%,transparent 18%,rgba(18,6,30,.75) 55%,rgba(6,0,12,.96) 100%)}#dreadDark.on{opacity:1}
+/* custom voices manager */
+#cvBox{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(3,5,12,.78)}
+#cvBox.on{display:flex}
+#cvBox .cvIn{width:min(640px,94vw);max-height:88vh;overflow:auto;background:#0b0e1c;border:2px solid #ffd23f;box-shadow:0 0 28px rgba(255,210,63,.25);padding:16px 18px;color:#e8ecf8;font-family:'Rajdhani',sans-serif}
+#cvBox .cvHd{display:flex;justify-content:space-between;align-items:center}#cvBox .cvHd b{font:32px 'Bebas Neue';letter-spacing:.1em;color:#ffd23f}
+#cvBox .cvNote{font-size:14px;opacity:.85;margin:8px 0;line-height:1.35}
+#cvBox .cvRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}#cvBox .cvRow span{font-weight:800;letter-spacing:.2em;font-size:12px;color:#ffd23f}
+#cvBox select{background:#1b1d2b;color:#fff;border:1px solid #444a66;font:18px 'Bebas Neue';letter-spacing:.06em;padding:4px 8px;min-width:220px}
+#cvBox .cvSlot{background:rgba(255,255,255,.04);padding:8px 10px;margin:6px 0;border-left:3px solid #ffd23f}
+#cvBox .cvSt{display:flex;justify-content:space-between;align-items:center}#cvBox .cvSt b{font:22px 'Bebas Neue';letter-spacing:.08em}
+#cvBox .cvClip{display:flex;gap:6px;align-items:center;margin-top:5px}#cvBox .cvClip span{flex:1;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#cvBox .cvClip .chip{padding:2px 10px;font-size:16px}#cvBox .cvEmpty{font-size:13px;opacity:.55;margin-top:4px}
+#cvBox .chip.on{background:#ffd23f;color:#111}#cvBox .cvErr{color:#ff6a6a;font-size:14px;min-height:4px}
+#cvBox .cvTab{font-size:18px}#cvBox .cvTab.on{background:#4fd2ff;color:#061018;border-color:#4fd2ff}
 </style>
 </head>
 <body>
@@ -1819,7 +1834,7 @@ const HEROES=[
  {id:'quake',bulk:1.18,pat:'cracks',patK:.8,faction:'villain',name:'QUAKE',power:'Geokinesis',cls:'Bruiser',diff:'Easy',tags:['Earth','Launcher'],color:0xffb52a,accent:0xffe08a,suit:0x2a2018,css:'#ffc23a',
   desc:'Rogue powerhouse. Rock fault lines launch foes. Ultimate TECTONIC SLAM crushes the ground.',spd:.9,pow:1.18,scale:1.12,special:'fault',ult:'tectonic',ultName:'TECTONIC SLAM'},
  {id:'marrow',bulk:.97,pat:'veins',patK:.9,faction:'villain',name:'MARROW',power:'Flesh Manipulation',cls:'Bruiser',diff:'Hard',tags:['Whips','Long Reach'],color:0xc4102a,accent:0xff3048,suit:0x1a0a10,css:'#ff3048',
-  desc:'Long-range flesh whips. Special grows arm blades. Ultimate BLOOD ARROW fires a massive crimson beam.',spd:1,pow:1,scale:1.02,special:'bladeform',specCD:14,ult:'bloodarrow',ultName:'BLOOD ARROW'},
+  desc:'PRESS 5 to switch between BONE form and DREAD form (fear as energy — different specials, punches, ultimates and look). Long-range flesh whips. Special grows arm blades. Ultimate BLOOD ARROW fires a massive crimson beam.',spd:1,pow:1,scale:1.02,special:'bladeform',specCD:14,ult:'bloodarrow',ultName:'BLOOD ARROW'},
  {id:'entropy',bulk:.97,pat:'cracks',patK:.7,faction:'villain',name:'ENTROPY',power:'Disintegration',cls:'Mage',diff:'Hard',tags:['Decay','Damage over Time'],color:0xa58cc8,accent:0xc9a0ff,suit:0x2a272e,mainCol:0x5a5560,css:'#b89be0',
   desc:'Every touch decays. Erosion Wave crumbles the street. Ultimate TOTAL COLLAPSE disintegrates everything nearby.',spd:.98,pow:1,scale:1.04,special:'erode',ult:'collapse',ultName:'TOTAL COLLAPSE'},
  {id:'sovereign',bulk:1.05,pat:'runes',patK:.7,faction:'villain',name:'SOVEREIGN',power:'Power Theft',cls:'Mage',diff:'Hard',tags:['Steal','Versatile'],color:0x8a3cff,accent:0xe0c8ff,suit:0x0c0b10,mainCol:0x24222e,css:'#9a5cff',
@@ -6301,6 +6316,241 @@ function ultOpening(f,t,c,dt){const k=KIT(f.hero,'elem'),fn=UO[k];
   if(fn){try{fn(f,t,c,dt);}catch(e){}return true;}
   // default: an aura pillar in the fighter's own colors + converging sparks
   if(uo1(f,'def'))aura(f,f.hero.color,f.hero.accent,1);uoSwirl(f,c,f.hero.color,f.hero.accent,4);return true;}
+/* HYPER ARMOR — big moves can't be interrupted.
+   While a fighter is doing one of these, hits still hurt (85% damage) but can't stagger, knock back, launch,
+   freeze, frame, paralyze, compress or grab them — the move always finishes. A golden shimmer shows it's active.
+     • every ULTIMATE and ALT ULTIMATE (the whole thing)
+     • every CHARGED special (hold-to-charge versions)
+     • heavy specials: ground slams, rushes and power strikes (HYPER_SP)
+     • extra moves (3/4) that slam, erupt or blast (slam · pillar · burst · wave); dashes for Bruisers/Tanks/Brawlers
+     • basic HEAVY attacks and combo finishers that slam (heavy · smash · …H)
+   Edit HYPER_SP / HYPER_FORMS to change what counts. */
+const HYPER_SP={airburst:1,rocket:1,fault:1,recipro:1,glacier:1,cleave:1,vital:1,skyhop:1,flyby:1,bladeform:1,harden:1,absorb:1,spikeline:1};
+const HYPER_FORMS={slam:1,pillar:1,burst:1,wave:1};
+const HYPER_DASH_CLS={Bruiser:1,Tank:1,Brawler:1};
+function isHyper(f){if(!f||f.dead||f.downed)return false;
+  if(f.state==='ult')return true;
+  if(f.state==='special'){if(f.specVar==='chg')return true;const sp=f.curSpecial&&f.curSpecial();if(HYPER_SP[sp])return true;
+    if(sp==='xm'&&f.xmA){if(HYPER_FORMS[f.xmA.form])return true;if(f.xmA.form==='dash'&&HYPER_DASH_CLS[f.hero.cls])return true;}return false;}
+  if(f.state==='attack'){const n=f.moveName||'';return n==='heavy'||n==='smash'||/H$/.test(n);}
+  return false;}
+
+// hits: run through the existing "armored" path (no flinch / knockback) but without armor's big damage cut
+const _hyHit=applyHit;
+applyHit=function(att,def,o){if(!isHyper(def)||!o||def.armorT>0)return _hyHit(att,def,o);
+  o=Object.assign({},o);delete o.float;delete o.frame;delete o.hold;delete o.launch;o.dmg=(o.dmg||0)*(.85/.45);
+  def.armorT=1e-6;try{return _hyHit(att,def,o);}finally{if(def.armorT<=1e-6)def.armorT=0;}};
+
+// effects that grab or freeze a fighter directly (not through a hit) can't take hold either
+const HY_BLOCK={hit:1,fly:1,framed:1,float:1,grabbed:1,stun:1,bstun:1,held:1,carried:1,frozen:1};
+const _hySet=Fighter.prototype.set;
+Fighter.prototype.set=function(s){if(HY_BLOCK[s]&&s!==this.state&&isHyper(this)){if(!this._hyFx||game.time-this._hyFx>.25){this._hyFx=game.time;hyperSpark(this);}return;}return _hySet.apply(this,arguments);};
+function hyperSpark(f){const c=f.chest(new V3());ring(c,0xffd86a,1.8,.22,false,2.6);burst(ADD,c,10,{colors:[0xffd86a,0xffffff],speed:6,life:.22,size:.18,size1:0,bright:2.6});}
+
+// golden shimmer while hyper armor is up
+onEv('tick',dt=>{for(const f of FS){if(!isHyper(f)||!nearCam(f.pos,60))continue;if(Math.random()<dt*14){const a=rand(0,6.28);
+  burst(ADD,TMP2.set(f.pos.x+Math.cos(a)*.55,f.pos.y+rand(.2,1.9),f.pos.z+Math.sin(a)*.55),1,{colors:[0xffd86a,0xfff4c8],speed:.2,up:.8,life:.3,size:.16,size1:0,bright:2.2});}}});
+/* MARROW · DREAD FORM — a second moveset built on FEAR as an energy. Press 5 to switch between BONE and DREAD.
+   DREAD swaps everything: specials, extra moves, ultimates, punches (shadow claws that spread fear) and the look
+   (violet-black body, sickly green glow, rising fear wisps).
+   TERROR (the fear status): foes deal 25% less damage, move slower and sometimes freeze up in panic.
+   Marrow FEEDS on fear: every terrified foe within 15 m charges his ultimate and heals him a little.
+     1  DREAD WAVE        a cone of ghostly fear — damages and terrifies       (hold: PANIC BURST — a terrifying ring around him)
+     2  NIGHTMARE GRASP   a spectral hand drags a far foe to him, terrified
+     3  PHANTOM SWARM     a volley of fear phantoms        4  SCREAM   a stunning cone of sound
+     Q  ABSOLUTE DREAD    darkness falls: every foe nearby is terrified for 6 s and drained each second (he heals)
+     Q+back  FEAR INCARNATE  8 s as a towering shadow — armored, stronger, and everyone close to him is terrified
+   The form switch goes through the host, so everyone sees the same form online. */
+const DR_V=0x6a2a9a,DR_G=0x8aff6a,DR_D=0x120a1a;
+Object.assign(SPNAME,{dread:'DREAD WAVE'});
+Object.assign(HERO_SND,{dread:SND.curse?'curse':'power'});
+Object.assign(ULT_RANGE,{absdread:18});
+Object.assign(SPECIAL_AI,{dread:[0,9,.6]});
+Object.assign(XSPK,{dread:1});
+Object.assign(XMOVES,{dread:[['PHANTOM SWARM','volley','shadow','orb',['slow']],['SCREAM','cone','sound','ring',['stun']]]});
+// (the voice tables load later, so register once everything is loaded)
+setTimeout(()=>{try{VPROF.dread={sex:'m',a:'au',p:.48,r:.82,v:1.05,vi:3};VCRY.dread=[['Can you feel it?',0],['Your fear... it tastes wonderful.',-.06]];}catch(e){}},0);
+if(typeof TRAIT_DESC!=='undefined')TRAIT_DESC.dread='feeds on fear: terrified foes nearby charge his ultimate and heal him · press 5 to switch form';
+if(typeof TRAIT_DESC!=='undefined')TRAIT_DESC.marrow='press 5 to switch to DREAD form (fear energy)';
+
+/* ---------- the two forms ---------- */
+function dreadHero(base){if(base._dread)return base._dread;const D=Object.assign({},base,{as:{elem:'dread',alt:'dread',wpn:'umbra'},special:'dread',specCD:2.4,ult:'absdread',
+  ultName:'ABSOLUTE DREAD',altName:'FEAR INCARNATE',power:'Fear Energy',color:DR_V,accent:DR_G,css:'#a46aff',_xm:null,_bone:base});base._dread=D;return D;}
+function isDread(f){return !!(f&&f.hero&&f.hero._bone);}
+function canSwitch(f){return f&&!f.dead&&HAS(f.hero._bone||f.hero,'marrow')&&KIT(f.hero._bone||f.hero,'elem')==='marrow'&&['idle','run','air','attack','block'].indexOf(f.state)>=0&&!(f._formCD>game.time);}
+function setForm(f,dread){if(!f||isDread(f)===!!dread)return;const base=f.hero._bone||f.hero;f.hero=dread?dreadHero(base):base;f._formCD=game.time+1.5;f.stolen=null;f.stolenT=0;f.bladeT=0;
+  formSkin(f,dread);const c=f.chest(new V3());
+  if(dread){burst(SMK,c,30,{colors:[DR_D,DR_V],speed:4,up:2,life:.9,size:.6,size1:1.6});ring(c,DR_G,3.2,.35,false,2.6);ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),DR_V,4,.4,true,2.4);}
+  else{burst(ADD,c,24,{colors:[0xe8e4dc,0xc4102a],speed:6,life:.4,size:.25,size1:0,bright:2.2});ring(c,0xe8e4dc,3,.3,false,2.4);}
+  xSnd(f.pos,()=>{AU.whoosh(true);if(SND.curse&&dread)SND.curse.hit(1.2);});
+  if(f===ME){announceSmall(dread?'DREAD FORM — FEAR IS ENERGY':'BONE FORM');if(typeof buildSlots==='function')buildSlots();}}
+// recolor the body: dark violet-black with a sickly green glow (originals are restored when switching back)
+function formSkin(f,dread){f.rig.root.traverse(o=>{if(!o.isMesh||!o.material||!o.material.color)return;
+  if(dread){if(!o.userData.drOrig){o.userData.drOrig=o.material;o.material=o.material.clone();}const c=o.userData.drOrig.color,l=(c.r+c.g+c.b)/3;
+    o.material.color.setHex(l>.6?DR_G:l>.3?DR_V:DR_D);if(o.material.emissive){o.material.emissive.setHex(l>.6?DR_G:0x1a0a2a);o.material.emissiveIntensity=l>.6?1.2:.4;}}
+  else if(o.userData.drOrig){o.material.dispose();o.material=o.userData.drOrig;o.userData.drOrig=null;}});}
+// press 5 (players) — goes through the host online
+addEventListener('keydown',e=>{if(e.code!=='Digit5'||e.repeat||!inMatch()||!ME||document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  if(!canSwitch(ME))return;formReq(ME,!isDread(ME));});
+function formReq(f,on){if(NET.role==='client'){netSay({k:'mform',id:f.id,on:on?1:0});return;}setForm(f,on);if(NET.role==='host')netSay({k:'mformFx',id:f.id,on:on?1:0});}
+onEv('x:mform',e=>{if(NET.role==='host'&&e.from!==NET.myId){const f=FS.find(q=>q.id===e.id);if(f&&!(f._formCD>game.time)){setForm(f,!!e.on);netSay({k:'mformFx',id:f.id,on:e.on});}}});
+onEv('x:mformFx',e=>{if(NET.role==='client'){const f=FS.find(q=>q.id===e.id);if(f)setForm(f,!!e.on);}});
+// bots switch now and then
+onEv('tick',dt=>{if(NET.role==='client')return;for(const f of FS){if(!f.isBot||f.dead)continue;const base=f.hero._bone||f.hero;if(KIT(base,'elem')!=='marrow')continue;
+  if(Math.random()<dt*.06&&canSwitch(f))formReq(f,!isDread(f));}});
+onEv('matchEnd',()=>FS.forEach(f=>{if(isDread(f)){f.hero=f.hero._bone;formSkin(f,false);}}));
+
+/* ---------- TERROR ---------- */
+function terrify(f,o,t){if(!o||o.dead||ally(o,f))return;const was=o.terrorT>0;o.terrorT=Math.max(o.terrorT||0,t);o.terrorBy=f;o.slowT=Math.max(o.slowT||0,Math.min(t,2.5));
+  if(!was){burst(SMK,o.chest(new V3()),12,{colors:[DR_V,DR_D],speed:2,up:2,life:.7,size:.4,size1:1});if(o===ME)announceSmall('TERRIFIED — YOUR HITS ARE WEAKER');}}
+const _drHit=applyHit;applyHit=function(att,def,o){if(att&&att.terrorT>0&&o&&o.dmg){o=Object.assign({},o);o.dmg*=.75;}return _drHit(att,def,o);};
+onEv('hit',(a,d,dmg)=>{if(a&&isDread(a)&&a.state==='attack'&&d!==a)terrify(a,d,1.6);});
+onEv('tick',dt=>{for(const o of FS){if(!(o.terrorT>0))continue;o.terrorT-=dt;if(o.dead){o.terrorT=0;continue;}
+    if(Math.random()<dt*7&&nearCam(o.pos,60))burst(SMK,TMP2.set(o.pos.x+rand(-.3,.3),o.pos.y+2.1,o.pos.z+rand(-.3,.3)),1,{colors:[DR_V,DR_G],speed:.2,up:.8,life:.6,size:.25,size1:.5});
+    // panic: now and then they freeze up for a moment
+    if(NET.role!=='client'&&Math.random()<dt*.35&&['idle','run'].indexOf(o.state)>=0){o.set('hit');o.stunT=.45;o.vel.set(0,o.vel.y,0);}}
+  // feeding on fear
+  for(const f of FS){if(!isDread(f)||f.dead)continue;let n=0;for(const o of FS)if(o.terrorT>0&&!o.dead&&o.pos.distanceTo(f.pos)<15)n++;
+    if(n&&NET.role!=='client'){f.meter=Math.min(100,f.meter+n*2.2*dt);f.hp=Math.min(100,f.hp+n*.8*dt);}
+    if(Math.random()<dt*10&&nearCam(f.pos,60)){const a=rand(0,6.28);burst(Math.random()<.5?ADD:SMK,TMP2.set(f.pos.x+Math.cos(a)*.5,f.pos.y+rand(.1,1.8),f.pos.z+Math.sin(a)*.5),1,{colors:[DR_G,DR_V],speed:.2,up:1.6,life:.6,size:.22,size1:.4,bright:1.8});}}});
+
+/* ---------- moves ---------- */
+SPECIALS.dread=function(f){once(f,.22,()=>{const T=tgtOf(f,10);if(T)faceTo(f,T);const fw=f.fwd(),c=f.chest(new V3());
+    for(let i=0;i<14;i++){const d=fw.clone().applyAxisAngle(UP,rand(-.55,.55));burst(SMK,c,1,{colors:[DR_V,DR_D],speed:rand(8,13),life:.6,size:.6,size1:1.4,dir:d});burst(ADD,c,1,{colors:[DR_G],speed:rand(9,14),life:.4,size:.25,size1:0,bright:2,dir:d});}
+    ring(c,DR_G,2.4,.25,false,2.4);xSnd(f.pos,()=>{SND.curse?SND.curse.spec():AU.whoosh(true);});
+    if(NET.role!=='client')for(const o of foes(f,9,null,.35)){hitO(f,o,{dmg:8,kb:6,up:2,stun:.5});terrify(f,o,3.5);}});
+  vpose(f,.22,'charge','command');endAt(f,.6);return 10;};
+SPECVAR.dread={
+  chg:['PANIC BURST',(f,dt,k)=>{once(f,.25,()=>{const R=6+3*k,c=f.chest(new V3());ring(c,DR_G,R,.4,false,2.6);ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),DR_V,R,.45,true,2.4);
+      burst(SMK,c,40,{colors:[DR_V,DR_D],speed:8+4*k,life:.8,size:.7,size1:1.6,flat:true});shake(.4,f.pos);xSnd(f.pos,()=>AU.boom(false));
+      if(NET.role!=='client')for(const o of foes(f,R)){hitO(f,o,{dmg:10+8*k,kb:9,up:5,launch:true});terrify(f,o,3+2*k);}});
+    vpose(f,.25,'charge','command');endAt(f,.65);return 10;}],
+  alt:['NIGHTMARE GRASP',f=>{once(f,.2,()=>{const T=tgtOf(f,18);if(!T)return;const a=f.chest(new V3()),b=T.chest(new V3());
+      for(let i=0;i<3;i++)trailSeg(a.clone().add(new V3(0,i*.15-.15,0)),b,i===1?DR_G:DR_V,.12,.45);burst(SMK,b,20,{colors:[DR_V,DR_D],speed:3,life:.6,size:.5,size1:1.2});
+      if(NET.role!=='client'){const fw=f.fwd();T.pos.set(f.pos.x+fw.x*1.6,f.pos.y,f.pos.z+fw.z*1.6);T.vel.set(0,0,0);hitO(f,T,{dmg:6,kb:0,up:0,stun:.9});terrify(f,T,2.5);}
+      xSnd(f.pos,()=>SND.curse?SND.curse.hit(1):AU.whoosh(false));});
+    vpose(f,.2,'charge','point');endAt(f,.55);return 10;}]};
+// ABSOLUTE DREAD: darkness falls; every foe nearby terrified for 6 s and drained each second
+ULTX.absdread={r:18,s(f){f.vf.t0=null;f.uEnd=99;f.invuln=Math.max(f.invuln,1);f.poseKey='command';},
+  u(f,t){const V=f.vf;if(V.t0==null){V.t0=t;V.L=foes(f,18);f.uEnd=t+2.4;}const r=t-V.t0;f.poseKey=r<.5?'charge':'command';
+    atT(f,'dark',V.t0+.4,()=>{const c=f.chest(new V3());ring(c,DR_V,18,.6,false,2.4);ring(new V3(f.pos.x,f.pos.y+.2,f.pos.z),DR_G,18,.6,true,2);shake(.6,c);xSnd(c,()=>AU.boom(true));
+      V.L.forEach(o=>{terrify(f,o,6);if(o===ME)dreadDark(5);dreadDrain(f,o,5);});if(f===ME)announceSmall('ABSOLUTE DREAD');});
+    if(r>.4&&r<2.2&&Math.random()<.7){const o=pick(V.L);if(o&&!o.dead)burst(SMK,TMP2.set(o.pos.x+rand(-1,1),o.pos.y+rand(.5,2.5),o.pos.z+rand(-1,1)),2,{colors:[DR_V,DR_D,DR_G],speed:1,up:1,life:.8,size:.5,size1:1.2});}
+    return 10;}};
+function dreadDrain(f,o,n){let k=0;const iv=setInterval(()=>{if(++k>n||!inMatch()||o.dead||f.dead){clearInterval(iv);return;}if(NET.role!=='client'){hitO(f,o,{dmg:4,kb:0,up:0,stun:.15,noSpark:true});f.hp=Math.min(100,f.hp+3);}
+  trailSeg(o.chest(new V3()),f.chest(new V3()),DR_G,.06,.4);},1000);}
+function dreadDark(sec){let e=$('dreadDark');if(!e){e=document.createElement('div');e.id='dreadDark';document.body.appendChild(e);}e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),sec*1000);}
+// FEAR INCARNATE: 8 s as a towering shadow — armored, stronger, foes close to him are terrified
+ALTULT.dread={name:'FEAR INCARNATE',r:8,s(f){f.uEnd=1;f.poseKey='charge';},u(f,t){atT(f,'i',.5,()=>{f.incT=8;f.armorT=Math.max(f.armorT||0,8);f.powT=Math.max(f.powT||0,8);f.auraC=DR_V;
+  const c=f.chest(new V3());ring(c,DR_V,6,.5,false,2.8);burst(SMK,c,50,{colors:[DR_D,DR_V],speed:5,up:4,life:1.2,size:.9,size1:2});shake(.5,c);if(f===ME)announceSmall('FEAR INCARNATE');});return 10;}};
+onEv('tick',dt=>{for(const f of FS){if(!(f.incT>0))continue;f.incT-=dt;const R=f.rig.root;if(f.incT<=0||f.dead){f.incT=0;if(!f.xHold)R.scale.setScalar(f.hero.scale);continue;}
+  if(!f.xHold)R.scale.setScalar(f.hero.scale*1.35);if(NET.role!=='client')for(const o of foes(f,7))terrify(f,o,.6);
+  if(Math.random()<dt*20)burst(SMK,TMP2.set(f.pos.x+rand(-.8,.8),f.pos.y+rand(0,2.6),f.pos.z+rand(-.8,.8)),1,{colors:[DR_D,DR_V],speed:.4,up:1.4,life:.8,size:.6,size1:1.4});}});
+Object.assign(PFX,{dread(a,d,t){terrify(a,d,t>=2?3:1.6);}});
+Object.assign(PFX_DESC,{dread:'every hit terrifies; charged hits terrify longer'});
+if(typeof UO!=='undefined')UO.dread=(f,t,c)=>{uoSwirl(f,c,DR_V,DR_G,5,SMK);if(uo1(f,'r',.4))ring(c,DR_G,4,.3,false,2.6);};
+onEv('matchStart',()=>setTimeout(()=>{if(ME&&KIT(ME.hero._bone||ME.hero,'elem')==='marrow')announceSmall('MARROW: PRESS 5 TO SWITCH BETWEEN BONE AND DREAD FORM');},2500));
+/* PROJECTILE LOOKS — every fighter's projectiles match them instead of the shared glowing orb.
+   1. Extra moves (3/4) get a model that fits their name (Bone Rain → bones, Knife Toss → knives, Night Bats → bats…).
+   2. Any ability projectile still using the plain orb uses the fighter's signature projectile (PROJ_SIG):
+      Cinder flames, Volta lightning, Quill feathers, Marrow bones, Recoil bullets, Hopstar music notes…
+   Models come from the shape library in gear.js (CAB_SHAPES2) plus spike/blade/ring/shard/star/arrow/bird. */
+const PROJ_MOVE={'BUBBLE PRISON':'bubble','WIND BLADES':'crescent','STICKY BOMBS':'bomb','NIGHT BATS':'bat','METEOR TOSS':'boulder','STAR SHOWER':'star',
+  'SPIRIT SLASHES':'crescent','BOULDER TOSS':'boulder','BONE RAIN':'bone','DECAY ORB':'skull','TYRANT ORBS':'eye','AZURE FLARES':'flame','PORTAL BARRAGE':'chakram',
+  'CURSED NEEDLES':'spike','CARD TRICK':'card','MUD BOMB':'boulder','FLASH GRENADE':'bomb','SUPPRESSING FIRE':'bullet','KNIFE TOSS':'knife','PHANTOM SWARM':'skull',
+  'FEATHER GUARD':'feather','SHADOW SPIKES':'spike','BLADE RUSH':'sword','HAYMAKER':'fist','TAKEDOWN':'hand','SKY HOOK':'hand','IRON GRASP':'hand','SCARF WHIP':'ring'};
+const PROJ_SIG={cinder:'flame',riptide:'bubble',gale:'tornado',nitro:'bomb',titan:'fist',volta:'lightning',umbra:'bat',drift:'boulder',bastion:'fist',quill:'feather',
+  void:'star',ronin:'crescent',quake:'boulder',marrow:'bone',entropy:'skull',sovereign:'eye',strobe:'chakram',pyre:'flame',warp:'chakram',hex:'eye',scathe:'crescent',
+  solstice:'snowflake',piston:'fist',snare:'ring',marble:'card',legion:'boulder',recoil:'bullet',crimson:'knife',sawback:'sword',resect:'spike',cushion:'fist',
+  corrosa:'bubble',verdict:'knife',decree:'coin',skitter:'coin',oldguard:'fist',hopstar:'note',headliner:'star',zanshin:'crescent',dread:'skull'};
+const PROJ_OK=new Set([...CAB_SHAPES,...(typeof CAB_SHAPES2!=='undefined'?CAB_SHAPES2:[])]);
+// 1) extra moves: pick the model from the move's name
+for(const k in XMOVES)XMOVES[k].forEach(m=>{const s=PROJ_MOVE[m[0]];if(s&&PROJ_OK.has(s))m[3]=s;else if(m[3]==='orb'){const sig=PROJ_SIG[k];if(sig&&PROJ_OK.has(sig))m[3]=sig;}});
+HEROES.forEach(h=>{h._xm=null;});
+// 2) anything still drawn as a plain orb uses the fighter's signature projectile
+const _pjMesh=cabMesh;
+cabMesh=function(A,s,f){if(A&&A.shape==='orb'&&f&&f.hero){const sig=PROJ_SIG[KIT(f.hero,'elem')];if(sig&&PROJ_OK.has(sig))A=Object.assign({},A,{shape:sig});}
+  const g=_pjMesh.call(this,A,s,f);if(f&&g&&A.shape!=='orb')projReadable(g,A);return g;};
+// fighters' projectile models: solid main body (so the shape reads), softer glow on the accent parts
+function projReadable(g,A){const c1=new THREE.Color(A.c1).multiplyScalar(2.2);g.traverse(o=>{const m=o.material;if(!m||!m.color||m.blending!==THREE.AdditiveBlending)return;
+  const d=Math.abs(m.color.r-c1.r)+Math.abs(m.color.g-c1.g)+Math.abs(m.color.b-c1.b);
+  if(d<.06){m.blending=THREE.NormalBlending;m.color.setHex(A.c1);m.opacity=Math.min(1,(m.opacity||1)+.15);m.depthWrite=true;m.needsUpdate=true;}
+  else{m.color.multiplyScalar(.55);m.needsUpdate=true;}});}
+/* UNIQUE BASIC ATTACKS — every fighter has their own light combo, finisher and heavy, plus swing trails in their colors
+   and hits that land with their element (fire embers, ice shards, sparks, splashes, dust, fear smoke…).
+   Built from move pieces (TPL) per fighter (UATK spec):  c = light combo, h = heavy, sp = speed, fx = hit effect.
+   Total combo damage is kept close to the default so longer, faster combos hit softer per hit.
+   Umbra, Ronin, Scathe, Marrow, Piston and Recoil keep their own weapon combos (shadow claws, sword, claws, whips/blades,
+   kicks, shots) — they just get the swing trails and hit effects too. */
+const TPL={
+  jR:{st:.07,ac:.07,rc:.17,dmg:4,rng:1.75,kb:2.4,up:0,stun:.34,lunge:3.5,w:'jabRw',h:'jabRh',limb:'r'},
+  jL:{st:.07,ac:.07,rc:.19,dmg:4,rng:1.75,kb:2.4,up:0,stun:.36,lunge:3.5,w:'jabLw',h:'jabLh',limb:'l'},
+  pa:{st:.09,ac:.08,rc:.2,dmg:4.5,rng:1.9,kb:4,up:0,stun:.38,lunge:3,w:'jabRw',h:'point',limb:'r'},
+  bk:{st:.08,ac:.08,rc:.19,dmg:4,rng:1.9,kb:3,up:0,stun:.36,lunge:3.5,w:'jabLw',h:'slashL',limb:'l'},
+  el:{st:.08,ac:.08,rc:.19,dmg:4,rng:2,kb:3,up:0,stun:.36,lunge:3.8,w:'jabRw',h:'slash',limb:'r'},
+  hk:{st:.1,ac:.09,rc:.22,dmg:5,rng:2.1,kb:4,up:2,stun:.4,lunge:4,w:'kickw',h:'kickh',limb:'f'},
+  lk:{st:.09,ac:.08,rc:.2,dmg:4.5,rng:2,kb:3,up:0,stun:.4,lunge:3.5,w:'kickw',h:'kickLh',limb:'f'},
+  sk:{st:.13,ac:.1,rc:.3,dmg:7,rng:2.3,kb:10,up:5,stun:.45,lunge:4.5,w:'heavyw',h:'kickSpin',limb:'f',launch:true,heavy:true},
+  ax:{st:.16,ac:.1,rc:.32,dmg:8,rng:2.1,kb:3,up:0,stun:.6,lunge:3,w:'charge',h:'axeKick',limb:'f',heavy:true},
+  up:{st:.12,ac:.1,rc:.3,dmg:7,rng:1.9,kb:4,up:13,stun:.5,lunge:4,w:'heavyw',h:'heavyh',limb:'r',launch:true,heavy:true},
+  sm:{st:.3,ac:.1,rc:.45,dmg:13,rng:2.4,kb:14,up:6,stun:.5,lunge:5,w:'heavyw',h:'smashh',limb:'r',launch:true,heavy:true,shock:true},
+  cm:{st:.2,ac:.1,rc:.35,dmg:9,rng:3.4,kb:12,up:4,stun:.5,lunge:1.5,w:'charge',h:'command',limb:'r',launch:true,heavy:true,lat:1.5},
+  dk:{st:.14,ac:.12,rc:.3,dmg:9,rng:2.2,kb:11,up:6,stun:.5,lunge:10,w:'jump',h:'airh',limb:'f',launch:true,heavy:true},
+  ds:{st:.25,ac:.1,rc:.4,dmg:11,rng:2.6,kb:8,up:9,stun:.5,lunge:4,w:'slamAir',h:'slamLand',limb:'f',launch:true,heavy:true,shock:true}};
+const UATK={
+  cinder:{c:'jR jL sk',h:'cm',fx:'fire'},           riptide:{c:'pa bk pa sk',h:'up',fx:'water'},        gale:{c:'jR hk lk sk',h:'dk',sp:1.15,fx:'wind'},
+  nitro:{c:'jR jR up',h:'sm',fx:'blast'},            titan:{c:'el bk up',h:'sm',sp:.85,d:1.15,fx:'earth'},   volta:{c:'jR jL pa cm',h:'dk',sp:1.1,fx:'spark'},
+  drift:{c:'pa pa ax',h:'up',fx:'void'},             bastion:{c:'el bk sm',h:'sm',sp:.85,d:1.1,fx:'metal'},  quill:{c:'hk lk ax',h:'dk',sp:1.1,fx:'feather'},
+  void:{c:'pa bk cm',h:'cm',fx:'void'},              quake:{c:'jR jL sm',h:'ds',sp:.9,d:1.1,fx:'earth'},     entropy:{c:'bk pa el cm',h:'ds',fx:'decay'},
+  sovereign:{c:'bk pa cm',h:'up',fx:'spirit'},       strobe:{c:'jR jL jR jL jR',h:'dk',sp:1.3,fx:'time'},     pyre:{c:'bk jR sk',h:'cm',fx:'bluefire'},
+  warp:{c:'pa dk bk',h:'ax',fx:'void'},              hex:{c:'pa bk ax',h:'cm',fx:'curse'},                    solstice:{c:'jR el sk',h:'up',fx:'icefire'},
+  snare:{c:'lk hk jR sk',h:'dk',fx:'light'},            marble:{c:'pa bk pa',h:'cm',fx:'crystal'},              legion:{c:'jR jL jR up',h:'dk',sp:1.1,fx:'mud'},
+  crimson:{c:'el bk el sk',h:'dk',sp:1.15,fx:'blood'},sawback:{c:'el bk sk',h:'sm',fx:'blade'},              resect:{c:'pa pa up',h:'sm',fx:'redcrackle'},
+  cushion:{c:'jR jL sm',h:'sm',sp:.85,d:1.15,fx:'cushion'},corrosa:{c:'hk lk sk ax',h:'dk',sp:1.15,fx:'acid'},  verdict:{c:'el bk el bk',h:'dk',sp:1.2,fx:'blood'},
+  decree:{c:'pa jR cm',h:'cm',fx:'gold'},            skitter:{c:'lk lk sk',h:'dk',sp:1.15,fx:'teal'},        oldguard:{c:'el jR jL bk up',h:'sm',fx:'impact'},
+  hopstar:{c:'hk lk ax',h:'ds',sp:1.1,fx:'sound'},   headliner:{c:'jR jL up',h:'dk',fx:'gold'},              zanshin:{c:'bk el bk sk',h:'ds',fx:'spirit'},
+  dread:{c:'pa bk cm',h:'cm',fx:'dread'}};
+const UATK_KEEP={umbra:'shadow',ronin:'blade',scathe:'blade',marrow:'blood',piston:'impact',recoil:'gold'};
+// build the moves
+(function(){const BASE=15;for(const id in UATK){const S=UATK[id],toks=S.c.split(' '),sp=S.sp||1,d=S.d||1;
+  const raw=toks.reduce((a,t)=>a+TPL[t].dmg,0),k=BASE*d/raw*(toks.length>3?1.08:1);
+  toks.forEach((t,i)=>{const M=Object.assign({},TPL[t]);M.st/=sp;M.ac/=sp;M.rc/=sp;M.dmg=+(M.dmg*k).toFixed(1);
+    const last=i===toks.length-1;if(last){M.launch=true;M.heavy=true;M.kb=Math.max(M.kb,9);M.up=Math.max(M.up,5);}else{delete M.launch;if(t!=='ax')delete M.heavy;delete M.shock;M.kb=Math.min(M.kb,4);M.up=Math.min(M.up,2);}
+    if(!last)M.next='u_'+id+'_'+(i+1);MOVES['u_'+id+'_'+i]=M;});
+  const H=Object.assign({},TPL[S.h]);H.st=Math.max(.24,H.st/sp);H.ac/=sp;H.rc=Math.max(.36,H.rc/sp);H.dmg=+(Math.max(11,H.dmg)*d).toFixed(1);H.launch=true;H.heavy=true;H.kb=Math.max(H.kb,10);
+  H.vfx=2;MOVES['u_'+id+'_H']=H;}})();
+const _uaL=Fighter.prototype.lightMove,_uaH=Fighter.prototype.heavyMove;
+Fighter.prototype.lightMove=function(){if(this.hero.gear&&this.hero.gear.type!=='none')return _uaL.call(this);const id=KIT(this.hero,'wpn');return UATK[id]?'u_'+id+'_0':_uaL.call(this);};
+Fighter.prototype.heavyMove=function(){if(this.hero.gear&&this.hero.gear.type!=='none')return _uaH.call(this);const id=KIT(this.hero,'wpn');return UATK[id]?'u_'+id+'_H':_uaH.call(this);};
+// Dread form gets its own set
+if(typeof dreadHero==='function'){const _dh=dreadHero;dreadHero=function(b){const D=_dh(b);D.as.wpn='dread';return D;};}
+
+/* ---------- swing trails + element hits ---------- */
+const UFX={fire:[0xff6a1a,0xffd23f],water:[0x2a8aff,0x9ae0ff],wind:[0xd8f4ff,0x8ad8c8],blast:[0xff8a1a,0xffe03a],earth:[0xa8906a,0x6a5a4a],spark:[0xffe03a,0x9ad8ff],
+  void:[0x9a6aff,0x2a0a4a],metal:[0xc8d0dc,0x7a8494],feather:[0xfff0e0,0x9ad8ff],decay:[0x8a8290,0x5a5560],spirit:[0x7affd8,0xffffff],time:[0x3fe0c5,0xffffff],
+  bluefire:[0x3a8aff,0x9ad8ff],curse:[0x9a2aff,0x5aff8a],icefire:[0xbfefff,0xff6a1a],light:[0xff2a2a,0xe8e8f0],crystal:[0x9ad8ff,0xff9af0],mud:[0x6a4a2a,0x3a2a1a],
+  blood:[0xc4102a,0xff3a4a],blade:[0xd8e0e8,0xffffff],redcrackle:[0xff2a3a,0xe8e0d0],cushion:[0xffd23f,0xffa21a],acid:[0xb8ff3a,0x6aff2a],gold:[0xffd86a,0xfff4d8],
+  teal:[0x3affc8,0xffffff],impact:[0xffd23f,0xffffff],sound:[0xb06aff,0x6affe0],dread:[0x6a2a9a,0x8aff6a],shadow:[0x5a2a8a,0x1a0a2a]};
+function uFxOf(f){const w=KIT(f.hero,'wpn');return (UATK[w]&&UATK[w].fx)||UATK_KEEP[w]||null;}
+function limbPos(f,limb,out){const r=f.rig;const n=limb==='l'?r.lF||r.lE:limb==='f'?(r.rK||r.lK):r.rF||r.rE;if(n&&n.getWorldPosition)return n.getWorldPosition(out);return f.chest(out);}
+onEv('tick',dt=>{for(const f of FS){if(f.state!=='attack'||!f.move||f.dead){f._sw=null;continue;}const fx=uFxOf(f);if(!fx||!nearCam(f.pos,45))continue;const M=f.move,t=f.stateT;
+  if(t>M.st*.6&&t<M.st+M.ac+.04){const p=limbPos(f,M.limb,new V3());if(f._sw&&f._sw.distanceTo(p)<3)trailSeg(f._sw,p,UFX[fx][0],M.heavy?.22:.12,M.heavy?.28:.18);f._sw=p;}else f._sw=null;}});
+onEv('hit',(a,d,dmg,o)=>{if(!a||!d||a.state!=='attack'||!nearCam(d.pos,50))return;const fx=uFxOf(a);if(!fx)return;const C=UFX[fx],p=(o&&o.pt)||d.chest(new V3()),big=a.move&&a.move.heavy;
+  switch(fx){
+    case 'fire':case 'bluefire':case 'blast':burst(ADD,p,big?14:7,{colors:C,speed:3,up:3,life:.4,size:.22,size1:0,bright:2.4});if(fx==='blast'&&big)burst(SMK,p,6,{colors:[0x4a4a4a],speed:2,up:1,life:.7,size:.5,size1:1});break;
+    case 'water':burst(ADD,p,big?16:8,{colors:C,speed:4,up:2,life:.45,size:.16,size1:0,bright:1.8,grav:14});break;
+    case 'wind':case 'sound':ring(p,C[0],big?2.4:1.4,.25,false,2.2);if(fx==='sound'&&big)glyph(pick(['♪','♫']),p.clone().add(new V3(0,.6,0)),C[0],.5,.7);break;
+    case 'earth':case 'mud':dust(d.pos,big?10:4,big?1.2:.7);burst(SMK,p,big?8:4,{colors:C,speed:3,up:2,life:.5,size:.2,size1:.1,grav:14});break;
+    case 'spark':for(let i=0;i<(big?4:2);i++){const q=p.clone().add(new V3(rand(-.8,.8),rand(-.6,.8),rand(-.8,.8)));trailSeg(p,q,C[i%2],.05,.18);}break;
+    case 'void':case 'curse':case 'decay':case 'shadow':case 'dread':burst(SMK,p,big?12:6,{colors:C,speed:2,up:1.2,life:.6,size:.35,size1:.8});break;
+    case 'metal':case 'blade':case 'impact':burst(ADD,p,big?12:6,{colors:C,speed:6,life:.18,size:.1,size1:0,bright:2.8,grav:10});if(big&&typeof impactLines==='function')impactLines(p,0xffffff,8);break;
+    case 'feather':for(let i=0;i<(big?6:3);i++)burst(ADD,TMP2.copy(p).add(new V3(rand(-.4,.4),rand(-.2,.4),rand(-.4,.4))),1,{colors:C,speed:1.5,up:1.5,life:.8,size:.18,size1:.1,bright:1.4,grav:2});break;
+    case 'spirit':case 'time':case 'light':case 'gold':case 'teal':case 'crystal':ring(p,C[0],big?2:1.2,.22,false,2.4);burst(ADD,p,big?10:5,{colors:C,speed:4,life:.25,size:.18,size1:0,bright:2.6});break;
+    case 'icefire':burst(ADD,p,big?12:6,{colors:(a._side||0)%2?[0xbfefff,0xffffff]:[0xff6a1a,0xffd23f],speed:3.5,up:2,life:.35,size:.2,size1:0,bright:2.4});break;
+    case 'blood':burst(SMK,p,big?10:5,{colors:C,speed:3,up:1,life:.5,size:.14,size1:.06,grav:16});break;
+    case 'redcrackle':if(typeof crackle==='function'&&big)crackle(p,C[0]);burst(ADD,p,5,{colors:C,speed:3,life:.2,size:.15,size1:0,bright:2.4});break;
+    case 'cushion':ring(p,C[0],big?2.2:1.3,.25,false,2.2);break;
+    case 'acid':burst(ADD,p,big?12:6,{colors:C,speed:2.5,up:2,life:.45,size:.18,size1:0,bright:2,grav:8});break;}});
 /* COSTUME UPGRADE: an extra layer of original costume detail on every fighter, themed to their power.
    Each entry in LOOKS picks: em (chest emblem shape), belt, br (bracers), bt (boot style), sh (shoulders), col (collar)
    and an optional sig(X,h) function for one signature accessory. Colors come from the fighter (so shop skins recolor it).
@@ -8337,7 +8587,7 @@ onEv('frame',()=>{const T=$('touch');if(T)T.classList.toggle('on',TOUCH.on&&inMa
 buildTouch();
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true};
+const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true,customVoice:true,ultSfx:false};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];
@@ -9538,6 +9788,125 @@ Fighter.prototype.dispose=function(){const root=this.rig&&this.rig.root;try{_stD
 renderer.domElement.addEventListener('webglcontextlost',()=>{setTimeout(()=>{if(!window.__ctxLost)return;let e=$('ctxLost');if(!e){e=document.createElement('div');e.id='ctxLost';
   e.innerHTML='<b>GRAPHICS RESET</b><span>Your browser reset the 3D graphics (usually low GPU memory). Click to reload the game.</span>';e.onclick=()=>location.reload();document.body.appendChild(e);}},1500);},false);
 renderer.domElement.addEventListener('webglcontextrestored',()=>{window.__ctxLost=false;const e=$('ctxLost');if(e)e.remove();},false);
+/* CUSTOM VOICES — players attach their own audio files to a fighter's voice moments.
+   Clips are stored in this browser only (IndexedDB). They are never uploaded, never sent to
+   other players online and never included in the game files — only the person who added them hears them.
+   Slots: ult (ultimate), kill (scores a KO), hurt (takes a big hit), win (wins the match). Several clips per slot = random pick. */
+const CV_SLOTS=[['ult','ULTIMATE'],['kill','SCORES A KO'],['hurt','TAKES A BIG HIT'],['win','WINS THE MATCH'],['theme','BATTLE THEME (WHEN YOU PLAY THEM)']];
+const CVM_SLOTS=[['menu','IDLE / MENU MUSIC'],['battle','BATTLE MUSIC'],['boss','BOSS FIGHT MUSIC'],['victory','VICTORY MUSIC']];
+const CV_MAX_MB=6,CV_MUS_MB=30,CV_MUS='_music';
+const CV={db:null,map:{},urls:{},playing:null,hurtT:{},sel:null,tab:'voice'};
+if(SET.customVoice===undefined)SET.customVoice=true;
+
+function cvOpen(){return new Promise((res,rej)=>{if(CV.db)return res(CV.db);if(!window.indexedDB)return rej('no idb');
+  const r=indexedDB.open('surge-customvoice',1);r.onupgradeneeded=()=>{r.result.createObjectStore('clips',{keyPath:'id'});};
+  r.onsuccess=()=>{CV.db=r.result;res(CV.db);};r.onerror=()=>rej(r.error);});}
+function cvTx(mode){return CV.db.transaction('clips',mode).objectStore('clips');}
+function cvLoad(){return cvOpen().then(()=>new Promise(res=>{const q=cvTx('readonly').getAll();q.onsuccess=()=>{CV.map={};
+  Object.values(CV.urls).forEach(u=>{try{URL.revokeObjectURL(u);}catch(e){}});CV.urls={};
+  (q.result||[]).forEach(c=>{const k=c.fid+':'+c.slot;(CV.map[k]=CV.map[k]||[]).push(c);CV.urls[c.id]=URL.createObjectURL(c.blob);});res();};q.onerror=()=>res();})).catch(()=>{});}
+function cvAdd(fid,slot,file){return cvOpen().then(()=>new Promise((res,rej)=>{
+  const mx=(fid===CV_MUS||slot==='theme')?CV_MUS_MB:CV_MAX_MB;if(file.size>mx*1048576)return rej(file.name+' is over '+mx+' MB');
+  const c={id:fid+':'+slot+':'+Date.now()+':'+Math.random().toString(36).slice(2,7),fid,slot,name:file.name,blob:file};
+  const q=cvTx('readwrite').put(c);q.onsuccess=()=>res();q.onerror=()=>rej(q.error&&q.error.message||'could not save');}));}
+function cvDel(id){return cvOpen().then(()=>new Promise(res=>{const q=cvTx('readwrite').delete(id);q.onsuccess=q.onerror=()=>res();}));}
+
+// which voice a fighter uses: Marrow's DREAD form gets its own set
+function cvId(f){try{return (f.hero&&KIT(f.hero,'elem'))||f.hero.id;}catch(e){return f.hero&&f.hero.id;}}
+function cvClips(fid,slot){return CV.map[fid+':'+slot]||[];}
+function cvHas(f,slot){return SET.customVoice!==false&&cvClips(cvId(f),slot).length>0;}
+function cvStop(){if(CV.playing){try{CV.playing.pause();}catch(e){}CV.playing=null;}}
+function cvPlayClip(c,vol){cvStop();const u=CV.urls[c.id];if(!u)return null;const a=new Audio(u);
+  a.volume=Math.max(0,Math.min(1,(SET.sfx==null?85:SET.sfx)/100*(vol||1)));CV.playing=a;
+  a.onloadedmetadata=()=>{if(typeof duckMusic==='function'&&isFinite(a.duration))duckMusic(Math.min(6,a.duration+.3));};
+  a.play().catch(()=>{});return a;}
+function cvPlay(f,slot,vol){if(!cvHas(f,slot))return false;const L=cvClips(cvId(f),slot);
+  try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}cvPlayClip(L[Math.floor(Math.random()*L.length)],vol);return true;}
+function cvNear(f,R){return f===ME||(ME&&f&&f.pos&&f.pos.distanceTo(ME.pos)<(R||16));}
+
+// hook the voice moments (custom clip replaces the spoken line when one is set)
+const _cvUlt=ultCry;ultCry=function(f){if(cvPlay(f,'ult'))return;if(SET.ultSfx)return _cvUlt.apply(this,arguments);};
+/* built-in ultimate sounds (spoken cry, orchestral sting, charge-up, per-element ult sound) are OFF unless
+   SET.ultSfx is turned on in Settings — only custom ULTIMATE clips play. Attack impacts during an ult still sound. */
+if(SET.ultSfx===undefined)SET.ultSfx=false;
+const _cvSfx=sfx;sfx=function(f,kind){if(!SET.ultSfx&&(kind==='ult'||(kind==='charge'&&f&&f.state==='ult')))return;return _cvSfx.apply(this,arguments);};
+const _cvStartUlt=Fighter.prototype.startUlt;Fighter.prototype.startUlt=function(){CV.inUlt=1;try{return _cvStartUlt.apply(this,arguments);}finally{CV.inUlt=0;}};
+const _cvSting=AU.sting;AU.sting=function(){if(CV.inUlt&&!SET.ultSfx)return;return _cvSting.apply(this,arguments);};
+Object.keys(SND).forEach(k=>{const P=SND[k];if(P&&typeof P.ult==='function'){const o=P.ult;P.ult=function(){if(SET.ultSfx)return o.apply(this,arguments);};}});
+const _cvSay=sayLine;sayLine=function(f,text,o){if(f&&f.__cvWin&&cvPlay(f,'win'))return;return _cvSay.apply(this,arguments);};
+onEv('kill',(d,a)=>{if(a&&a!==d&&cvNear(a)&&cvHas(a,'kill'))setTimeout(()=>cvPlay(a,'kill'),250);});
+onEv('hit',(a,d,dmg)=>{if(!d||d.dead||dmg<12||!cvNear(d,12)||!cvHas(d,'hurt'))return;const now=performance.now();
+  if(now-(CV.hurtT[d.id||d.name]||0)<4000)return;CV.hurtT[d.id||d.name]=now;if(CV.playing&&!CV.playing.paused&&!CV.playing.ended)return;cvPlay(d,'hurt',.9);});
+onEv('win',w=>{if(w&&cvHas(w,'win')){w.__cvWin=1;setTimeout(()=>{cvPlay(w,'win');w.__cvWin=0;},1250);}});
+onEv('matchEnd',()=>{setTimeout(cvStop,1500);});
+
+// ---------- manager screen ----------
+function cvFighters(){const L=HEROES.map(h=>({id:(h.as&&h.as.elem)||h.id,name:h.name}));L.push({id:'dread',name:'MARROW · DREAD FORM'});return L;}
+function cvEsc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function cvSlotHTML(fid,s,n){return `<div class="cvSlot"><div class="cvSt"><b>${n}</b><label class="chip">+ ADD AUDIO<input type="file" accept="audio/*" multiple data-s="${s}" hidden></label></div>
+  ${cvClips(fid,s).map(c=>`<div class="cvClip"><span>${cvEsc(c.name)}</span><button class="chip" data-p="${c.id}">▶</button><button class="chip" data-d="${c.id}">✕</button></div>`).join('')||`<div class="cvEmpty">${fid===CV_MUS||s==='theme'?'No track: uses the built-in music':s==='ult'?'No clip: ultimate is silent (built-in ult sounds are off)':'No clip: uses the built-in voice'}</div>`}</div>`;}
+function cvUI(fid,tab){let box=$('cvBox');
+  if(!box){box=document.createElement('div');box.id='cvBox';document.body.appendChild(box);
+    box.addEventListener('keydown',e=>e.stopPropagation());box.addEventListener('mousedown',e=>e.stopPropagation());}
+  if(tab)CV.tab=tab;const F=cvFighters();CV.sel=fid||CV.sel||F[0].id;if(!F.some(x=>x.id===CV.sel))CV.sel=F[0].id;
+  const count=id=>CV_SLOTS.reduce((n,[s])=>n+cvClips(id,s).length,0),mus=CV.tab==='music',tgt=mus?CV_MUS:CV.sel;
+  box.innerHTML=`<div class="cvIn"><div class="cvHd"><b>CUSTOM SOUNDS</b><button class="chip" id="cvX">✕ CLOSE</button></div>
+    <div class="cvNote">🔒 Your clips stay in this browser only. They're never uploaded, never sent to other players online and never included in the game files. Only you hear them.</div>
+    <div class="cvRow"><button class="chip cvTab${mus?'':' on'}" data-t="voice">🎙 FIGHTER VOICES</button><button class="chip cvTab${mus?' on':''}" data-t="music">🎵 MUSIC</button>
+    <button class="chip${SET.customVoice!==false?' on':''}" id="cvOn" style="margin-left:auto">${SET.customVoice!==false?'CUSTOM SOUNDS ON':'CUSTOM SOUNDS OFF'}</button></div>
+    ${mus?'':`<div class="cvRow"><span>FIGHTER</span><select id="cvSel">${F.map(x=>`<option value="${x.id}"${x.id===CV.sel?' selected':''}>${cvEsc(x.name)}${count(x.id)?'  ♪'+count(x.id):''}</option>`).join('')}</select></div>`}
+    <div id="cvSlots">${(mus?CVM_SLOTS:CV_SLOTS).map(([s,n])=>cvSlotHTML(tgt,s,n)).join('')}</div>
+    <div class="cvErr" id="cvErr"></div><div class="cvNote">${mus?`Music loops; several tracks in one slot shuffle. A fighter's own BATTLE THEME (Fighter Voices tab) replaces Battle Music when you play them. Max ${CV_MUS_MB} MB per track. Plays at your Music volume (M toggles music).`:`Several clips in one slot play at random. Max ${CV_MAX_MB} MB per clip (${CV_MUS_MB} MB for a battle theme). Clips play at your SFX volume.`}</div></div>`;
+  box.classList.add('on');
+  $('cvX').onclick=()=>{cvStop();box.classList.remove('on');CVM.key=null;AU.ui&&AU.ui();};
+  if($('cvSel'))$('cvSel').onchange=e=>{cvStop();cvUI(e.target.value);};
+  box.querySelectorAll('.cvTab').forEach(b=>b.onclick=()=>{cvStop();cvUI(CV.sel,b.dataset.t);});
+  $('cvOn').onclick=()=>{SET.customVoice=SET.customVoice===false;setSave();CVM.key=null;cvUI(CV.sel);};
+  box.querySelectorAll('input[type=file]').forEach(inp=>inp.onchange=async()=>{const err=[];
+    for(const f of inp.files){if(!/^audio\//.test(f.type)&&!/\.(mp3|wav|ogg|m4a|aac|webm|flac)$/i.test(f.name)){err.push(f.name+' is not an audio file');continue;}
+      try{await cvAdd(tgt,inp.dataset.s,f);}catch(e){err.push(String(e));}}
+    await cvLoad();CVM.key=null;cvUI(CV.sel);if(err.length)$('cvErr').textContent=err.join(' · ');});
+  box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const c=Object.values(CV.map).flat().find(x=>x.id===b.dataset.p);if(c)cvPlayClip(c,(c.fid===CV_MUS||c.slot==='theme')?.6:1);});
+  box.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{cvStop();await cvDel(b.dataset.d);await cvLoad();CVM.key=null;cvUI(CV.sel);});}
+
+/* ---------- custom music: replaces the procedural soundtrack for the matching situation ---------- */
+const CVM={key:null,el:null,g:null,list:null};
+function cvmWant(){if(SET.customVoice===false||!AU.ctx||!AU.music||!AU.timer||!AU.mus)return null;const t=AU.theme;
+  if(t==='menu'){const L=cvClips(CV_MUS,'menu');return L.length?{key:'menu',L}:null;}
+  if(t==='boss'){const L=cvClips(CV_MUS,'boss');return L.length?{key:'boss',L}:null;}
+  if(t==='battle'){if(ME){const id=cvId(ME),L=cvClips(id,'theme');if(L.length)return {key:'theme:'+id,L};}const L=cvClips(CV_MUS,'battle');return L.length?{key:'battle',L}:null;}
+  return null;}
+function cvmStop(){const el=CVM.el,g=CVM.g;CVM.el=CVM.g=null;if(!el)return;try{const t=AU.ctx.currentTime;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+.6);}catch(e){}
+  setTimeout(()=>{try{el.pause();el.src='';g.disconnect();}catch(e){}},700);}
+function cvmStart(L,loop){const c=L[Math.floor(Math.random()*L.length)],u=CV.urls[c.id];if(!u||!AU.ctx)return;
+  const el=new Audio(u);el.loop=!!loop&&L.length===1;let g;
+  try{const src=AU.ctx.createMediaElementSource(el);g=AU.ctx.createGain();g.gain.value=0;src.connect(g);g.connect(AU.mus);const t=AU.ctx.currentTime;g.gain.linearRampToValueAtTime(3.5,t+.8);}
+  catch(e){g={gain:{value:1,cancelScheduledValues(){},setValueAtTime(){},linearRampToValueAtTime(){}},disconnect(){}};el.volume=(SET.music==null?70:SET.music)/100;}
+  el.onended=()=>{if(CVM.el!==el)return;if(CVM.key==='victory'){cvmStop();CVM.key=null;return;}cvmStop();cvmStart(CVM.list,loop);};
+  CVM.el=el;CVM.g=g;el.play().catch(()=>{});}
+function cvmSync(){if(CVM.key==='victory'&&CVM.el)return;const w=cvmWant(),k=w?w.key:null;
+  if(k===CVM.key&&(!k||CVM.el))return;cvmStop();CVM.key=k;CVM.list=w?w.L:null;if(w)cvmStart(w.L,true);}
+setInterval(()=>{try{cvmSync();}catch(e){}},300);
+// procedural music stays silent (but keeps time) while a custom track is playing
+const _cvSched=AU.sched;AU.sched=function(){if(CVM.el&&this.ctx){const c=this.ctx;while(this.nextT<c.currentTime+.12){this.nextT+=.03;this.step=(this.step+1)%64;}return;}return _cvSched.apply(this,arguments);};
+const _cvStopM=AU.stopMusic;AU.stopMusic=function(){const r=_cvStopM.apply(this,arguments);if(CVM.key!=='victory'){cvmStop();CVM.key=null;}return r;};
+const _cvFan=AU.fanfare;AU.fanfare=function(){const L=SET.customVoice!==false&&AU.ctx&&AU.mus&&cvClips(CV_MUS,'victory');
+  if(L&&L.length){cvmStop();CVM.key='victory';CVM.list=L;cvmStart(L,false);return;}return _cvFan.apply(this,arguments);};
+onEv('matchStart',()=>{if(CVM.key==='victory'){cvmStop();CVM.key=null;}});
+
+// entry points: Settings and the fighter preview
+const _cvSS=showSettings;showSettings=function(){const r=_cvSS.apply(this,arguments);try{const L=$('setList');
+  const h=document.createElement('div');h.className='seth';h.textContent='CUSTOM SOUNDS';L.appendChild(h);
+  const row=document.createElement('div');row.className='setrow';row.innerHTML='<span class="setl">YOUR OWN VOICE CLIPS AND MUSIC (THIS BROWSER ONLY)</span>';
+  const b=document.createElement('button');b.className='chip';b.textContent='🎙 MANAGE';b.onclick=()=>cvUI(null,'voice');row.appendChild(b);L.appendChild(row);
+  const r2=document.createElement('div');r2.className='setrow';r2.innerHTML='<span class="setl">BUILT-IN ULTIMATE SOUNDS (CRY, STING, CHARGE)</span>';const t=document.createElement('button');t.className='chip'+(SET.ultSfx?' on':'');t.textContent=SET.ultSfx?'ON':'OFF';
+  t.onclick=()=>{SET.ultSfx=!SET.ultSfx;setSave();showSettings();};r2.appendChild(t);L.appendChild(r2);}catch(e){}return r;};
+const _cvPv=previewHero;previewHero=function(i){const r=_cvPv.apply(this,arguments);try{const h=heroAt(i);let b=$('pvCVoice');
+  if(!b){b=document.createElement('button');b.id='pvCVoice';b.className='chip';b.title='Use your own audio clips for this fighter';b.textContent='🎙 CUSTOM';
+    const v=$('pvVoice')||$('pvName');if(v&&v.parentNode)v.parentNode.insertBefore(b,v.nextSibling);}
+  const id=(h.as&&h.as.elem)||h.id;const n=CV_SLOTS.reduce((k,[s])=>k+cvClips(id,s).length,0);b.textContent=n?'🎙 CUSTOM ♪'+n:'🎙 CUSTOM';
+  b.onclick=e=>{e.stopPropagation();cvUI(id,'voice');};const pv=$('pvVoice');if(pv)pv.style.display=(SET.ultSfx||cvClips(id,'ult').length)?'':'none';}catch(e){}return r;};
+cvLoad();
 /* Starts the game. Loaded last, after every other file. */
 buildGfx();if(!GFX.high)lampConeMat.visible=false;initPreview();makePortraits();$('load').style.display='none';showScreen('title');loop();
 })();

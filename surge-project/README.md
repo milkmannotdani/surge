@@ -23,6 +23,11 @@ js/
     gear.js           weapons and gear
     mha.js            Solstice, Piston, Snare, Marble, Legion, Recoil; extra moves (XMOVES); death ults
     zanshin.js        Zanshin: crescent waves, flash step, Final Release (sword swap)
+    projshape.js      projectile looks per fighter (PROJ_SIG) and per extra move (PROJ_MOVE)
+    uniqatk.js        unique light combo + heavy per fighter (UATK, built from TPL move templates; UATK_KEEP keeps old chains)
+    customvoice.js    CUSTOM SOUNDS: player-added voice clips per fighter (ult/kill/hurt/win/theme) and music (menu/battle/boss/victory), IndexedDB only; SET.ultSfx gates built-in ult sounds
+    dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
+    hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)
     fx2.js            signature VFX hooked onto inspired fighters' moves (glaciers, engine flames, red eyes, mud, tracers…)
     faithful.js       signature traits that make inspired fighters fight like their inspirations (TRAIT_DESC)
