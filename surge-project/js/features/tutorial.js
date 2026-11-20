@@ -1,6 +1,6 @@
 /* TUTORIAL — TUTORIAL button on the title screen. Runs in the training room with dummies.
    Each step waits until you actually do the thing: move, double jump, dash, light combo, heavy, block, special,
-   extra moves, ultimate, break out, awaken. SKIP moves on, EXIT leaves. Edit TUTL_STEPS to change the lessons. */
+   extra moves, ultimate, break out, switch mode. SKIP moves on, EXIT leaves. Edit TUTL_STEPS to change the lessons. */
 const TUT={on:false,i:0,acc:0,p0:null,hits:0};
 const TUTL_STEPS=[
   {t:'MOVE',d:'Move around with <b>WASD</b> (or the left stick). Look around with the mouse.',start(){TUT.p0=ME.pos.clone();},ok(){return ME.pos.distanceTo(TUT.p0)>8;}},
@@ -14,9 +14,9 @@ const TUTL_STEPS=[
   {t:'ULTIMATE',d:'Your ultimate fills as you fight — here it\'s full. Press <b>Q</b>! (Hold back or be in the air for your alternate ultimate.)',start(){ME.meter=100;},ok(){return ME.state==='ult';}},
   {t:'BREAK OUT',d:'Taking hits fills your <b>BREAK</b> bar. When it\'s full and you\'re being combo\'d, press <b>SHIFT</b> to burst out. Try it now!',
     start(){TUT.bt=0;},ok(dt){TUT.bt-=dt;if(TUT.bt<=0&&ME.state!=='hit'){TUT.bt=1.2;ME.brk=100;const d=FS.find(f=>f!==ME&&!f.dead);if(d)hitO(d,ME,{dmg:1,kb:1,stun:1.4});}return ME.brk<50&&TUT.bt<1.1;}},
-  {t:'AWAKEN',d:'At low health with a full BREAK bar you can <b>AWAKEN</b> — press <b>X</b> for a huge power-up.',start(){TUT.aw=false;ME.hp=25;ME.brk=100;},ok(){if(ME.hp>30)ME.hp=25;ME.brk=Math.max(ME.brk,100);return TUT.aw;}},
+  {t:'SWITCH MODE',d:'Every fighter has a second <b>MODE</b> with new specials, extra moves, punches, ultimate and look. Press <b>5</b> to switch, and again to switch back.',start(){TUT.aw=false;ME._formCD=0;},ok(){return TUT.aw;}},
   {t:'YOU\'RE READY!',d:'That\'s everything. Battle royale: be the last one standing while the zone closes in. Good luck — go beyond!',ok(){return false;},last:true}];
-onEv('awakenMe',()=>{if(TUT.on)TUT.aw=true;});
+onEv('modeMe',()=>{if(TUT.on)TUT.aw=true;});
 onEv('hit',(a,d)=>{if(TUT.on&&a===ME)TUT.hits++;});
 function startTutorial(){TUT.wait=false;if(typeof startPractice!=='function')return;PR.count=2;PR.look='dummy';PR.act='stand';startPractice();TUT.on=true;TUT.i=0;tutStep();
   $('prac').classList.remove('on');}

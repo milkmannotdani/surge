@@ -12,7 +12,7 @@ const HUMAN={
   strobe:[0,0xff8a3a,'pony',0x3fe0c5,'freckles'],pyre:[1,0xb8682a,'slick',0x3a8aff],warp:[3,0x6a6a7a,'buzz',0x8a5aff,'shades'],hex:[2,0x2a8a4a,'twin',0x5aff8a],
   scathe:[3,0xc4202a,'mohawk',0xff4a1a,'earring'],solstice:[0,0x1a2a5a,'short',0x9ae8ff],piston:[2,0xd86a2a,'mohawk',0xffb03a,'glasses'],snare:[1,0xb89a5a,'bun',0x5a5a62,'stubble'],
   marble:[1,0x14141a,'slick',0x9ae8ff,'beard'],legion:[2,0xd8822a,'curly',0x8a8e9a],recoil:[0,0xe8e8f2,'short',0xff3a96,'earring'],crimson:[1,0x14060a,'pony',0xff1a3a],
-  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble'],decree:[2,0xe8d8b0,'long',0x3ad8ff],skitter:[1,0x3a2a1a,'messy',0x7affd8],oldguard:[2,0xe8e4dc,'short',0x6a8aaa],hopstar:[1,0x8a4ad8,'long',0x6affe0],headliner:[0,0xf2d27a,'slick',0x3a8aff],zanshin:[1,0xd8d8e0,'spiky',0x8a6a4a]};
+  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble'],decree:[2,0xe8d8b0,'long',0x3ad8ff],skitter:[1,0x3a2a1a,'messy',0x7affd8],oldguard:[2,0xe8e4dc,'short',0x6a8aaa],hopstar:[1,0x8a4ad8,'long',0x6affe0],headliner:[0,0xf2d27a,'slick',0x3a8aff],torrent:[2,0x14141a,'pomp',0x5ab0ff,'stubble'],zanshin:[1,0xd8d8e0,'spiky',0x8a6a4a]};
 function humanLook(h){const id=h.as&&h.as.look&&HUMAN[h.as.look]?h.as.look:h.id;if(HUMAN[id])return HUMAN[id];let k=0;for(const c of (h.name||'x'))k=(k*31+c.charCodeAt(0))|0;k=Math.abs(k);
   return [k%6,[0x14141a,0x3a2414,0xa8401a,0xe8c84a,h.accent][k%5],['short','spiky','pony','curly','slick'][k%5],h.accent];}
 function geoKind(m){const g=m.geometry;if(!g)return '';const p=g.parameters||{};const t=g.type;
@@ -46,6 +46,8 @@ function humanize(h,X){const L=humanLook(h),skinC=SKIN[L[0]],skin=new THREE.Mesh
   if(st==='mohawk'){cap([.96,1.06,1.02],.0,.42);for(let k=0;k<6;k++){const c=M(new THREE.BoxGeometry(.035,.1,.05),hairM);c.position.set(0,.17-Math.abs(k-2.5)*.012,.09-k*.04);F.add(c);}}
   if(st==='curly'){cap([1.04,1.12,1.07],.02,.5);for(let k=0;k<16;k++){const a=k/16*6.283,b=M(new THREE.SphereGeometry(.04,10,8),hairM);b.position.set(Math.sin(a)*.12,.11+Math.cos(a*2)*.03,Math.cos(a)*.11-.01);F.add(b);}}
   if(st==='slick'){const c=cap([1.03,1.1,1.12],.02,.5);c.rotation.x=-.12;const b=M(new THREE.BoxGeometry(.24,.06,.1),hairM);b.position.set(0,.15,-.1);b.rotation.x=-.4;F.add(b);}
+  if(st==='pomp'){const c=cap([1.02,1.08,1.08],.02,.5);c.rotation.x=-.08;const p=M(new THREE.SphereGeometry(.14,18,12),hairM);p.position.set(0,.17,.1);p.scale.set(1,.72,1.75);p.rotation.x=-.18;F.add(p);
+    const b=M(new THREE.BoxGeometry(.26,.05,.12),hairM);b.position.set(0,.13,-.1);b.rotation.x=-.35;F.add(b);}
   if(st==='afro'){const a=M(new THREE.SphereGeometry(.22,20,16),hairM);a.position.set(0,.09,-.03);a.scale.set(1,.9,.95);F.add(a);}
   const ex=L[4];
   if(ex==='beard'||ex==='stubble'){const bd=M(new THREE.SphereGeometry(.112,20,14,0,Math.PI*2,Math.PI*.5,Math.PI*.5),ex==='beard'?hairM:new THREE.MeshStandardMaterial({color:L[1],roughness:.9,transparent:true,opacity:.45}));bd.position.set(0,-.06,.035);bd.scale.set(1.02,ex==='beard'?1.1:.95,1.04);F.add(bd);

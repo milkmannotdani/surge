@@ -25,10 +25,13 @@ js/
     zanshin.js        Zanshin: crescent waves, flash step, Final Release (sword swap)
     projshape.js      projectile looks per fighter (PROJ_SIG) and per extra move (PROJ_MOVE)
     uniqatk.js        unique light combo + heavy per fighter (UATK, built from TPL move templates; UATK_KEEP keeps old chains)
+    torrent.js        TORRENT (inspired by Ryu Ishigori, Jujutsu Kaisen — Gege Akutami): huge steerable output beams, finger guns
     customvoice.js    CUSTOM SOUNDS: player-added voice clips per fighter (ult/kill/hurt/win/theme) and music (menu/battle/boss/victory), IndexedDB only; SET.ultSfx gates built-in ult sounds
     clips.js          CLIPS: F8 record, F9 instant replay (two staggered MediaRecorders), auto KO/win highlights, gallery with trim/download/share (IndexedDB)
     secret.js         SECRET: press every letter A–Z on the title screen to unlock everything and max out every fighter
-    combatrules.js    10 s heal lock after damage, combo lock (only the BREAK escapes, 1 s invuln), 1.6x leaps, per-variant special cooldowns
+    combatrules.js    10 s heal lock after damage, combo lock (only the BREAK escapes, 1 s invuln), 1.6x leap/slam moves (whole move), per-variant special cooldowns
+    forms.js          MODES (replaces Awakening): every fighter's second mode on 5 — new specials, extra moves, ultimate, combo, look and stats (FORMS table)
+    beams.js          steerable beams (turn with aim, slow walk) and BEAM CLASHES (mash to push, winner overpowers)
     dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
     hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)
@@ -60,7 +63,6 @@ js/
     story.js          story engine: campaigns (CAMPS), anime cutscenes, missions, saving progress
   features/           add-ons that plug in through event hooks (see below)
     music.js          procedural soundtrack: THEMES (menu/story/dark/battle/boss/exam) + stings
-    awaken.js         power awakening (X at low HP with a full BREAK bar)
     teamup.js         team-up combos when partners ult together (TU_NAMES for named combos)
     destruct.js       craters, wall cracks, extra breakable street furniture
     civilians.js      civilians to rescue, objective panel, compass arrow

@@ -41,14 +41,14 @@
 <div id="flash"></div>
 <div id="spec"><div id="specT"></div><button class="btn ghost" id="bSpecLeave">LEAVE MATCH</button></div>
 <div id="objP"></div><div id="objArrow"><i>▲</i><b></b></div><div id="civProg"></div><div id="civHint">HOLD <kbd>R</kbd> TO RESCUE</div>
-<div id="awkP">AWAKEN READY · PRESS <kbd>X</kbd></div><div id="tuP">TEAM-UP! PRESS <kbd>Q</kbd> NOW</div><div id="touch"></div>
+<div id="tuP">TEAM-UP! PRESS <kbd>Q</kbd> NOW</div><div id="touch"></div>
 <div id="missions" class="screen"><h1 style="font-size:52px">MISSIONS</h1><p id="misHero"></p>
   <div id="misBody"><div class="rowb" id="misDiff" style="margin:8px 0 14px"></div>
   <div class="miscards"><div class="misc" id="misRescue"><div class="mict">RESCUE</div><div class="micd">Villains are tearing up the city and people are trapped in burning buildings and on rooftops. Fight your way through and carry them out before time runs out. Save 60% to pass.</div><div class="micb" id="misRescueBest"></div></div>
   <div class="misc ex" id="misExam"><div class="mict">HERO LICENSE EXAM</div><div class="micd">Three trials, one clock: an obstacle course over the rooftops, a rescue trial, and a fight with the exam proctor. Earn rank S, A, B or C.</div><div class="micb" id="misExamBest"></div></div></div></div>
   <div id="misRes" class="stfail" style="display:none"></div>
   <div class="rowb" style="margin-top:16px"><button class="btn" id="misBack">BACK</button></div></div>
-<div id="hint" style="display:none">WASD MOVE · CLICK TO LOCK CURSOR · MOUSE LOOK · C SHIFT LOCK · TAB LOCK-ON · SPACE JUMP ×2 · JUMP INTO A WALL + HOLD = CLIMB · SPACE ON A WALL = WALL JUMP · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · 1–4 MOVES · Q ULT (BACK/AIR = ALT ULT) · HOLD = CHARGE · X AWAKEN · HOLD R RESCUE · M MUSIC · ESC MENU</div>
+<div id="hint" style="display:none">WASD MOVE · CLICK TO LOCK CURSOR · MOUSE LOOK · C SHIFT LOCK · TAB LOCK-ON · SPACE JUMP ×2 · JUMP INTO A WALL + HOLD = CLIMB · SPACE ON A WALL = WALL JUMP · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · 1–4 MOVES · Q ULT (BACK/AIR = ALT ULT) · HOLD = CHARGE · 5 SWITCH MODE · HOLD R RESCUE · M MUSIC · ESC MENU</div>
 
 <div id="story" class="screen"><div class="rowb" id="storyTabs" style="margin-bottom:10px"></div><h1 style="font-size:52px" id="storyH">SURGE: ORIGIN</h1><p id="storySub">STORY MODE · THE TALE OF THE HERO TITAN</p><div id="storyList"></div><div class="rowb" style="margin-top:16px"><button class="btn" id="bStoryBack">BACK</button></div></div>
 <div id="cut"><canvas id="cutFx"></canvas><div id="cutSfx"></div><div id="cutCard"><b></b><span></span></div><div id="cutEp"><small></small><b></b></div><div id="cutBox"><div id="cutImg"></div><div class="cutr"><div id="cutName"></div><div id="cutTxt"></div><div class="cuth">CLICK / SPACE ▶ · ESC SKIP</div></div><button id="cutSkip">SKIP ▶▶</button></div></div>
@@ -239,6 +239,7 @@
 <script src="js/fighters/dread.js"></script>
 <script src="js/fighters/projshape.js"></script>
 <script src="js/fighters/uniqatk.js"></script>
+<script src="js/fighters/torrent.js"></script>
 <script src="js/fighters/looks.js"></script>
 <script src="js/fighters/humans.js"></script>
 <script src="js/game/game.js"></script>
@@ -254,7 +255,6 @@
 <!-- add-on features (they hook in with onEv) -->
 <script src="js/features/music.js"></script>
 <script src="js/features/cinematic.js"></script>
-<script src="js/features/awaken.js"></script>
 <script src="js/features/teamup.js"></script>
 <script src="js/features/destruct.js"></script>
 <script src="js/features/civilians.js"></script>
@@ -281,6 +281,8 @@
 <script src="js/features/clips.js"></script>
 <script src="js/features/secret.js"></script>
 <script src="js/features/combatrules.js"></script>
+<script src="js/features/forms.js"></script>
+<script src="js/features/beams.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

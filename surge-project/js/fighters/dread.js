@@ -38,14 +38,11 @@ function formSkin(f,dread){f.rig.root.traverse(o=>{if(!o.isMesh||!o.material||!o
     o.material.color.setHex(l>.6?DR_G:l>.3?DR_V:DR_D);if(o.material.emissive){o.material.emissive.setHex(l>.6?DR_G:0x1a0a2a);o.material.emissiveIntensity=l>.6?1.2:.4;}}
   else if(o.userData.drOrig){o.material.dispose();o.material=o.userData.drOrig;o.userData.drOrig=null;}});}
 // press 5 (players) — goes through the host online
-addEventListener('keydown',e=>{if(e.code!=='Digit5'||e.repeat||!inMatch()||!ME||document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
-  if(!canSwitch(ME))return;formReq(ME,!isDread(ME));});
+// (switching is handled by forms.js — the SWITCH MODE action, 5)
 function formReq(f,on){if(NET.role==='client'){netSay({k:'mform',id:f.id,on:on?1:0});return;}setForm(f,on);if(NET.role==='host')netSay({k:'mformFx',id:f.id,on:on?1:0});}
 onEv('x:mform',e=>{if(NET.role==='host'&&e.from!==NET.myId){const f=FS.find(q=>q.id===e.id);if(f&&!(f._formCD>game.time)){setForm(f,!!e.on);netSay({k:'mformFx',id:f.id,on:e.on});}}});
 onEv('x:mformFx',e=>{if(NET.role==='client'){const f=FS.find(q=>q.id===e.id);if(f)setForm(f,!!e.on);}});
 // bots switch now and then
-onEv('tick',dt=>{if(NET.role==='client')return;for(const f of FS){if(!f.isBot||f.dead)continue;const base=f.hero._bone||f.hero;if(KIT(base,'elem')!=='marrow')continue;
-  if(Math.random()<dt*.06&&canSwitch(f))formReq(f,!isDread(f));}});
 onEv('matchEnd',()=>FS.forEach(f=>{if(isDread(f)){f.hero=f.hero._bone;formSkin(f,false);}}));
 
 /* ---------- TERROR ---------- */

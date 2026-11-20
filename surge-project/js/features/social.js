@@ -102,7 +102,7 @@ function ultCry(f){if(SET.voiceLines===false||!window.speechSynthesis)return;try
   const cry=ULT_CRY[f.hero.id];if(cry)speechSynthesis.speak(vSpeak(f,cry,{rate:1.12}));speechSynthesis.speak(vSpeak(f,name+'!',{rate:.82,dp:-.08,vol:1.15}));duckMusic(2.6);}catch(e){}}
 onEv('ult',f=>{if(f===ME||(ME&&f.pos.distanceTo(ME.pos)<16&&Math.random()<.5))setTimeout(()=>ultCry(f),30);});
 onEv('teamupMe',()=>{if(ME)setTimeout(()=>sayLine(ME,'Team up! Plus Ultra!'),100);});
-onEv('awakenMe',()=>{if(ME)sayLine(ME,'I won\'t lose here!');});
+
 onEv('win',w=>{if(w&&ME&&ally(w,ME))setTimeout(()=>sayLine(ME,ME.hero.faction==='villain'?'Too easy.':'That\'s what heroes do!'),1200);});
 /* shop: emotes are owned, not equipped */
 const _rsS=renderShop;renderShop=function(){_rsS();if(SH.tab==='emotes'){const b=$('shBuy');if(owns('emote:'+SH.sel)){b.textContent='OWNED · PRESS B IN A MATCH';b.disabled=true;}$('shBig').innerHTML='<div class="mdnote">Emotes play with the emote wheel (B, or View on a controller). Everyone nearby sees them.</div>';}
@@ -138,7 +138,8 @@ const VPROF={ // sex m/f · a: accent (us gb au in) · p: pitch · r: rate · v:
   oldguard:{sex:'m',a:'gb',p:.58,r:.88},         // gruff veteran
   hopstar:{sex:'f',a:'au',p:1.45,r:1.15,v:1.1},  // bright idol
   headliner:{sex:'m',a:'us',p:.92,r:1.02,v:1.15},// big American showman
-  zanshin:{sex:'m',a:'us',p:.88,r:1.06,v:1.1}};  // determined, protective
+  zanshin:{sex:'m',a:'us',p:.88,r:1.06,v:1.1},  // determined, protective
+  torrent:{sex:'m',a:'us',p:.72,r:.96,v:1.2}};  // booming, cocky
 // spread fighters across the installed voices so two fighters with the same gender/accent still sound different
 (function(){const n={};Object.keys(VPROF).forEach(k=>{const P=VPROF[k],key=P.sex+P.a;P.vi=n[key]=(n[key]||0)+1;});})();
 const ACC={us:/en[-_]US/i,gb:/en[-_]GB/i,au:/en[-_]AU/i,in:/en[-_]IN/i};
@@ -160,7 +161,8 @@ const VCRY={
   oldguard:'Listen up, kid. Power isn\'t everything.',
   hopstar:'Showtime! Everybody, eyes on me!',
   headliner:'Smile for the cameras, folks — the star has arrived!',
-  zanshin:'I\'ll protect them. No matter what!'};
+  zanshin:'I\'ll protect them. No matter what!',
+  torrent:'Come on — show me you can take my full output!'};
 const _vfOld=voiceFor;
 voiceFor=function(f){const P=VPROF[KIT(f.hero,'elem')];if(!P)return _vfOld(f);if(!VOICES.length)loadVoices();if(!VOICES.length)return null;
   const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);

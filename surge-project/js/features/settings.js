@@ -60,7 +60,7 @@ onEv('matchStart',()=>{if(ME)ME.hardLock=false;if(SET.shiftLock||SET.cursorLock)
 
 /* ---- button prompts: keyboard keys, or controller buttons when you're playing on a gamepad ---- */
 const INDEV={dev:'kb'};
-const KB_NAMES={m1:'1',m2:'2',m3:'3',m4:'4',ult:'Q',awk:'X',res:'R',jump:'SPACE',dash:'SHIFT',light:'J',heavy:'K',block:'F',lock:'TAB',pause:'ESC'};
+const KB_NAMES={m1:'1',m2:'2',m3:'3',m4:'4',ult:'Q',awk:'5',res:'R',jump:'SPACE',dash:'SHIFT',light:'J',heavy:'K',block:'F',lock:'TAB',pause:'ESC'};
 const PAD_GLYPH={xbox:{m1:['RB','sh'],m2:['LT','tr'],m3:['↑','dp'],m4:['→','dp'],ult:['RT','tr'],awk:['↓','dp'],res:['←','dp'],jump:['A','fa a'],dash:['B','fa b'],light:['X','fa x'],heavy:['Y','fa y'],block:['LB','sh'],lock:['R3','st'],pause:['☰','st']},
   ps:{m1:['R1','sh'],m2:['L2','tr'],m3:['↑','dp'],m4:['→','dp'],ult:['R2','tr'],awk:['↓','dp'],res:['←','dp'],jump:['✕','fa ps-x'],dash:['○','fa ps-o'],light:['□','fa ps-s'],heavy:['△','fa ps-t'],block:['L1','sh'],lock:['R3','st'],pause:['≡','st']}};
 function onPad(){return INDEV.dev==='pad';}
@@ -75,7 +75,7 @@ onEv('input',()=>{const gp=navigator.getGamepads?[...navigator.getGamepads()].fi
   if(gp.buttons.some(b=>b.pressed)||gp.axes.some(v=>Math.abs(v)>.4))setDev('pad');
   const r3=!!(gp.buttons[11]&&gp.buttons[11].pressed);if(r3&&!INDEV.r3&&inMatch())lockOnCycle();INDEV.r3=r3;});
 // prompts that name a button
-[['awkP','AWAKEN READY · PRESS ','awk'],['tuP','TEAM-UP! PRESS ','ult'],['civHint','HOLD ','res']].forEach(([id,t,a])=>{const e=$(id);if(e)e.innerHTML=t+`<span data-a="${a}"><kbd>${KB_NAMES[a]}</kbd></span>`+(id==='tuP'?' NOW':id==='civHint'?' TO RESCUE':'');});
+[['tuP','TEAM-UP! PRESS ','ult'],['civHint','HOLD ','res']].forEach(([id,t,a])=>{const e=$(id);if(e)e.innerHTML=t+`<span data-a="${a}"><kbd>${KB_NAMES[a]}</kbd></span>`+(id==='tuP'?' NOW':id==='civHint'?' TO RESCUE':'');});
 // tutorial lessons: show controller buttons when on a gamepad
 const TUT_PAD={'MOVE':'L-STICK','JUMP':'jump','DASH':'dash','BASIC ATTACKS':'light heavy','SPECIAL MOVE':'m1','EXTRA MOVES':'m3 m4','BLOCK':'block','BREAK OUT':'dash','CLIMB':'jump','ULTIMATE':'ult','AWAKENING':'awk'};
 onEv('tick',()=>{if(!onPad())return;const o=$('objP');if(!o||!o.classList.contains('on'))return;const k=o.querySelector('kbd');if(!k)return;const m=/LESSON \d+\/\d+ · ([A-Z ]+)/.exec(o.textContent);if(!m)return;

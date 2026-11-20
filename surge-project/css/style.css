@@ -504,3 +504,10 @@ body.calm #flash{display:none!important}
 #secretBox span{font-size:20px;opacity:.9}@keyframes secPop{0%{transform:scale(2.4);opacity:0}100%{transform:none;opacity:1}}
 #meH.nohl{filter:saturate(.25) brightness(.8)}
 #healLk{position:absolute;right:4px;top:50%;transform:translateY(-50%);font:13px 'Bebas Neue',sans-serif;letter-spacing:.12em;color:#ff8a8a;text-shadow:0 1px 2px #000;pointer-events:none}
+#modeChip{position:fixed;left:50%;bottom:118px;transform:translateX(-50%);z-index:19;display:none;padding:3px 12px;background:rgba(8,10,20,.72);border-left:3px solid var(--c,#ffd23f);color:#fff;font:15px 'Bebas Neue',sans-serif;letter-spacing:.14em;pointer-events:none}
+#modeChip kbd{background:#1b1d2b;border:1px solid #555b7a;border-radius:3px;padding:0 5px;color:#ffd23f;margin-right:4px;font:inherit}#modeChip b{color:var(--c,#ffd23f);font-weight:400}#modeChip i{opacity:.6}
+#clashP{position:fixed;left:50%;top:24%;transform:translateX(-50%);z-index:30;display:none;text-align:center;pointer-events:none;color:#fff}
+#clashP.on{display:block}#clashP b{display:block;font:44px 'Bebas Neue',sans-serif;letter-spacing:.12em;color:#ffd23f;text-shadow:0 0 18px rgba(255,210,63,.8),0 3px 0 #000}
+#clashP span{display:block;font:800 14px 'Rajdhani',sans-serif;letter-spacing:.3em;margin:2px 0 6px;animation:awkPulse .25s ease-in-out infinite alternate}
+#clashP .cbar{width:340px;height:14px;background:#ff3a3a;border:2px solid #fff;box-shadow:0 0 14px rgba(0,0,0,.6);margin:0 auto;overflow:hidden}#clashP .cbar i{display:block;height:100%;width:50%;background:linear-gradient(90deg,#4fd2ff,#ffffff);transition:width .1s}
+#clashP.pp b{animation:secPop .2s}

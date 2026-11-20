@@ -39,13 +39,27 @@ const CR_ATK=['light','heavy','special','ult','x1','x2','spB','ultB'];
 function comboLocked(f){if(f.dead||f.downed)return false;if(BRK_STATES.indexOf(f.state)>=0)return true;return game.time-(f._comboAt==null?-99:f._comboAt)<COMBO_WIN&&f.state!=='dash';}
 const _crUpd=Fighter.prototype.update;Fighter.prototype.update=function(dt){
   if(game.phase==='fight'&&comboLocked(this)){const I=this.intent;if(I)CR_ATK.forEach(k=>{I[k]=false;});this.bufL=this.bufH=this.bufS=0;this.bufX=0;this.bufSB=0;}
-  // a leap = this fighter launched itself upward during one of its own moves
+  // LEAPS: a move that sends the fighter into the sky (and back down) plays 1.6x faster from wind-up to landing.
+  // Known leaping moves (and every slam-type move) are fast from the first frame; any other move that launches its user is learned the first time it happens.
   const st=this.state,own=st==='special'||st==='ult'||st==='attack';
-  if(!own||this.onGround&&this._leap&&this.stateT>.05)this._leap=false;
+  if(!own){this._leap=false;this._mk=null;}
+  else{const mk=crMoveKey(this);if(mk!==this._mk||this.stateT<(this._lst||0)){this._mk=mk;this._leap=LEAPK.has(mk)||crSlamMove(this);}this._lst=this.stateT;}
   const k=this._leap?LEAP_SPD:1,y0=this.pos.y;
   const r=_crUpd.call(this,dt*k);
-  const s2=this.state;if(!this._leap&&dt>0&&!this.dead&&(s2==='special'||s2==='ult'||s2==='attack')&&((this.pos.y-y0)/(dt*k)>4.5||this.vel.y>6)&&!this.onGround)this._leap=true;
+  if(own&&this._mk&&!this._leap&&dt>0&&!this.dead&&this.state===st&&((this.pos.y-y0)/(dt*k)>4.5||this.vel.y>6)&&!this.onGround){this._leap=true;LEAPK.add(this._mk);}
   return r;};
+function crMoveKey(f){const h=f.hero,st=f.state;
+  if(st==='ult')return h.id+'|u:'+h.ult+':'+(f.ultAlt?'B':'');
+  if(st==='special')return h.id+'|'+(f.xmOn?'x:'+(f.xmA&&f.xmA.name):'s:'+h.special+':'+(f.specVar||'n'));
+  return h.id+'|a:'+f.moveName;}
+function crSlamMove(f){if(f.state!=='special')return false;if(f.xmOn)return !!(f.xmA&&f.xmA.form==='slam');
+  const C=f.hero.cab;if(f.hero.special==='cab'&&C){const A=f.specVar==='alt'?(C.spAlt||C.sp):C.sp;return !!(A&&A.form==='slam');}return false;}
+// moves found to rise and slam down (scan of every fighter)
+const LEAPK=new Set();
+[['gale','spB'],['nitro','spB'],['titan','ultB'],['quill','ult'],['quill','ultB'],['quake','ult'],['recoil','ultB'],['crimson','ult'],['cushion','ultB'],['hopstar','sp'],['hopstar','spB'],['hopstar','ultB'],['headliner','ult'],['titan','ult']]
+  .forEach(([id,sl])=>{const h=HEROES.find(x=>x.id===id);if(!h)return;
+    LEAPK.add(h.id+'|'+(sl[0]==='s'?'s:'+h.special+':'+(sl==='spB'?'alt':'n'):'u:'+h.ult+':'+(sl==='ultB'?'B':'')));
+    if(sl==='sp')LEAPK.add(h.id+'|s:'+h.special+':chg');});
 
 // HUD: show when your healing is locked
 setInterval(()=>{const b=$('meH');if(!b||!ME)return;const L=inMatch()&&healLocked(ME)&&ME.hp<100;b.classList.toggle('nohl',L);

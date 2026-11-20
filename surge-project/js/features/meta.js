@@ -5,7 +5,7 @@
 const CH_POOL=[
   {id:'ko',t:'Knock out {n} fighters',ev:'ko',d:[5,8],w:[40,60]},{id:'win',t:'Win {n} matches',ev:'win',d:[1,2],w:[5,8]},
   {id:'civ',t:'Rescue {n} civilians',ev:'civ',d:[5,8],w:[25,40]},{id:'tu',t:'Land {n} team-up combos',ev:'tu',d:[1,2],w:[5,8]},
-  {id:'ult',t:'Use {n} ultimates',ev:'ult',d:[5,8],w:[25,40]},{id:'awk',t:'Awaken {n} times',ev:'awk',d:[1,2],w:[4,6]},
+  {id:'ult',t:'Use {n} ultimates',ev:'ult',d:[5,8],w:[25,40]},{id:'awk',t:'Switch modes {n} times',ev:'awk',d:[3,5],w:[10,15]},
   {id:'play',t:'Finish {n} matches',ev:'play',d:[3,4],w:[12,18]},{id:'dmg',t:'Deal {n} damage',ev:'dmg',d:[1500,2500],w:[9000,14000]},
   {id:'car',t:'Throw {n} cars',ev:'car',d:[2,3],w:[8,12]},{id:'mis',t:'Clear {n} story missions or missions',ev:'mis',d:[1,2],w:[5,7]},
   {id:'vwin',t:'Win {n} matches as a villain',ev:'vwin',d:[1,1],w:[3,5]},{id:'raid',t:'Defeat {n} raid bosses',ev:'raid',d:[1,1],w:[3,4]},
@@ -25,7 +25,7 @@ function chBump(ev,amt){chRefresh();let any=false;for(const [L,pts,sx] of [[META
 // what counts
 onEv('kill',(d,a)=>{if(a&&a===ME&&!ally(a,d)){chBump('ko');if(d.evt)chBump('nomu');}else if(d.evt&&ME&&!ME.dead&&ME.pos.distanceTo(d.pos)<30)chBump('nomu');});
 onEv('win',w=>{if(!w||!ME||!ally(w,ME)||game.story)return;chBump('win');if(ME.hero.faction==='villain')chBump('vwin');if(game.rules==='raid')chBump('raid');});
-onEv('civSaved',()=>chBump('civ'));onEv('teamupMe',()=>chBump('tu'));onEv('awakenMe',()=>chBump('awk'));onEv('carMe',()=>chBump('car'));
+onEv('civSaved',()=>chBump('civ'));onEv('teamupMe',()=>chBump('tu'));onEv('modeMe',()=>chBump('awk'));onEv('carMe',()=>chBump('car'));
 onEv('ult',f=>{if(f===ME)chBump('ult');});
 onEv('hit',(a,d,dmg)=>{if(a===ME&&!game.practice&&!ally(a,d)){META._dmg=(META._dmg||0)+dmg;if(META._dmg>=50){chBump('dmg',Math.floor(META._dmg));META._dmg=0;}}});
 onEv('matchEnd',()=>{if(ME&&!game.practice&&game.matchT>30&&!game.story)chBump('play');});

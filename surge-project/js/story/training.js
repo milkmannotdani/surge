@@ -11,7 +11,7 @@ const TUT_STEPS=[
   {t:'BREAK OUT',k:'SHIFT WHILE BEING HIT',d:'Your BREAK bar is full. When you are caught in a combo, tap Shift to burst out.',start(s){ME.brk=100;},check(){return ME.brk===0;}},
   {t:'CLIMB',k:'JUMP INTO A WALL + HOLD W',d:'Jump into a building wall and keep holding forward to climb it. Press Space on a wall to wall-jump.',start(s){s.bot.hold=true;},check(){return ME.state==='climb';}},
   {t:'ULTIMATE',k:'Q',d:'Your ult meter is full. Unleash your ultimate!',start(){ME.meter=100;},check(){return ME.state==='ult';}},
-  {t:'AWAKENING',k:'X',d:'Low health + full BREAK bar = AWAKENING, once per match. Try it!',start(){ME.hp=26;ME.brk=100;ME.awkUsed=false;},check(){if(!(ME.awkT>0)&&!ME.awkUsed){ME.hp=Math.min(ME.hp,28);ME.brk=100;}return ME.awkT>0;}},
+  {t:'SWITCH MODE',k:'5',d:'Every fighter has a second mode with new moves. Press 5 to switch!',start(){ME._formCD=0;},check(){return typeof inMode==='function'&&inMode(ME);}},
   {t:'SPARRING MATCH',k:'EVERYTHING',d:'Final lesson: beat Nitro in a real spar!',start(s){s.final=true;s.bot.hold=false;}}];
 function tutStage(){const st={i:-1,hits:0,bk:false,bot:null,final:false};
   function go(i){st.i=i;const T=TUT_STEPS[i];if(T.start)T.start(st);announceSmall(T.t);AU.scale=1;if(i>0)AU.pick();}

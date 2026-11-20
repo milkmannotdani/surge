@@ -3,7 +3,7 @@
    A default key that has been moved to another action stops working for its old action. */
 const KB_ACTIONS=[['fwd','MOVE FORWARD','KeyW'],['back','MOVE BACK','KeyS'],['left','MOVE LEFT','KeyA'],['right','MOVE RIGHT','KeyD'],['jump','JUMP','Space'],['dash','DASH / SPRINT','ShiftLeft'],
   ['light','LIGHT ATTACK','KeyJ'],['heavy','HEAVY ATTACK','KeyK'],['block','BLOCK','KeyF'],['m1','MOVE 1 (SPECIAL)','Digit1'],['m2','MOVE 2','Digit2'],['m3','MOVE 3','Digit3'],['m4','MOVE 4','Digit4'],
-  ['ult','ULTIMATE','KeyQ'],['awk','AWAKEN','KeyX'],['res','RESCUE / REVIVE / LIFT CAR','KeyR'],['lock','LOCK-ON','Tab'],['emote','EMOTE WHEEL','KeyB'],['chat','QUICK CHAT','KeyT'],['ping','PING','KeyG'],['ptt','PUSH TO TALK','KeyV']];
+  ['ult','ULTIMATE','KeyQ'],['awk','SWITCH MODE','Digit5'],['res','RESCUE / REVIVE / LIFT CAR','KeyR'],['lock','LOCK-ON','Tab'],['emote','EMOTE WHEEL','KeyB'],['chat','QUICK CHAT','KeyT'],['ping','PING','KeyG'],['ptt','PUSH TO TALK','KeyV']];
 SET.binds=SET.binds||{};let REMAP={};
 function rebuildRemap(){REMAP={};const phys={};KB_ACTIONS.forEach(([a,,d])=>{phys[a]=SET.binds[a]||d;});
   KB_ACTIONS.forEach(([a,,d])=>{if(phys[a]!==d)REMAP[phys[a]]=d;});

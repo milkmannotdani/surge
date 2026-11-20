@@ -11,7 +11,7 @@ const ACH=[
   ['combo10','COMBO KING','Land a 10-hit combo'],['dmg1k','HEAVY HITTER','Deal 1,000 damage in one match'],['ko5','RAMPAGE','5 KOs in one match'],
   ['car','CAR TOSS','KO someone with a thrown car'],['meteor','DUCK AND COVER','Survive a Meteor Shower'],['gold','GOLD DIGGER','Grab 5 gold orbs in one match'],
   ['clip1','DIRECTOR','Save your first clip'],['clip10','HIGHLIGHT REEL','Save 10 clips'],['train','LAST STOP','Get hit by the train'],
-  ['awaken','AWAKENED','Awaken your power'],['teamup','TEAM PLAYER','Pull off a team-up'],['civ','RESCUER','Save 10 civilians'],
+  ['awaken','TRANSFORMED','Switch into your second mode'],['teamup','TEAM PLAYER','Pull off a team-up'],['civ','RESCUER','Save 10 civilians'],
   ['share','GOING VIRAL','Share or download a clip'],['roster10','VERSATILE','Win with 10 different fighters'],['roster','FULL ROSTER','Play every fighter'],
   ['law','THE LAW','Lay down a law as Decree'],['erase','NOT ON MY WATCH','Erase a power for 5 s as Snare'],['wall','STRAIGHT UP','Glide up a 30 m wall as Skitter'],
   ['rankpro','GOING PRO','Reach PRO rank'],['master','MASTER','Reach mastery 10 with any fighter']].map(([id,n,d])=>({id,n,d}));
@@ -28,7 +28,7 @@ const AM={};onEv('matchStart',()=>{AM.ult=false;AM.kos=0;AM.gold=0;AM.carT=0;AM.
 onEv('ult',f=>{if(f===ME)AM.ult=true;});
 onEv('kill',(d,a)=>{if(!real()||!ME)return;if(a===ME&&d!==ME){AM.kos++;const n=achAdd('kos');achGive('first');if(n>=10)achGive('ko10');if(n>=100)achGive('ko100');if(n>=500)achGive('ko500');if(AM.kos>=5)achGive('ko5');if(game.time-AM.carT<3)achGive('car');}});
 onEv('carMe',()=>{AM.carT=game.time;});
-onEv('awakenMe',()=>achGive('awaken'));onEv('teamupMe',()=>achGive('teamup'));onEv('civSaved',()=>{if(achAdd('civ')>=10)achGive('civ');});
+onEv('modeMe',()=>achGive('awaken'));onEv('teamupMe',()=>achGive('teamup'));onEv('civSaved',()=>{if(achAdd('civ')>=10)achGive('civ');});
 onEv('recap',S=>{if(S.best>=10)achGive('combo10');if(S.dmg>=1000)achGive('dmg1k');});
 onEv('tick',dt=>{if(!ME||!real())return;
   if(typeof SURGE!=='undefined'){if(SURGE.ev==='meteors'){AM.met=true;}else if(AM.met){AM.met=false;if(!ME.dead)achGive('meteor');}

@@ -115,6 +115,7 @@ function spawnProj(f,type,ang,opt){
   if(type==='wave'){p.vel=fw.clone().multiplyScalar(20);p.r=2.2;p.life=2.4;p.dmg=24;p.kb=13;p.up=11;p.launch=true;p.pos.copy(f.pos).addScaledVector(fw,1.5);p.pos.y=0;p.big=true;
     const geo=new THREE.PlaneGeometry(11,4.5,24,10);const pa=geo.attributes.position;for(let i=0;i<pa.count;i++){const y=pa.getY(i),v=(y+2.25)/4.5;pa.setZ(i,v*v*2.2-Math.abs(pa.getX(i))*.12);pa.setY(i,y+2.25);}geo.computeVertexNormals();
     g.add(new THREE.Mesh(geo,addMat(0x1fb8ff,1.6,.55)));const m2=new THREE.Mesh(geo,addMat(0x9af0ff,1.2,.35));m2.scale.set(.96,.9,.9);m2.position.z=-.4;g.add(m2);}
+  if(!p.vel){p.vel=fw.clone().multiplyScalar(24);p.r=p.r||.6;p.life=p.life||1;p.dmg=p.dmg||8;p.kb=p.kb||4;p.up=p.up||0;}  // unknown type: fly straight
   if(!opt.quiet&&f.state!=='special'){const q=specSnd(type);if(q&&q.spec)q.spec(f);}
   AU.scale=sc;
   g.position.copy(p.pos);if(opt.dir&&(type==='feather'||type==='meteor'))g.quaternion.setFromUnitVectors(new V3(0,0,1),p.vel.clone().normalize());else g.rotation.y=Math.atan2(fw.x,fw.z);scene.add(g);p.mesh=g;projs.push(p);
