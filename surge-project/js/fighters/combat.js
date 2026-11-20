@@ -25,8 +25,10 @@ function applyHit(att,def,o){o=Object.assign({},o);o.dmg=(o.dmg||0)*DMG_SCALE*(d
     def.face=Math.atan2(att.pos.x-def.pos.x,att.pos.z-def.pos.z);if(def===ME)announceSmall('PARRY!');AU.block();AU.scale=sc;applyHit(def,att,{dmg:12,kb:12,up:9,launch:true,heavy:true,pt:att.chest(new V3())});return 'block';}
   if(o.gb&&(def.state==='block'||def.state==='bstun')&&facing){ring(o.pt,0xffd23f,2.6,.3,false,2.6);burst(ADD,o.pt,30,{colors:[0xffd23f,0xffffff],speed:10,life:.35,size:.25,bright:2.6});AU.glass();if(def===ME||att===ME)announceSmall('GUARD BREAK');}
   const guardF=def.fwd(TMP2).dot(dir)<.15;
-  if((def.state==='block'||def.state==='bstun')&&guardF&&!o.frame&&!o.gb){
-    const chip=o.chip!==undefined?o.chip:(o.heavy?.25:.1);def.hp=Math.max(1,def.hp-o.dmg*chip);
+  // blocking stops ALL damage, except guard breakers, ultimate moves and heavy attacks, which go straight through
+  const pierce=!o.gb&&(def.state==='block'||def.state==='bstun')&&guardF&&!o.frame&&(att.state==='ult'||o.ult||(att.state==='attack'&&MOVES[att.moveName]&&MOVES[att.moveName].heavy));
+  if(pierce){ring(o.pt,att.state==='ult'?0xffd23f:0xff7a3a,2.4,.28,false,2.4);if(def===ME||att===ME)announceSmall(att.state==='ult'?'UNBLOCKABLE':'GUARD PIERCED');def.set('hit');}
+  if((def.state==='block'||def.state==='bstun')&&guardF&&!o.frame&&!o.gb&&!pierce){
     def.vel.addScaledVector(dir,(o.kb||3)*.5+1.5);def.set('bstun');def.meter=Math.min(100,def.meter+4);att.meter=Math.min(100,att.meter+2);
     blockSpark(o.pt);AU.block();if(local)hitStop(.05);shake(.12,o.pt);AU.scale=sc;return 'block';
   }

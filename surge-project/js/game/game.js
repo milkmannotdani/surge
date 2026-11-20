@@ -29,7 +29,7 @@ function orbsHost(dt){
   orbT-=dt;if(orbT<=0&&ORBS.length<14){orbT=2.5;const p=randomOpenPoint(ZONE.cx,ZONE.cz,Math.min(ZONE.r*.85,95));addOrb(orbId++,p.x,p.z,Math.random()<.6?'hp':'surge');}
   for(const o of ORBS.slice()){if(Math.hypot(o.x-ZONE.cx,o.z-ZONE.cz)>ZONE.r+2){removeOrb(o,false);continue;}
     for(const f of FS){if(f.dead)continue;if(Math.hypot(f.pos.x-o.x,f.pos.z-o.z)<1.7&&f.pos.y<2.5){
-      if(o.type==='hp'){if(f.hp>=100)continue;f.hp=Math.min(100,f.hp+30);}else f.meter=Math.min(100,f.meter+40);
+      if(o.type==='hp'){if(f.hp>=100||(typeof healLocked==='function'&&healLocked(f)))continue;f.hp=Math.min(100,f.hp+30);}else f.meter=Math.min(100,f.meter+40);
       removeOrb(o,true);netEvent({k:'pick',id:o.id,f:f.id});break;}}}
 }
 function orbsAnimate(){ORBS.forEach(o=>{o.mesh.position.y=1+Math.sin(game.time*2.5+o.id)*.2;o.mesh.rotation.y+=.03;o.mesh.children[1].rotation.x=Math.PI/2+Math.sin(game.time+o.id)*.4;});}

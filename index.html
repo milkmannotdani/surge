@@ -511,6 +511,8 @@ body.calm #flash{display:none!important}
 #secretBox div{text-align:center;color:#fff;font-family:'Rajdhani',sans-serif;max-width:80vw}#secretBox small{display:block;letter-spacing:.5em;color:#ffd23f;font-weight:800}
 #secretBox b{display:block;font:clamp(48px,9vw,120px) 'Bebas Neue';letter-spacing:.06em;color:#ffd23f;text-shadow:0 0 30px rgba(255,210,63,.7),0 4px 0 #8a5a00;animation:secPop .6s cubic-bezier(.2,1.6,.4,1)}
 #secretBox span{font-size:20px;opacity:.9}@keyframes secPop{0%{transform:scale(2.4);opacity:0}100%{transform:none;opacity:1}}
+#meH.nohl{filter:saturate(.25) brightness(.8)}
+#healLk{position:absolute;right:4px;top:50%;transform:translateY(-50%);font:13px 'Bebas Neue',sans-serif;letter-spacing:.12em;color:#ff8a8a;text-shadow:0 1px 2px #000;pointer-events:none}
 </style>
 </head>
 <body>
@@ -2312,7 +2314,7 @@ class Fighter{
     if(this.state==='special'&&this.fired&&!this._sndF){this._sndF=true;sfx(this,'spec',this.curSpecial());}
     this.flash=Math.max(0,this.flash-dt*5);this.landT=Math.max(0,this.landT-dt);
     if(this.dead){this.physics(dt,0,false);this.applyPose(dt);return;}
-    this.atkCD=Math.max(0,(this.atkCD||0)-dt);this.climbCD=Math.max(0,(this.climbCD||0)-dt);this.specCD=Math.max(0,this.specCD-dt);this.dashCD=Math.max(0,this.dashCD-dt);this.invuln=Math.max(0,this.invuln-dt);
+    this.atkCDL=Math.max(0,(this.atkCDL||0)-dt);this.atkCDH=Math.max(0,(this.atkCDH||0)-dt);this.climbCD=Math.max(0,(this.climbCD||0)-dt);if(this._spc){this._spc.n=Math.max(0,this._spc.n-dt);this._spc.alt=Math.max(0,this._spc.alt-dt);}this.dashCD=Math.max(0,this.dashCD-dt);this.invuln=Math.max(0,this.invuln-dt);
     this.bufL-=dt;this.bufH-=dt;this.bufS-=dt;if(I.light)this.bufL=.28;if(I.heavy)this.bufH=.28;if(I.special)this.bufS=.35;this.bufSB=Math.max(0,(this.bufSB||0)-dt);if(I.spB){this.bufS=.35;this.bufSB=.35;}this.bufX=Math.max(0,(this.bufX||0)-dt);if(I.x1){this.bufX=.3;this.bufXi=0;}if(I.x2){this.bufX=.3;this.bufXi=1;}if(this.xcd){this.xcd[0]=Math.max(0,this.xcd[0]-dt);this.xcd[1]=Math.max(0,this.xcd[1]-dt);}
     if(this.bladeT>0){this.bladeT=Math.max(0,this.bladeT-dt);if(this.bladeT===0)burst(SMK,this.chest(TMP2),14,{colors:[0x8a1020,0x5a0010],speed:3,life:.6,size:.25,size1:.05,grav:9});}
     if(this.stolenT>0){this.stolenT=Math.max(0,this.stolenT-dt);if(Math.random()<.4)burst(ADD,this.chest(TMP2),1,{colors:[0x8a3cff,0xe0c8ff],speed:.8,up:1.2,life:.5,size:.3,size1:0,bright:1.8,rad:.6});}
@@ -2349,8 +2351,8 @@ class Fighter{
         if(!this.onGround){this.set('air');break;}
         if(fight){
           if(I.block){this.set('block');break;}
-          if(this.bufL>0){const mk=this.lightMove();if(isVarMove(mk)||!(this.atkCD>0)){this.bufL=0;this.aimAt(lock);this.attack(mk);break;}this.bufL=Math.max(this.bufL,.05);}
-          if(this.bufH>0){const mk=this.heavyMove();if(isVarMove(mk)||!(this.atkCD>0)){this.bufH=0;this.aimAt(lock);this.attack(mk);break;}this.bufH=Math.max(this.bufH,.05);}
+          if(this.bufL>0){const mk=this.lightMove();if(isVarMove(mk)||!(this.atkCDL>0)){this.bufL=0;this.aimAt(lock);this.attack(mk);break;}this.bufL=Math.max(this.bufL,.05);}
+          if(this.bufH>0){const mk=this.heavyMove();if(isVarMove(mk)||!(this.atkCDH>0)){this.bufH=0;this.aimAt(lock);this.attack(mk);break;}this.bufH=Math.max(this.bufH,.05);}
           if(this.bufS>0&&this.specCD<=0){this.bufS=0;this.aimAt(lock);this.startSpecial();break;}
           if(this.bufX>0&&this.tryExtra(lock))break;
           if((I.ult||I.ultB)&&this.meter>=100){this.aimAt(lock);this.startUlt();break;}
@@ -2469,7 +2471,7 @@ class Fighter{
   breakOut(mv){this.brk=0;if(this.xHold==='marble'||this.xHold==='dis')this.xBy=null;if(this.state==='framed'){this.rig.frame.visible=false;}
     const A=this.lastHitBy&&!this.lastHitBy.dead?this.lastHitBy:null;let d=mv.lengthSq()>.05?mv.clone().normalize():null;
     if(!d&&A){d=new V3(this.pos.x-A.pos.x,0,this.pos.z-A.pos.z);if(d.lengthSq()<.01)d=this.fwd().negate();d.normalize();}if(!d)d=this.fwd().negate();
-    this.set('dash');this.dashDir=d;this.face=Math.atan2(d.x,d.z);this.invuln=.6;this.dashCD=.3;this.vel.set(d.x*20,Math.max(this.vel.y,this.onGround?0:3),d.z*20);this.stunT=0;this.bounce=0;this.dropDmg=0;
+    this.set('dash');this.dashDir=d;this.face=Math.atan2(d.x,d.z);this.invuln=1;this._comboAt=-99;this.dashCD=.3;this.vel.set(d.x*20,Math.max(this.vel.y,this.onGround?0:3),d.z*20);this.stunT=0;this.bounce=0;this.dropDmg=0;
     const c=this.chest(new V3());ring(c,0xffffff,3.4,.35,false,2.8);ring(c,this.hero.color,4.6,.45,false,2.4);ring(TMP.set(this.pos.x,.2,this.pos.z),this.hero.color,7,.4,true,2.2);
     burst(ADD,c,50,{colors:[0xffffff,this.hero.color,this.hero.accent],speed:9,life:.4,size:.3,size1:0,bright:2.6});
     for(const o of FS){if(ally(o,this)||o.dead)continue;const dx=o.pos.x-this.pos.x,dz=o.pos.z-this.pos.z,l=Math.hypot(dx,dz);if(l<3.2&&l>.01){o.vel.x+=dx/l*9;o.vel.z+=dz/l*9;if(o.state==='attack')o.set(o.onGround?'idle':'air');}}
@@ -2503,7 +2505,7 @@ class Fighter{
         if(M.next&&this.bufL>0){if(ready){this.bufL=0;this.attack(M.next);return 8;}this.bufL=Math.max(this.bufL,.05);}
         if(M.next&&this.bufH>0){if(ready){this.bufH=0;this.attack(this.heavyMove());return 8;}this.bufH=Math.max(this.bufH,.05);}
       }
-      if(t>=M.st+M.ac+M.rc){if(!isVarMove(this.moveName))this.atkCD=M.heavy?BASE_CD_H:BASE_CD_L;this.set(this.onGround?'idle':'air');}
+      if(t>=M.st+M.ac+M.rc){if(!isVarMove(this.moveName)){if(M.heavy)this.atkCDH=BASE_CD_H;else this.atkCDL=BASE_CD_L;}this.set(this.onGround?'idle':'air');}
     }
     return M.air?0:(t<M.st+M.ac?3:9);
   }
@@ -2933,8 +2935,10 @@ function applyHit(att,def,o){o=Object.assign({},o);o.dmg=(o.dmg||0)*DMG_SCALE*(d
     def.face=Math.atan2(att.pos.x-def.pos.x,att.pos.z-def.pos.z);if(def===ME)announceSmall('PARRY!');AU.block();AU.scale=sc;applyHit(def,att,{dmg:12,kb:12,up:9,launch:true,heavy:true,pt:att.chest(new V3())});return 'block';}
   if(o.gb&&(def.state==='block'||def.state==='bstun')&&facing){ring(o.pt,0xffd23f,2.6,.3,false,2.6);burst(ADD,o.pt,30,{colors:[0xffd23f,0xffffff],speed:10,life:.35,size:.25,bright:2.6});AU.glass();if(def===ME||att===ME)announceSmall('GUARD BREAK');}
   const guardF=def.fwd(TMP2).dot(dir)<.15;
-  if((def.state==='block'||def.state==='bstun')&&guardF&&!o.frame&&!o.gb){
-    const chip=o.chip!==undefined?o.chip:(o.heavy?.25:.1);def.hp=Math.max(1,def.hp-o.dmg*chip);
+  // blocking stops ALL damage, except guard breakers, ultimate moves and heavy attacks, which go straight through
+  const pierce=!o.gb&&(def.state==='block'||def.state==='bstun')&&guardF&&!o.frame&&(att.state==='ult'||o.ult||(att.state==='attack'&&MOVES[att.moveName]&&MOVES[att.moveName].heavy));
+  if(pierce){ring(o.pt,att.state==='ult'?0xffd23f:0xff7a3a,2.4,.28,false,2.4);if(def===ME||att===ME)announceSmall(att.state==='ult'?'UNBLOCKABLE':'GUARD PIERCED');def.set('hit');}
+  if((def.state==='block'||def.state==='bstun')&&guardF&&!o.frame&&!o.gb&&!pierce){
     def.vel.addScaledVector(dir,(o.kb||3)*.5+1.5);def.set('bstun');def.meter=Math.min(100,def.meter+4);att.meter=Math.min(100,att.meter+2);
     blockSpark(o.pt);AU.block();if(local)hitStop(.05);shake(.12,o.pt);AU.scale=sc;return 'block';
   }
@@ -6812,7 +6816,7 @@ function orbsHost(dt){
   orbT-=dt;if(orbT<=0&&ORBS.length<14){orbT=2.5;const p=randomOpenPoint(ZONE.cx,ZONE.cz,Math.min(ZONE.r*.85,95));addOrb(orbId++,p.x,p.z,Math.random()<.6?'hp':'surge');}
   for(const o of ORBS.slice()){if(Math.hypot(o.x-ZONE.cx,o.z-ZONE.cz)>ZONE.r+2){removeOrb(o,false);continue;}
     for(const f of FS){if(f.dead)continue;if(Math.hypot(f.pos.x-o.x,f.pos.z-o.z)<1.7&&f.pos.y<2.5){
-      if(o.type==='hp'){if(f.hp>=100)continue;f.hp=Math.min(100,f.hp+30);}else f.meter=Math.min(100,f.meter+40);
+      if(o.type==='hp'){if(f.hp>=100||(typeof healLocked==='function'&&healLocked(f)))continue;f.hp=Math.min(100,f.hp+30);}else f.meter=Math.min(100,f.meter+40);
       removeOrb(o,true);netEvent({k:'pick',id:o.id,f:f.id});break;}}}
 }
 function orbsAnimate(){ORBS.forEach(o=>{o.mesh.position.y=1+Math.sin(game.time*2.5+o.id)*.2;o.mesh.rotation.y+=.03;o.mesh.children[1].rotation.x=Math.PI/2+Math.sin(game.time+o.id)*.4;});}
@@ -9961,6 +9965,58 @@ addEventListener('keydown',e=>{const t=$('title');if(!t||!t.classList.contains('
   const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
   const m=/^Key([A-Z])$/.exec(e.code);if(!m||e.ctrlKey||e.metaKey||e.altKey)return;SECRET.keys.add(m[1]);
   if(SECRET.keys.size===26){SECRET.keys.clear();secretUnlock();}});
+/* COMBAT RULES
+   1. HEAL LOCK — taking damage stops all healing for 10 s (every new hit restarts it at 10 s; it never stacks past 10).
+      Damage-reduction effects that work by refunding part of a hit (Vitality skill, Awakening, Absorb) still apply.
+   2. COMBO LOCK — while you're being comboed (a landed hit in the last 0.6 s, or in hit-stun) you can't attack back.
+      The only way out is EVASIVE: the BREAK (dash with a full BREAK bar), which now gives 1 s of invulnerability.
+   3. LEAPS — any move where the fighter launches themselves into the air plays 1.6× faster.
+   4. SEPARATE COOLDOWNS — light and heavy attacks (in fighter.js) and the normal and back-special each keep their own cooldown;
+      the two extra moves were already separate.
+   Block rules (combat.js): blocking stops all damage except guard breakers, ultimate moves and heavy attacks. */
+const HEAL_LOCK=10,COMBO_WIN=.6,LEAP_SPD=1.6;
+const HEAL={def:null,free:0};
+function healLocked(f){return !!f&&game.time-(f._hurtAt==null?-99:f._hurtAt)<HEAL_LOCK&&!f.dead;}
+function healLeft(f){return Math.max(0,HEAL_LOCK-(game.time-(f._hurtAt==null?-99:f._hurtAt)));}
+Object.defineProperty(Fighter.prototype,'hp',{configurable:true,
+  get(){return this._hp;},
+  set(v){const o=this._hp;
+    if(o===undefined||!(o>0)||this.dead||this.downed||HEAL.free||NET.role==='client'||(game.practice&&typeof PR!=='undefined'&&PR.god)){this._hp=v;return;}
+    if(v<o-1e-6){if(game.phase==='fight'||inMatch())this._hurtAt=game.time;}
+    else if(v>o&&HEAL.def!==this&&healLocked(this)){v=o;}
+    this._hp=v;}});
+const _crReset=Fighter.prototype.reset;Fighter.prototype.reset=function(){HEAL.free++;try{this._hurtAt=null;this._comboAt=-99;this._spc={n:0,alt:0};return _crReset.apply(this,arguments);}finally{HEAL.free--;}};
+if(typeof revived==='function'){const _crRev=revived;revived=function(f){HEAL.free++;try{return _crRev.apply(this,arguments);}finally{HEAL.free--;if(f)f._hurtAt=null;}};}
+const _crHit=applyHit;applyHit=function(att,def,o){const p=HEAL.def;HEAL.def=def;try{return _crHit.apply(this,arguments);}finally{HEAL.def=p;}};
+onEv('hit',(a,d,dmg)=>{if(d&&dmg>0&&a!==d)d._comboAt=game.time;});
+
+// special cooldowns kept per variant: 'n' (special) and 'alt' (back + special)
+function crSpVar(f){try{return ((inDir(f)==='b'||f.bufSB>0)&&(SPECVAR[f.curSpecial()]||{}).alt)?'alt':'n';}catch(e){return 'n';}}
+Object.defineProperty(Fighter.prototype,'specCD',{configurable:true,
+  get(){const s=this._spc;return s?s[crSpVar(this)]:0;},
+  set(v){const s=this._spc||(this._spc={n:0,alt:0});v=+v||0;
+    if(this._inSS){s[this.specVar==='alt'?'alt':'n']=v;return;}
+    const cur=s[crSpVar(this)];
+    if(v>=cur){s.n=Math.max(s.n,v);s.alt=Math.max(s.alt,v);}          // penalties (erase, snare…) hit both
+    else{const d=cur-v;s.n=Math.max(0,s.n-d);s.alt=Math.max(0,s.alt-d);}}}); // speed-ups help both
+const _crSS=Fighter.prototype.startSpecial;Fighter.prototype.startSpecial=function(){this._inSS=1;try{return _crSS.apply(this,arguments);}finally{this._inSS=0;}};
+
+// combo lock + faster leaps, applied around each fighter update
+const CR_ATK=['light','heavy','special','ult','x1','x2','spB','ultB'];
+function comboLocked(f){if(f.dead||f.downed)return false;if(BRK_STATES.indexOf(f.state)>=0)return true;return game.time-(f._comboAt==null?-99:f._comboAt)<COMBO_WIN&&f.state!=='dash';}
+const _crUpd=Fighter.prototype.update;Fighter.prototype.update=function(dt){
+  if(game.phase==='fight'&&comboLocked(this)){const I=this.intent;if(I)CR_ATK.forEach(k=>{I[k]=false;});this.bufL=this.bufH=this.bufS=0;this.bufX=0;this.bufSB=0;}
+  // a leap = this fighter launched itself upward during one of its own moves
+  const st=this.state,own=st==='special'||st==='ult'||st==='attack';
+  if(!own||this.onGround&&this._leap&&this.stateT>.05)this._leap=false;
+  const k=this._leap?LEAP_SPD:1,y0=this.pos.y;
+  const r=_crUpd.call(this,dt*k);
+  const s2=this.state;if(!this._leap&&dt>0&&!this.dead&&(s2==='special'||s2==='ult'||s2==='attack')&&((this.pos.y-y0)/(dt*k)>4.5||this.vel.y>6)&&!this.onGround)this._leap=true;
+  return r;};
+
+// HUD: show when your healing is locked
+setInterval(()=>{const b=$('meH');if(!b||!ME)return;const L=inMatch()&&healLocked(ME)&&ME.hp<100;b.classList.toggle('nohl',L);
+  let t=$('healLk');if(!t){t=document.createElement('span');t.id='healLk';const P=b.parentNode;if(getComputedStyle(P).position==='static')P.style.position='relative';P.appendChild(t);}t.style.display=L?'block':'none';if(L)t.textContent='NO HEAL '+Math.ceil(healLeft(ME))+'s';},200);
 /* Starts the game. Loaded last, after every other file. */
 buildGfx();if(!GFX.high)lampConeMat.visible=false;initPreview();makePortraits();$('load').style.display='none';showScreen('title');loop();
 })();

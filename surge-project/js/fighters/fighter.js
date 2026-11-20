@@ -46,7 +46,7 @@ class Fighter{
     if(this.state==='special'&&this.fired&&!this._sndF){this._sndF=true;sfx(this,'spec',this.curSpecial());}
     this.flash=Math.max(0,this.flash-dt*5);this.landT=Math.max(0,this.landT-dt);
     if(this.dead){this.physics(dt,0,false);this.applyPose(dt);return;}
-    this.atkCD=Math.max(0,(this.atkCD||0)-dt);this.climbCD=Math.max(0,(this.climbCD||0)-dt);this.specCD=Math.max(0,this.specCD-dt);this.dashCD=Math.max(0,this.dashCD-dt);this.invuln=Math.max(0,this.invuln-dt);
+    this.atkCDL=Math.max(0,(this.atkCDL||0)-dt);this.atkCDH=Math.max(0,(this.atkCDH||0)-dt);this.climbCD=Math.max(0,(this.climbCD||0)-dt);if(this._spc){this._spc.n=Math.max(0,this._spc.n-dt);this._spc.alt=Math.max(0,this._spc.alt-dt);}this.dashCD=Math.max(0,this.dashCD-dt);this.invuln=Math.max(0,this.invuln-dt);
     this.bufL-=dt;this.bufH-=dt;this.bufS-=dt;if(I.light)this.bufL=.28;if(I.heavy)this.bufH=.28;if(I.special)this.bufS=.35;this.bufSB=Math.max(0,(this.bufSB||0)-dt);if(I.spB){this.bufS=.35;this.bufSB=.35;}this.bufX=Math.max(0,(this.bufX||0)-dt);if(I.x1){this.bufX=.3;this.bufXi=0;}if(I.x2){this.bufX=.3;this.bufXi=1;}if(this.xcd){this.xcd[0]=Math.max(0,this.xcd[0]-dt);this.xcd[1]=Math.max(0,this.xcd[1]-dt);}
     if(this.bladeT>0){this.bladeT=Math.max(0,this.bladeT-dt);if(this.bladeT===0)burst(SMK,this.chest(TMP2),14,{colors:[0x8a1020,0x5a0010],speed:3,life:.6,size:.25,size1:.05,grav:9});}
     if(this.stolenT>0){this.stolenT=Math.max(0,this.stolenT-dt);if(Math.random()<.4)burst(ADD,this.chest(TMP2),1,{colors:[0x8a3cff,0xe0c8ff],speed:.8,up:1.2,life:.5,size:.3,size1:0,bright:1.8,rad:.6});}
@@ -83,8 +83,8 @@ class Fighter{
         if(!this.onGround){this.set('air');break;}
         if(fight){
           if(I.block){this.set('block');break;}
-          if(this.bufL>0){const mk=this.lightMove();if(isVarMove(mk)||!(this.atkCD>0)){this.bufL=0;this.aimAt(lock);this.attack(mk);break;}this.bufL=Math.max(this.bufL,.05);}
-          if(this.bufH>0){const mk=this.heavyMove();if(isVarMove(mk)||!(this.atkCD>0)){this.bufH=0;this.aimAt(lock);this.attack(mk);break;}this.bufH=Math.max(this.bufH,.05);}
+          if(this.bufL>0){const mk=this.lightMove();if(isVarMove(mk)||!(this.atkCDL>0)){this.bufL=0;this.aimAt(lock);this.attack(mk);break;}this.bufL=Math.max(this.bufL,.05);}
+          if(this.bufH>0){const mk=this.heavyMove();if(isVarMove(mk)||!(this.atkCDH>0)){this.bufH=0;this.aimAt(lock);this.attack(mk);break;}this.bufH=Math.max(this.bufH,.05);}
           if(this.bufS>0&&this.specCD<=0){this.bufS=0;this.aimAt(lock);this.startSpecial();break;}
           if(this.bufX>0&&this.tryExtra(lock))break;
           if((I.ult||I.ultB)&&this.meter>=100){this.aimAt(lock);this.startUlt();break;}
@@ -203,7 +203,7 @@ class Fighter{
   breakOut(mv){this.brk=0;if(this.xHold==='marble'||this.xHold==='dis')this.xBy=null;if(this.state==='framed'){this.rig.frame.visible=false;}
     const A=this.lastHitBy&&!this.lastHitBy.dead?this.lastHitBy:null;let d=mv.lengthSq()>.05?mv.clone().normalize():null;
     if(!d&&A){d=new V3(this.pos.x-A.pos.x,0,this.pos.z-A.pos.z);if(d.lengthSq()<.01)d=this.fwd().negate();d.normalize();}if(!d)d=this.fwd().negate();
-    this.set('dash');this.dashDir=d;this.face=Math.atan2(d.x,d.z);this.invuln=.6;this.dashCD=.3;this.vel.set(d.x*20,Math.max(this.vel.y,this.onGround?0:3),d.z*20);this.stunT=0;this.bounce=0;this.dropDmg=0;
+    this.set('dash');this.dashDir=d;this.face=Math.atan2(d.x,d.z);this.invuln=1;this._comboAt=-99;this.dashCD=.3;this.vel.set(d.x*20,Math.max(this.vel.y,this.onGround?0:3),d.z*20);this.stunT=0;this.bounce=0;this.dropDmg=0;
     const c=this.chest(new V3());ring(c,0xffffff,3.4,.35,false,2.8);ring(c,this.hero.color,4.6,.45,false,2.4);ring(TMP.set(this.pos.x,.2,this.pos.z),this.hero.color,7,.4,true,2.2);
     burst(ADD,c,50,{colors:[0xffffff,this.hero.color,this.hero.accent],speed:9,life:.4,size:.3,size1:0,bright:2.6});
     for(const o of FS){if(ally(o,this)||o.dead)continue;const dx=o.pos.x-this.pos.x,dz=o.pos.z-this.pos.z,l=Math.hypot(dx,dz);if(l<3.2&&l>.01){o.vel.x+=dx/l*9;o.vel.z+=dz/l*9;if(o.state==='attack')o.set(o.onGround?'idle':'air');}}
@@ -237,7 +237,7 @@ class Fighter{
         if(M.next&&this.bufL>0){if(ready){this.bufL=0;this.attack(M.next);return 8;}this.bufL=Math.max(this.bufL,.05);}
         if(M.next&&this.bufH>0){if(ready){this.bufH=0;this.attack(this.heavyMove());return 8;}this.bufH=Math.max(this.bufH,.05);}
       }
-      if(t>=M.st+M.ac+M.rc){if(!isVarMove(this.moveName))this.atkCD=M.heavy?BASE_CD_H:BASE_CD_L;this.set(this.onGround?'idle':'air');}
+      if(t>=M.st+M.ac+M.rc){if(!isVarMove(this.moveName)){if(M.heavy)this.atkCDH=BASE_CD_H;else this.atkCDL=BASE_CD_L;}this.set(this.onGround?'idle':'air');}
     }
     return M.air?0:(t<M.st+M.ac?3:9);
   }

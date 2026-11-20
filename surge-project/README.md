@@ -28,6 +28,7 @@ js/
     customvoice.js    CUSTOM SOUNDS: player-added voice clips per fighter (ult/kill/hurt/win/theme) and music (menu/battle/boss/victory), IndexedDB only; SET.ultSfx gates built-in ult sounds
     clips.js          CLIPS: F8 record, F9 instant replay (two staggered MediaRecorders), auto KO/win highlights, gallery with trim/download/share (IndexedDB)
     secret.js         SECRET: press every letter A–Z on the title screen to unlock everything and max out every fighter
+    combatrules.js    10 s heal lock after damage, combo lock (only the BREAK escapes, 1 s invuln), 1.6x leaps, per-variant special cooldowns
     dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
     hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)
