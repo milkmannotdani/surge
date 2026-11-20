@@ -484,6 +484,33 @@ body.calm #flash{display:none!important}
 #cvBox .cvClip .chip{padding:2px 10px;font-size:16px}#cvBox .cvEmpty{font-size:13px;opacity:.55;margin-top:4px}
 #cvBox .chip.on{background:#ffd23f;color:#111}#cvBox .cvErr{color:#ff6a6a;font-size:14px;min-height:4px}
 #cvBox .cvTab{font-size:18px}#cvBox .cvTab.on{background:#4fd2ff;color:#061018;border-color:#4fd2ff}
+/* clips */
+#clipBox{position:fixed;inset:0;z-index:82;display:none;align-items:center;justify-content:center;background:rgba(3,5,12,.82)}#clipBox.on{display:flex}
+#clipBox .clIn{width:min(980px,96vw);max-height:90vh;overflow:auto;background:#0b0e1c;border:2px solid #ff4d6d;box-shadow:0 0 30px rgba(255,77,109,.25);padding:16px 18px;color:#e8ecf8;font-family:'Rajdhani',sans-serif}
+#clipBox .cvHd{display:flex;justify-content:space-between;align-items:center}#clipBox .cvHd b{font:34px 'Bebas Neue';letter-spacing:.1em;color:#ff4d6d}
+#clipBox .clKeys{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;opacity:.85;margin:4px 0}#clipBox kbd{background:#1b1d2b;border:1px solid #555b7a;border-radius:3px;padding:0 6px;font:15px 'Bebas Neue';letter-spacing:.08em;color:#ffd23f}
+#clipBox .clInfo{font-size:13px;opacity:.7;align-self:center}#clipBox .chip[disabled]{opacity:.4;pointer-events:none}#clipBox .chip.warn{background:#ff4d4d;color:#fff}
+#clipBox .clGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+#clipBox .clCard{background:rgba(255,255,255,.04);border:1px solid #262a40;padding:6px}#clipBox .clTh{position:relative;aspect-ratio:16/9;background:#05060c;cursor:pointer;overflow:hidden}
+#clipBox .clTh img{width:100%;height:100%;object-fit:cover;display:block}#clipBox .clD,#clipBox .clA{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.75);font:15px 'Bebas Neue';letter-spacing:.06em;padding:0 5px}
+#clipBox .clA{left:4px;right:auto;bottom:auto;top:4px;color:#ffd23f}#clipBox .clPl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;opacity:0;transition:.15s;background:rgba(0,0,0,.35)}#clipBox .clTh:hover .clPl{opacity:1}
+#clipBox .clNm{font:18px 'Bebas Neue';letter-spacing:.05em;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#clipBox .clDt{font-size:12px;opacity:.6}
+#clipBox .clBt{display:flex;gap:4px;margin-top:5px}#clipBox .clBt .chip{flex:1;padding:2px 0;font-size:15px}
+#clipBox .clRen{width:100%;background:#1b1d2b;color:#fff;border:1px solid #ffd23f;font:16px 'Bebas Neue';letter-spacing:.05em;padding:1px 4px}
+#clipPlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,5,12,.94)}
+#clipPlay .clPIn{width:min(980px,96vw);max-height:92vh;overflow:auto;background:#0b0e1c;border:2px solid #ff4d6d;padding:14px 16px;color:#e8ecf8;font-family:'Rajdhani',sans-serif}
+#clipPlay video{width:100%;max-height:58vh;background:#000;display:block;margin:8px 0}
+#clipPlay .clTrim{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:6px 0 10px}#clipPlay .clTrim b{font:20px 'Bebas Neue';letter-spacing:.1em;color:#ffd23f}
+#clipPlay .clTrim label{display:flex;gap:6px;align-items:center;font-weight:700;letter-spacing:.12em;font-size:12px}#clipPlay .clTrim input{width:220px;accent-color:#ff4d6d}
+#clipToast{position:fixed;right:16px;bottom:120px;z-index:85;display:flex;gap:10px;align-items:center;background:rgba(11,14,28,.94);border-left:4px solid #ff4d6d;padding:8px 12px 8px 8px;color:#fff;font-family:'Rajdhani',sans-serif;transform:translateX(130%);transition:transform .35s;pointer-events:none}
+#clipToast.on{transform:none}#clipToast img{width:128px;height:72px;object-fit:cover}#clipToast b{display:block;font:20px 'Bebas Neue';letter-spacing:.1em;color:#ff4d6d}#clipToast span{display:block;font-size:14px}#clipToast .ct2{opacity:.6;font-size:12px}
+#recDot{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:70;display:none;align-items:center;gap:4px;background:rgba(0,0,0,.6);padding:3px 10px;color:#fff;font:16px 'Bebas Neue';letter-spacing:.12em;cursor:pointer}
+#recDot i{width:10px;height:10px;border-radius:50%;background:#ff3b3b;animation:recP 1s infinite}@keyframes recP{50%{opacity:.25}}
+#secretBox{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .4s}
+#secretBox.on{opacity:1;animation:secIn 5.2s forwards}@keyframes secIn{0%{background:rgba(255,210,63,.55)}12%{background:rgba(5,6,14,.7)}85%{opacity:1}100%{opacity:0;background:rgba(5,6,14,.7)}}
+#secretBox div{text-align:center;color:#fff;font-family:'Rajdhani',sans-serif;max-width:80vw}#secretBox small{display:block;letter-spacing:.5em;color:#ffd23f;font-weight:800}
+#secretBox b{display:block;font:clamp(48px,9vw,120px) 'Bebas Neue';letter-spacing:.06em;color:#ffd23f;text-shadow:0 0 30px rgba(255,210,63,.7),0 4px 0 #8a5a00;animation:secPop .6s cubic-bezier(.2,1.6,.4,1)}
+#secretBox span{font-size:20px;opacity:.9}@keyframes secPop{0%{transform:scale(2.4);opacity:0}100%{transform:none;opacity:1}}
 </style>
 </head>
 <body>
@@ -7143,7 +7170,7 @@ function hostStartMatch(){
     if(new Set(roster.map(r=>r.team)).size<2){const t=[0,1,2,3].find(x=>!roster.some(r=>r.team===x));roster.push({id:bid++,name:botName(),hero:0,bot:true,team:t},{id:bid++,name:botName(),hero:1,bot:true,team:t});}}
   else{const want=NET.fill?8:Math.max(2,roster.length);while(roster.length<want){const id=bid++;roster.push({id,name:botName(),hero:Math.floor(Math.random()*HEROES.length),bot:true,team:id});}}
   const spawns=(duo?teamSpawns(roster):spawnPoints(roster.length)).map(s=>[r2(s[0]),r2(s[1])]);
-  decorateBots(roster);const msg={t:'start',roster,spawns,diff:NET.diff,mode:NET.mode,rules:NET.rules||'br',map:game._mapNext||'city'};NET.conns.forEach(c=>c.send(msg));
+  decorateBots(roster);const msg={t:'start',roster,spawns,diff:NET.diff,mode:NET.mode,rules:NET.rules||'br'};NET.conns.forEach(c=>c.send(msg));
   startMatch(roster,spawns,NET.diff,NET.mode,NET.rules||'br');
 }
 function clientRecv(m){
@@ -7153,7 +7180,7 @@ function clientRecv(m){
   if(m.t==='full'){netShutdown();netStatus('That room is full (8 players).');return;}
   if(m.t==='closed'){hostLost();return;}
   if(m.t==='lobby'){NET.lobby=m.players;NET.fill=m.fill;NET.diff=m.diff;NET.rules=normRules(m.rules);NET.mode=m.mode||'solo';if(inMatch()){endMatchCleanup();}if(game.phase!=='lobby')showLobby();else renderLobby();return;}
-  if(m.t==='start'){game._mapNext=m.map||'city';startMatch(m.roster,m.spawns,m.diff,m.mode,m.rules);return;}
+  if(m.t==='start'){startMatch(m.roster,m.spawns,m.diff,m.mode,m.rules);return;}
   if(m.t==='s'){applySnap(m);return;}
   emitEv('cmsg',m);
 }
@@ -8826,7 +8853,7 @@ function trainPlace(){const span=TRAINX.len*(TRAINX.carL+.6);TRAINX.g.position.x
   for(let i=0;i<TRAINX.len;i++){const cx=TRAINX.x+TRAINX.dir*i*(TRAINX.carL+.6),b=TRAINX.boxes[i];b.x0=cx-TRAINX.carL/2;b.x1=cx+TRAINX.carL/2;}
   const on=Math.abs(TRAINX.x)<BOUND+span;DYNB.length=0;if(on&&TRAINX.state==='run')TRAINX.boxes.forEach(b=>DYNB.push(b));
   DYNR.x0=Math.min(TRAINX.x,TRAINX.x+TRAINX.dir*span)-14;DYNR.x1=Math.max(TRAINX.x,TRAINX.x+TRAINX.dir*span)+14;DYNR.z0=TRAINX.z-14;DYNR.z1=TRAINX.z+14;}
-onEv('frame',dt=>{if(!inMatch()||game.story||(typeof PR!=='undefined'&&PR.on)||(typeof MAP_CUR!=='undefined'&&MAP_CUR!=='city')){TRAINX.g.visible=false;DYNB.length=0;return;}TRAINX.g.visible=true;
+onEv('frame',dt=>{if(!inMatch()||game.story||(typeof PR!=='undefined'&&PR.on)){TRAINX.g.visible=false;DYNB.length=0;return;}TRAINX.g.visible=true;
   const T=TRAINX;if(T.state==='wait'){T.t-=dt;if(T.t<=0){T.state='run';T.dir=-T.dir;T.x=T.dir>0?-BOUND-40:BOUND+40;if(ME&&Math.abs(ME.pos.z-T.z)<40){announceSmall('🚆 TRAINX INCOMING');AU.scale=.6;AU.tone('square',660,660,.25,.08);AU.tone('square',550,550,.3,.08,.3);AU.scale=1;}}}
   else{const dx=T.speed*T.dir*dt;T.x+=dx;const span=T.len*(T.carL+.6);
     // riders move with the roof; anyone in front gets launched (host decides)
@@ -8871,7 +8898,7 @@ function makeWalker(x,z,ax){const g=new THREE.Group(),sh=civMat(CIV_SHIRTS[Math.
 function crowdSpawn(){crowdClear();let n=0;for(let k=0;k<200&&n<30;k++){const a=INNER[Math.floor(Math.random()*INNER.length)],sd=Math.random()<.5?-1:1,along=rand(-BOUND+10,BOUND-10);
   const ax=Math.random()<.5?'x':'z';const x=ax==='x'?along:a+sd*7.6,z=ax==='x'?a+sd*7.6:along;if(insideBld(x,z,.6))continue;makeWalker(x,z,ax);n++;}}
 function crowdClear(){CROWD.forEach(w=>scene.remove(w.g));CROWD.length=0;}
-onEv('matchStart',()=>{if(game.story||(typeof PR!=='undefined'&&PR.on)||SET.crowds===false||(typeof MAP_CUR!=='undefined'&&MAP_CUR!=='city')){crowdClear();return;}crowdSpawn();});
+onEv('matchStart',()=>{if(game.story||(typeof PR!=='undefined'&&PR.on)||SET.crowds===false){crowdClear();return;}crowdSpawn();});
 onEv('matchEnd',crowdClear);
 onEv('frame',dt=>{if(!CROWD.length)return;const t=game.time;
   for(const W of CROWD){const g=W.g;if(!nearCam(g.position,90)){g.visible=false;continue;}g.visible=true;
@@ -9310,192 +9337,6 @@ const NODS=['"Plus Ultra" — the motto of a certain hero academy. Go beyond!','
 let nodI=Math.floor(Math.random()*NODS.length);function nodTick(){const e=$('nodTip');if(e){e.textContent=NODS[nodI%NODS.length];nodI++;}}nodTick();setInterval(nodTick,7000);
 // a couple of bot names
 BOTN.push('PlusUltra','Musutafu Kid');
-/* MAPS — three extra battle royale maps, each with its own hazard. Pick one under MAP (offline panel / online lobby).
-   HARBOR    container stacks to climb, giant cranes, a docked cargo ship, open water that slows you.
-             Hazard: CRANE DROP — a container falls onto a marked spot.
-   DISASTER  half-collapsed towers, rubble, fires and a flooded lowland.
-             Hazards: COLLAPSE — a damaged tower crumbles (look for the dust); FLOOD — the lowland water rises and slows.
-   RESORT    snowy mountain resort: cliffs (stairs up the sides), a lodge, ski-lift towers, pines, a frozen lake.
-             Hazard: AVALANCHE — a wall of snow sweeps across the map; get above 4 m to dodge it.
-   Story and missions always use the city. Each map is built the first time it's played.
-   To add a map: add an entry to MAPS with name, sky and build(K) using K.box / K.stairs / K.solid / K.mesh. */
-const MAPS={},MAPD={};let MAP_CUR='city';
-const MAP_KEYS=['city','harbor','disaster','resort'];
-const MAP_NAMES={city:'CITY',harbor:'HARBOR',disaster:'DISASTER ZONE',resort:'MOUNTAIN RESORT',random:'RANDOM'};
-function mapPref(){return store.get('surge.map')||'city';}
-function mapResolve(k){if(k==='random')return pick(MAP_KEYS);return MAP_KEYS.indexOf(k)>=0?k:'city';}
-
-/* ---------- builder kit ---------- */
-function mapKit(D){const G=D.G;const geoBox=new THREE.BoxGeometry(1,1,1);
-  const K={
-    mat(c,o){return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o||{}));},
-    mesh(geo,mat,x,y,z,sx,sy,sz){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(sx)m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;G.add(m);return m;},
-    // a solid box you can stand on (and climb)
-    box(x,z,w,d,h,mat,o){o=o||{};const y0=o.y0||0;const m=K.mesh(geoBox,mat,x,y0+h/2,z,w,h,d);if(o.ry)m.rotation.y=o.ry;
-      if(o.collide!==false)D.BLD.push({x0:x-w/2,x1:x+w/2,z0:z-d/2,z1:z+d/2,y0:y0>0?y0:undefined,h:y0+h,top:true});return m;},
-    // steps up to height H along +dir (ax 'x' or 'z', sign s)
-    stairs(x,z,ax,s,H,width,mat){const n=Math.ceil(H/.5);for(let i=1;i<=n;i++){const h=Math.min(H,i*.5),off=s*(i-.5)*.8;
-      K.box(ax==='x'?x+off:x,ax==='z'?z+off:z,ax==='x'?.8:width,ax==='z'?.8:width,h,mat);}},
-    solid(x,z,r){D.solids.push({x,z,r});},
-    ground(c,size,tex){const g=new THREE.Mesh(new THREE.PlaneGeometry(size||BOUND*2+160,size||BOUND*2+160),K.mat(c,{roughness:.95,map:tex||null}));g.rotation.x=-Math.PI/2;g.receiveShadow=true;G.add(g);return g;},
-    water(x,z,w,d,y){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshStandardMaterial({color:0x1a5a8a,roughness:.1,metalness:.4,transparent:true,opacity:.82}));m.rotation.x=-Math.PI/2;m.position.set(x,y||.06,z);G.add(m);
-      D.water.push({x0:x-w/2,x1:x+w/2,z0:z-d/2,z1:z+d/2,m});return m;},
-    noiseTex(base,spots,n,rep){const [c,g]=cv(256,256);g.fillStyle=base;g.fillRect(0,0,256,256);for(let i=0;i<(n||2500);i++){g.fillStyle=pick(spots);g.globalAlpha=Math.random()*.35;g.fillRect(Math.random()*256,Math.random()*256,2+Math.random()*4,2+Math.random()*4);}g.globalAlpha=1;
-      const t=tex(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep||40,rep||40);return t;},
-    free(x,z,pad){return !insideBldList(D.BLD,x,z,pad||1.2)&&!D.solids.some(s=>Math.hypot(s.x-x,s.z-z)<s.r+(pad||1.2));}};
-  return K;}
-function insideBldList(L,x,z,pad){for(const b of L)if(x>b.x0-pad&&x<b.x1+pad&&z>b.z0-pad&&z<b.z1+pad&&!(b.y0>2))return true;return false;}
-
-/* ================= HARBOR ================= */
-MAPS.harbor={name:'HARBOR',build(K,D){const rng=Math.random;
-  K.ground(0x6a6c70,null,K.noiseTex('#6a6c70',['#5a5c60','#7a7c80','#4a4a50'],3000,30));
-  // the sea along the north side, plus a channel
-  K.water(0,-120,BOUND*2+160,60);K.water(-40,-60,18,60);
-  const dockEdge=K.mat(0xd8b02a);K.box(0,-89.5,BOUND*2,1,.25,dockEdge,{collide:false});
-  const cols=[0xc4302a,0x2a6ac4,0x2a8a4a,0xd88a1a,0x8a8a92,0x1a4a6a,0x9a2a6a].map(c=>K.mat(c,{roughness:.6,metalness:.3}));
-  // container yard: rows of stacks 1–3 high
-  for(let gx=-100;gx<=100;gx+=26)for(let gz=-60;gz<=110;gz+=18){if(Math.abs(gx)<14&&Math.abs(gz)<14)continue;if(gx>-50&&gx<-30&&gz<-30)continue;if(rng()<.25)continue;
-    const along=rng()<.5,n=1+Math.floor(rng()*3);for(let r=0;r<2;r++){const ox=along?0:r*2.6-1.3,oz=along?r*2.6-1.3:0;
-      for(let k=0;k<n-(r&&rng()<.5?1:0);k++)K.box(gx+ox,gz+oz,along?12:2.5,along?2.5:12,2.6,pick(cols),{y0:k*2.6});}
-    if(rng()<.5)K.stairs(gx+(along?7:0),gz+(along?0:7),along?'x':'z',1,2.6,2,K.mat(0x5a5c60));}
-  // gantry cranes: two legs each side, a walkable top beam, a hanging container
-  const steel=K.mat(0xe8b82a,{metalness:.5,roughness:.4}),dark=K.mat(0x2a2a30);
-  [[-80,-70],[-20,-70],[50,-70],[105,-70]].forEach(([x,z])=>{[[-7,-5],[7,-5],[-7,5],[7,5]].forEach(([a,b])=>K.box(x+a,z+b,1.4,1.4,26,steel));
-    K.box(x,z-5,16,1.6,1.6,steel,{y0:26});K.box(x,z+5,16,1.6,1.6,steel,{y0:26});K.box(x,z-16,2,30,1.4,steel,{y0:27.6});
-    const cab=K.box(x,z-26,4,4,3,dark,{y0:23,collide:false});D.cranes.push({x,z:z-26,c:cab});});
-  // cargo ship along the sea: hull, deck, bridge tower, containers; stairs up the side
-  const hull=K.mat(0x1a2a4a,{roughness:.5}),deck=K.mat(0x8a3a2a);K.box(-10,-100,120,18,8,hull);K.box(-10,-100,118,16,.3,deck,{y0:8});
-  K.box(-58,-100,14,14,12,K.mat(0xe8e8f0),{y0:8.3});for(let i=0;i<7;i++)for(let k=0;k<2;k++)K.box(-40+i*13,-100+(k?3:-3),12,2.5,2.6,pick(cols),{y0:8.3});
-  K.stairs(10,-90,'z',-1,8,3,K.mat(0x5a5c60));K.stairs(-30,-90,'z',-1,8,3,K.mat(0x5a5c60));
-  // warehouses with walkable roofs
-  [[-100,90],[0,120],[100,90]].forEach(([x,z])=>{K.box(x,z,30,18,9,K.mat(0x8a96a4,{metalness:.3}));K.stairs(x+16,z,'x',1,9,3,K.mat(0x5a5c60));});
-  // bollards and lamps
-  for(let x=-120;x<=120;x+=12){K.mesh(new THREE.CylinderGeometry(.3,.35,.8,8),dark,x,.4,-88.5);K.solid(x,-88.5,.4);}
-  D.sky={fog:.006};D.hazard=harborHazard;}};
-function harborHazard(D,dt){D.ht=(D.ht||9)-dt;if(D.ht>0)return;D.ht=rand(7,12);const L=FS.filter(f=>!f.dead&&!f.dormant);if(!L.length)return;const f=pick(L);
-  const x=f.pos.x+rand(-6,6),z=f.pos.z+rand(-6,6);mapHazard('crane',{x,z});}
-function craneDrop(x,z){const y=floorAt(x,z,40);const warn=new THREE.Mesh(new THREE.PlaneGeometry(13,3.4),new THREE.MeshBasicMaterial({color:0xffb02a,transparent:true,opacity:.6,depthWrite:false,side:THREE.DoubleSide}));warn.rotation.x=-Math.PI/2;warn.position.set(x,y+.07,z);scene.add(warn);
-  const box=new THREE.Mesh(new THREE.BoxGeometry(12,2.6,2.5),new THREE.MeshStandardMaterial({color:pick([0xc4302a,0x2a6ac4,0x2a8a4a,0xd88a1a])}));box.position.set(x,y+40,z);scene.add(box);
-  if(ME&&Math.hypot(ME.pos.x-x,ME.pos.z-z)<30)announceSmall('⚠ CRANE DROP!');let t=0;
-  const iv=setInterval(()=>{t+=.03;warn.material.opacity=.3+.4*Math.abs(Math.sin(t*12));if(t<1.8){box.position.y=y+40-38*Math.pow(t/1.8,2);return;}
-    clearInterval(iv);scene.remove(warn);warn.geometry.dispose();warn.material.dispose();box.position.y=y+1.3;if(!inMatch()){scene.remove(box);return;}
-    const p=new V3(x,y+1,z);dust(p,30,2);shake(.6,p);xSnd(p,()=>AU.boom(false));if(typeof crater==='function')crater(x,z,2.5);
-    if(NET.role!=='client')for(const o of FS){if(o.dead||o.dormant)continue;if(Math.abs(o.pos.x-x)<6.6&&Math.abs(o.pos.z-z)<2.2&&o.pos.y<y+4){o.hp-=26*DMG_SCALE*(o.take||1);o.vel.set(0,10,0);o.onGround=false;if(o.hp<=0&&!o.dead){o.hp=0;killFighter(o,null,new V3(0,1,0));}else if(o===ME)announceSmall('CRUSHED BY A CONTAINER!');}}
-    setTimeout(()=>{scene.remove(box);box.geometry.dispose();box.material.dispose();},4000);},30);}
-
-/* ================= DISASTER ZONE ================= */
-MAPS.disaster={name:'DISASTER ZONE',build(K,D){const rng=Math.random;
-  K.ground(0x3a3634,null,K.noiseTex('#3a3634',['#2a2624','#4a4442','#5a4a3a'],4000,30));
-  const conc=[0x6a6460,0x5a5450,0x7a726a,0x4a4846].map(c=>K.mat(c,{roughness:.95,flatShading:true})),rubble=K.mat(0x5a5048,{flatShading:true});
-  // the flooded lowland in the middle-south (water rises during FLOOD)
-  D.flood=K.water(20,60,90,60,.02);D.floodY=.02;
-  // towers: some intact, some half-collapsed (jagged tops); a few are marked as about to collapse
-  for(let gx=-110;gx<=110;gx+=36)for(let gz=-110;gz<=110;gz+=36){if(gx>-30&&gx<70&&gz>25&&gz<95)continue;if(Math.abs(gx)<20&&Math.abs(gz)<20)continue;if(rng()<.2)continue;
-    const w=rand(12,18),d=rand(12,18),h=rand(10,34),m=pick(conc),broken=rng()<.5;const parts=[];
-    parts.push(K.box(gx,gz,w,d,broken?h*.6:h,m));if(broken){for(let i=0;i<3;i++){const pw=w*rand(.3,.5),pd=d*rand(.3,.5);parts.push(K.box(gx+rand(-w/4,w/4),gz+rand(-d/4,d/4),pw,pd,h*rand(.08,.3),m,{y0:h*.6}));}}
-    else K.stairs(gx+w/2+.4,gz,'x',1,Math.min(h,6),2.4,rubble);
-    if(rng()<.45)D.towers.push({x:gx,z:gz,w,d,h,parts,cols:D.BLD.slice(-parts.length)});
-    // rubble piles around the base
-    for(let i=0;i<4;i++){const a=rand(0,6.28),r=Math.max(w,d)*.7;K.box(gx+Math.cos(a)*r,gz+Math.sin(a)*r,rand(1.5,3.5),rand(1.5,3.5),rand(.5,1.6),rubble);}}
-  // overturned cars and burning spots
-  for(let i=0;i<16;i++){const x=rand(-120,120),z=rand(-120,120);if(!K.free(x,z,3))continue;const c=K.box(x,z,4.2,2,1.4,K.mat(pick([0x8a2a2a,0x2a4a8a,0x6a6a6a]),{metalness:.4}));c.rotation.z=.15;}
-  for(let i=0;i<10;i++){const x=rand(-120,120),z=rand(-120,120);if(!K.free(x,z,2))continue;D.fires.push({x,z});}
-  D.sky={fog:.009};D.hazard=disasterHazard;}};
-function disasterHazard(D,dt){
-  // fires burn anyone standing in them
-  for(const F of D.fires){if(Math.random()<dt*14)burst(ADD,TMP2.set(F.x+rand(-.8,.8),.3,F.z+rand(-.8,.8)),1,{colors:[0xff6a1a,0xffd23f,0xff3a1a],speed:.4,up:3.5,life:.6,size:.6,size1:0,bright:2.4});
-    if(Math.random()<dt*2)burst(SMK,TMP2.set(F.x,1.5,F.z),1,{colors:[0x2a2a2a],speed:.3,up:2,life:2,size:1,size1:2.4});
-    if(NET.role!=='client')for(const f of FS)if(!f.dead&&Math.hypot(f.pos.x-F.x,f.pos.z-F.z)<1.6&&f.pos.y<2&&!(f._fireCD>game.time)){f._fireCD=game.time+.6;burnOn(f,2,4);}}
-  // flood cycle: calm 25 s → rising (water climbs to 1.6 m) for 12 s → receding
-  D.ft=(D.ft||20)-dt;if(D.ft<=0){if(!D.flooding){D.flooding=true;D.ft=14;mapHazard('flood',{on:1});}else{D.flooding=false;D.ft=rand(22,30);mapHazard('flood',{on:0});}}
-  const tY=D.flooding?1.6:.02;D.floodY+=(tY-D.floodY)*Math.min(1,dt*.35);D.flood.position.y=D.floodY;
-  // collapsing towers
-  D.ct=(D.ct||25)-dt;if(D.ct<=0&&NET.role!=='client'){D.ct=rand(22,32);const T=D.towers.find(t=>!t.down&&FS.some(f=>!f.dead&&Math.hypot(f.pos.x-t.x,f.pos.z-t.z)<45));if(T)mapHazard('collapse',{i:D.towers.indexOf(T)});}}
-function towerCollapse(D,i){const T=D.towers[i];if(!T||T.down)return;T.down=true;if(ME&&Math.hypot(ME.pos.x-T.x,ME.pos.z-T.z)<50)announceSmall('⚠ A TOWER IS COLLAPSING!');let t=0;
-  const iv=setInterval(()=>{t+=.04;if(t<2){T.parts.forEach(p=>p.position.x+=Math.sin(t*60)*.03);if(Math.random()<.7)dust(new V3(T.x+rand(-T.w/2,T.w/2),rand(0,T.h*.6),T.z+rand(-T.d/2,T.d/2)),3,1.5);return;}
-    if(t<3.4){T.parts.forEach(p=>{p.position.y-=.6;});if(Math.random()<.9)burst(SMK,TMP2.set(T.x+rand(-T.w/2,T.w/2),rand(0,6),T.z+rand(-T.d/2,T.d/2)),2,{colors:[0x6a6460,0x4a4846],speed:3,up:3,life:1.6,size:1.4,size1:3.4});return;}
-    clearInterval(iv);T.parts.forEach(p=>p.visible=false);T.cols.forEach(c=>{const k=BLD.indexOf(c);if(k>=0)BLD.splice(k,1);});
-    const p=new V3(T.x,1,T.z);shake(.8,p);xSnd(p,()=>AU.boom(true));
-    if(NET.role!=='client')for(const o of FS){if(o.dead||o.dormant)continue;if(Math.abs(o.pos.x-T.x)<T.w/2+3&&Math.abs(o.pos.z-T.z)<T.d/2+3){o.hp-=30*DMG_SCALE*(o.take||1);o.vel.set(rand(-6,6),8,rand(-6,6));o.onGround=false;if(o.hp<=0&&!o.dead){o.hp=0;killFighter(o,null,new V3(0,1,0));}else if(o===ME)announceSmall('CAUGHT IN THE COLLAPSE!');}}},40);}
-
-/* ================= MOUNTAIN RESORT ================= */
-MAPS.resort={name:'MOUNTAIN RESORT',build(K,D){const rng=Math.random;
-  K.ground(0xeef2f6,null,K.noiseTex('#eef2f6',['#dfe6ee','#ffffff','#cfd8e2'],2000,30));
-  const rock=K.mat(0x6a6e78,{flatShading:true}),snow=K.mat(0xf4f8fc,{flatShading:true}),wood=K.mat(0x7a4a2a),roof=K.mat(0x8a2a2a),pine=K.mat(0x1a4a2a,{flatShading:true});
-  // cliffs: stacked rock tiers with snowy tops and stairs cut into the side
-  [[-90,-80,40,30,14],[90,-90,36,36,18],[-100,80,34,30,10],[95,85,30,40,22],[0,-115,60,20,26]].forEach(([x,z,w,d,h])=>{K.box(x,z,w,d,h*.55,rock);K.box(x,z,w*.75,d*.75,h*.45,rock,{y0:h*.55});
-    K.box(x,z,w*.75+.2,d*.75+.2,.3,snow,{y0:h,collide:false});K.stairs(x+w/2+.4,z,'x',1,h*.55,3,rock);K.stairs(x+w*.375+.4,z+d*.25,'x',1,h*.45,2.6,snow);
-    D.BLD.push({x0:x+w*.375,x1:x+w*.375+5,z0:z+d*.25-1.3,z1:z+d*.25+1.3,y0:h*.55-.01,h:h*.55,top:true});});
-  // the lodge
-  K.box(0,40,30,20,8,wood);const rf=K.mesh(new THREE.ConeGeometry(21,7,4),roof,0,11.5,40);rf.rotation.y=Math.PI/4;rf.scale.set(1,1,.7);
-  D.BLD.push({x0:-15,x1:15,z0:30,z1:50,h:9,top:true});K.stairs(16,40,'x',1,8,3,wood);
-  // frozen lake
-  const lake=new THREE.Mesh(new THREE.CircleGeometry(26,40),new THREE.MeshStandardMaterial({color:0xbfe4ff,roughness:.05,metalness:.3,transparent:true,opacity:.85}));lake.rotation.x=-Math.PI/2;lake.position.set(-40,.05,10);D.G.add(lake);D.ice={x:-40,z:10,r:26};
-  // ski lift: towers in a line up the mountain with a cable
-  const steel=K.mat(0x8a8e9a,{metalness:.6});for(let i=0;i<6;i++){const x=60-i*4,z=60-i*30;K.box(x,z,1.2,1.2,14+i*2,steel);K.box(x,z,6,.6,.6,steel,{y0:14+i*2,collide:false});}
-  // pines
-  for(let i=0;i<70;i++){const x=rand(-125,125),z=rand(-125,125);if(!K.free(x,z,2.5))continue;if(Math.hypot(x+40,z-10)<28)continue;const s=rand(.8,1.5);
-    K.mesh(new THREE.CylinderGeometry(.2,.3,2,6),wood,x,1,z);K.mesh(new THREE.ConeGeometry(2*s,5*s,7),pine,x,2+2.5*s,z);K.mesh(new THREE.ConeGeometry(1.2*s,1.4*s,7),snow,x,4.3+3*s,z);K.solid(x,z,.6);}
-  // snow drifts to hop over
-  for(let i=0;i<20;i++){const x=rand(-120,120),z=rand(-120,120);if(!K.free(x,z,2))continue;K.box(x,z,rand(3,7),rand(2,4),rand(.5,1.2),snow);}
-  D.sky={fog:.012};D.hazard=resortHazard;D.snow=snowfall(D.G);}};
-function snowfall(G){const N=900,g=new THREE.BufferGeometry(),p=new Float32Array(N*3);for(let i=0;i<N;i++){p[i*3]=rand(-60,60);p[i*3+1]=rand(0,40);p[i*3+2]=rand(-60,60);}
-  g.setAttribute('position',new THREE.BufferAttribute(p,3));const m=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.25,transparent:true,opacity:.85,depthWrite:false}));m.frustumCulled=false;G.add(m);return m;}
-function resortHazard(D,dt){
-  if(D.snow){const p=D.snow.geometry.attributes.position,a=p.array;const c=camera.position;D.snow.position.set(c.x,0,c.z);for(let i=0;i<a.length;i+=3){a[i+1]-=dt*3;a[i]+=Math.sin(game.time+i)*dt*.4;if(a[i+1]<0)a[i+1]=40;}p.needsUpdate=true;}
-  // ice lake: very slippery — you keep your speed
-  for(const f of FS){if(f.dead||!f.onGround||!D.ice)continue;if(Math.hypot(f.pos.x-D.ice.x,f.pos.z-D.ice.z)<D.ice.r){f._slide=f._slide||new V3();if(Math.hypot(f.vel.x,f.vel.z)>2)f._slide.set(f.vel.x,0,f.vel.z);else{f.vel.x=f._slide.x*.97;f.vel.z=f._slide.z*.97;f._slide.multiplyScalar(.97);}}}
-  D.at=(D.at||35)-dt;if(D.at<=0&&NET.role!=='client'){D.at=rand(40,55);const ax=Math.random()<.5?'x':'z',dir=Math.random()<.5?1:-1;mapHazard('avalanche',{ax,dir});}
-  const A=D.aval;if(A){A.pos+=A.dir*26*dt;const k=A.ax==='x'?'x':'z';A.m.position[k]=A.pos;if(Math.random()<.9)for(let i=0;i<3;i++){const o=rand(-130,130);burst(SMK,TMP2.set(k==='x'?A.pos:o,rand(.5,5),k==='x'?o:A.pos),1,{colors:[0xffffff,0xe8f0f8],speed:3,up:2,life:1.2,size:2,size1:4});}
-    if(NET.role!=='client')for(const f of FS){if(f.dead||f.dormant||f.pos.y>4)continue;const d=(k==='x'?f.pos.x:f.pos.z)-A.pos;if(Math.abs(d)<3&&!A.hit.has(f)){A.hit.add(f);f.hp-=18*DMG_SCALE*(f.take||1);f.vel[k]=A.dir*22;f.vel.y=9;f.onGround=false;if(f.hp<=0&&!f.dead){f.hp=0;killFighter(f,null,new V3(0,1,0));}else if(f===ME)announceSmall('SWEPT AWAY BY THE AVALANCHE!');}}
-    if(Math.abs(A.pos)>BOUND+20){scene.remove(A.m);A.m.geometry.dispose();A.m.material.dispose();D.aval=null;}}}
-function avalanche(D,ax,dir){if(D.aval)return;const m=new THREE.Mesh(new THREE.BoxGeometry(ax==='x'?6:BOUND*2+40,5,ax==='x'?BOUND*2+40:6),new THREE.MeshStandardMaterial({color:0xf4f8fc,transparent:true,opacity:.85,roughness:1}));
-  m.position.y=2.5;const start=-dir*(BOUND+15);if(ax==='x')m.position.x=start;else m.position.z=start;scene.add(m);D.aval={ax,dir,pos:start,m,hit:new Set()};
-  announce('⚠ AVALANCHE — GET HIGH!','#cfe8ff');}
-
-/* ---------- hazards are decided by the host and played on every screen ---------- */
-function mapHazard(kind,o){const msg={k:'mapHz',kind,o};if(NET.role==='host')netEvent(msg);runHazard(msg);}
-onEv('net:mapHz',e=>runHazard(e));
-function runHazard(e){const D=MAPD[MAP_CUR];if(!D)return;const o=e.o||{};
-  if(e.kind==='crane')craneDrop(o.x,o.z);
-  if(e.kind==='collapse')towerCollapse(D,o.i);
-  if(e.kind==='avalanche')avalanche(D,o.ax,o.dir);
-  if(e.kind==='flood'){if(NET.role==='client'){D.flooding=!!o.on;}if(o.on&&ME)announceSmall('⚠ FLOOD — THE LOWLAND IS FILLING WITH WATER');}}
-
-/* ---------- switching maps ---------- */
-// every player must build the same layout, so building uses a fixed random seed per map
-function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
-function buildMap(k){if(MAPD[k])return MAPD[k];const G=new THREE.Group();G.visible=false;scene.add(G);const D={G,BLD:[],solids:[],walls:[],water:[],cranes:[],towers:[],fires:[]};MAPD[k]=D;
-  const R=Math.random;Math.random=seeded(hashStr('surge-map-'+k));try{MAPS[k].build(mapKit(D),D);}finally{Math.random=R;}return D;}
-const _mapSW=setWorld;
-setWorld=function(w){
-  if(!MAPS[w]){for(const k in MAPD)MAPD[k].G.visible=false;MAP_CUR=w==='train'?'train':'city';return _mapSW(w);}
-  _mapSW('__map_'+w);const D=buildMap(w);for(const k in MAPD)MAPD[k].G.visible=k===w;MAP_CUR=w;
-  BLD.length=0;solids.length=0;walls.length=0;props.length=0;D.BLD.forEach(b=>BLD.push(b));D.solids.forEach(s=>solids.push(s));
-  // fresh hazard state every match (collapsed towers come back)
-  D.towers.forEach(T=>{T.down=false;T.parts.forEach(p=>{p.visible=true;});});D.ht=D.ct=D.at=D.ft=undefined;D.flooding=false;if(D.flood){D.floodY=.02;D.flood.position.y=.02;}
-  if(D.aval){scene.remove(D.aval.m);D.aval=null;}if(D.sky&&scene.fog)scene.fog.density=D.sky.fog;};
-// towers rebuild their parts when the map is reloaded
-onEv('matchStart',()=>{const D=MAPD[MAP_CUR];if(!D)return;D.towers.forEach(T=>{T.parts.forEach((p,i)=>{if(p.userData.y0==null)p.userData.y0=p.position.y;p.position.y=p.userData.y0;});});});
-onEv('tick',dt=>{const D=MAPD[MAP_CUR];if(!D||!inMatch()||game.phase!=='fight')return;if(D.hazard)D.hazard(D,dt);
-  // water: wading slows you down
-  for(const f of FS){if(f.dead)continue;for(const W of D.water){const y=W.m.position.y;if(f.pos.x>W.x0&&f.pos.x<W.x1&&f.pos.z>W.z0&&f.pos.z<W.z1&&f.pos.y<y+.2&&y>.01){f.slowT=Math.max(f.slowT||0,.3);if(Math.random()<dt*6&&nearCam(f.pos,60))burst(ADD,TMP2.set(f.pos.x,y+.05,f.pos.z),2,{colors:[0x9ad8ff,0xffffff],speed:1.5,up:1.5,life:.35,size:.2,size1:0,bright:1.6});}}}});
-// spawn points are picked before the match starts, so the map is chosen (and built) here
-function nextMapKey(){if(game._storyNext||(typeof PR!=='undefined'&&PR.on))return 'city';if(NET.role==='client')return game._mapNext||'city';return mapResolve(NET.role==='host'?(NET.map||mapPref()):mapPref());}
-const _mapSpawn=spawnPoints;spawnPoints=function(n){const k=game._mapNext||nextMapKey();game._mapNext=k;if(k==='city')return _mapSpawn(n);const D=buildMap(k),out=[];
-  for(let i=0;i<n;i++){let p=null;for(let t=0;t<80&&!p;t++){const a=rand(0,6.28),r=rand(10,95),x=Math.cos(a)*r,z=Math.sin(a)*r;if(!insideBldList(D.BLD,x,z,2)&&!D.water.some(W=>x>W.x0&&x<W.x1&&z>W.z0&&z<W.z1)&&out.every(q=>Math.hypot(q[0]-x,q[1]-z)>12))p=[x,z];}out.push(p||[rand(-20,20),rand(-20,20)]);}return out;};
-/* ---------- picking the map (offline panel + online lobby) ---------- */
-function mapChips(id,cur,on){const el=$(id);if(!el)return;el.innerHTML='';[...MAP_KEYS,'random'].forEach(k=>{const b=document.createElement('div');b.className='chip'+(cur===k?' sel':'');b.textContent=MAP_NAMES[k];
-  b.onclick=()=>{AU.ui&&AU.ui();on(k);mapChips(id,k,on);};el.appendChild(b);});}
-(function(){const r=$('rulesRow');if(r&&!$('mapRow')){const d=document.createElement('div');d.className='arow';d.id='mapRow';d.innerHTML='<span class="lbl">MAP</span><div class="rowb" style="margin:0" id="mapSel"></div>';r.after(d);}
-  const r2=$('rules2');if(r2&&!$('mapSel2')){const l=document.createElement('span');l.className='lbl';l.textContent='MAP';const d=document.createElement('div');d.className='rowb';d.style.margin='0';d.id='mapSel2';r2.after(l,d);}})();
-function drawMapChips(){mapChips('mapSel',mapPref(),k=>store.set('surge.map',k));mapChips('mapSel2',NET.map||mapPref(),k=>{if(NET.role!=='host')return;NET.map=k;store.set('surge.map',k);broadcastLobby();});}
-onEv('frame',()=>{const s=$('mapSel');if(s&&!s.children.length)drawMapChips();const s2=$('mapSel2');if(s2&&!s2.children.length)drawMapChips();});
-// the host's start message carries the map; everyone builds the same one
-const _mapStart=startMatch;startMatch=function(roster,spawns,diff,mode,rules){const pick_=game._mapNext||nextMapKey();game._mapNext=null;
-  game.mapK=(game._storyNext||game.story)?'city':pick_;const prOn=PR.on;
-  const r=(function(){const sw=setWorld;setWorld=function(w){return sw(w==='city'&&!prOn?game.mapK:w);};try{return _mapStart(roster,spawns,diff,mode,rules);}finally{setWorld=sw;}})();
-  if(game.mapK!=='city'&&ME)setTimeout(()=>announceSmall('MAP: '+MAP_NAMES[game.mapK]),1200);return r;};
 /* KILL CAM · SPECTATE · MATCH RECAP
    When you're knocked out: a ~3 s slow-motion orbit around whoever got you (letterboxed), then a recap card,
    then spectating — cycle who you watch with ◀ ▶ (or the ← → keys).
@@ -9555,9 +9396,9 @@ const ACH=[
   ['noult','NO SHORTCUTS','Win without using your ultimate'],['clutch','BY A THREAD','Win with under 15 HP'],['fresh','UNTOUCHABLE','Win with over 75 HP'],
   ['combo10','COMBO KING','Land a 10-hit combo'],['dmg1k','HEAVY HITTER','Deal 1,000 damage in one match'],['ko5','RAMPAGE','5 KOs in one match'],
   ['car','CAR TOSS','KO someone with a thrown car'],['meteor','DUCK AND COVER','Survive a Meteor Shower'],['gold','GOLD DIGGER','Grab 5 gold orbs in one match'],
-  ['avalanche','OVER THE TOP','Survive an avalanche'],['crushed','WRONG PLACE, WRONG TIME','Get flattened by a falling container'],['train','LAST STOP','Get hit by the train'],
+  ['clip1','DIRECTOR','Save your first clip'],['clip10','HIGHLIGHT REEL','Save 10 clips'],['train','LAST STOP','Get hit by the train'],
   ['awaken','AWAKENED','Awaken your power'],['teamup','TEAM PLAYER','Pull off a team-up'],['civ','RESCUER','Save 10 civilians'],
-  ['maps','WORLD TRAVELER','Win on every map'],['roster10','VERSATILE','Win with 10 different fighters'],['roster','FULL ROSTER','Play every fighter'],
+  ['share','GOING VIRAL','Share or download a clip'],['roster10','VERSATILE','Win with 10 different fighters'],['roster','FULL ROSTER','Play every fighter'],
   ['law','THE LAW','Lay down a law as Decree'],['erase','NOT ON MY WATCH','Erase a power for 5 s as Snare'],['wall','STRAIGHT UP','Glide up a 30 m wall as Skitter'],
   ['rankpro','GOING PRO','Reach PRO rank'],['master','MASTER','Reach mastery 10 with any fighter']].map(([id,n,d])=>({id,n,d}));
 const ACHS=(()=>{try{return JSON.parse(store.get('surge.ach')||'{}');}catch(e){return {};}})();ACHS.u=ACHS.u||{};ACHS.c=ACHS.c||{};
@@ -9578,19 +9419,17 @@ onEv('recap',S=>{if(S.best>=10)achGive('combo10');if(S.dmg>=1000)achGive('dmg1k'
 onEv('tick',dt=>{if(!ME||!real())return;
   if(typeof SURGE!=='undefined'){if(SURGE.ev==='meteors'){AM.met=true;}else if(AM.met){AM.met=false;if(!ME.dead)achGive('meteor');}
 }
-  if(typeof MAPD!=='undefined'&&MAPD.resort&&MAP_CUR==='resort'){const A=MAPD.resort.aval;if(A)AM.av=A;else if(AM.av){if(!ME.dead&&!AM.av.hit.has(ME))achGive('avalanche');AM.av=null;}}
   if(ME.glideOn&&ME.pos.y>30)achGive('wall');
   if(heroIs(ME,'snare')&&ME.eyeT>=5)achGive('erase');
   if(ME.trainT>game.time&&!AM.tr){AM.tr=1;achGive('train');}});
 if(typeof surgeTake==='function'){const _st=surgeTake;surgeTake=function(i,f){const r=_st.apply(this,arguments);if(f===ME&&real()){AM.gold++;if(AM.gold>=5)achGive('gold');}return r;};}
-if(typeof craneDrop==='function'){const _cd=craneDrop;craneDrop=function(x,z){const r=_cd.apply(this,arguments);setTimeout(()=>{if(ME&&!ME.dead&&Math.abs(ME.pos.x-x)<6.6&&Math.abs(ME.pos.z-z)<2.2&&ME.pos.y<4)achGive('crushed');},1850);return r;};}
 if(typeof giveOrder==='function'){const _go=giveOrder;giveOrder=function(f,k){const r=_go.apply(this,arguments);if(f===ME&&k==='law')achGive('law');return r;};}
 
 /* ---------- end of match: wins, rank, mastery ---------- */
 function matchDone(){if(AM.ended||!ME||!real())return;AM.ended=true;const won=game.winner&&ally(game.winner,ME),S=typeof rcS==='function'?rcS(ME.id):{dmg:0,kos:0};
   if(won){const n=achAdd('wins');achGive('win1');if(n>=10)achGive('win10');if(n>=50)achGive('win50');if(!AM.ult)achGive('noult');if(ME.hp<15)achGive('clutch');if(ME.hp>75)achGive('fresh');
-    const W=ACHS.c.wonWith||{};W[ME.hero.id]=1;ACHS.c.wonWith=W;const M=ACHS.c.wonOn||{};M[AM.mapk]=1;ACHS.c.wonOn=M;achSave();
-    if(Object.keys(W).length>=10)achGive('roster10');if(MAP_KEYS.every(k=>M[k]))achGive('maps');}
+    const W=ACHS.c.wonWith||{};W[ME.hero.id]=1;ACHS.c.wonWith=W;achSave();
+    if(Object.keys(W).length>=10)achGive('roster10');}
   if(game.rules==='br')rankApply(won);masteryApply(won,S);}
 onEv('tick',()=>{if(game.phase==='over')matchDone();if(ME&&ME.dead&&RC.died&&game.rules==='br'&&!game.story&&game.time-RC.died>.5)matchDone();});
 
@@ -9816,8 +9655,9 @@ function cvId(f){try{return (f.hero&&KIT(f.hero,'elem'))||f.hero.id;}catch(e){re
 function cvClips(fid,slot){return CV.map[fid+':'+slot]||[];}
 function cvHas(f,slot){return SET.customVoice!==false&&cvClips(cvId(f),slot).length>0;}
 function cvStop(){if(CV.playing){try{CV.playing.pause();}catch(e){}CV.playing=null;}}
-function cvPlayClip(c,vol){cvStop();const u=CV.urls[c.id];if(!u)return null;const a=new Audio(u);
-  a.volume=Math.max(0,Math.min(1,(SET.sfx==null?85:SET.sfx)/100*(vol||1)));CV.playing=a;
+function cvPlayClip(c,vol){cvStop();const u=CV.urls[c.id];if(!u)return null;const a=new Audio(u);const v=Math.max(0,Math.min(1,(SET.sfx==null?85:SET.sfx)/100*(vol||1)));
+  // played through the game's audio graph so recordings/clips include it
+  try{if(AU.ctx&&AU.master){const src=AU.ctx.createMediaElementSource(a),g=AU.ctx.createGain();g.gain.value=v;src.connect(g);g.connect(AU.master);}else a.volume=v;}catch(e){a.volume=v;}CV.playing=a;
   a.onloadedmetadata=()=>{if(typeof duckMusic==='function'&&isFinite(a.duration))duckMusic(Math.min(6,a.duration+.3));};
   a.play().catch(()=>{});return a;}
 function cvPlay(f,slot,vol){if(!cvHas(f,slot))return false;const L=cvClips(cvId(f),slot);
@@ -9907,6 +9747,220 @@ const _cvPv=previewHero;previewHero=function(i){const r=_cvPv.apply(this,argumen
   const id=(h.as&&h.as.elem)||h.id;const n=CV_SLOTS.reduce((k,[s])=>k+cvClips(id,s).length,0);b.textContent=n?'🎙 CUSTOM ♪'+n:'🎙 CUSTOM';
   b.onclick=e=>{e.stopPropagation();cvUI(id,'voice');};const pv=$('pvVoice');if(pv)pv.style.display=(SET.ultSfx||cvClips(id,'ult').length)?'':'none';}catch(e){}return r;};
 cvLoad();
+/* CLIPS — recording, instant replay, a clip gallery with trimming, download and share.
+   F8  start / stop a recording (any length, up to 10 min)
+   F9  save the last 15–30 seconds (instant replay, always running during matches)
+   Auto-highlights: your KOs (multi-KOs merge into one clip) and your wins are clipped automatically.
+   Video = the 3D view plus a light HUD drawn on top; audio = all game sound and music (spoken text-to-speech lines can't be captured by browsers).
+   Clips are stored in this browser (IndexedDB) — nothing is uploaded unless you share/download it yourself. */
+const CLIP_L=15,CLIP_MANUAL_MAX=600,CLIP_AUTO_KEEP=15;
+const REC={cv:null,cx:null,stream:null,aDest:null,mime:'',ext:'webm',slots:[],man:null,manT0:0,feed:[],ultB:null,kos:0,autoT:0,autoWhy:'',db:null,busy:0};
+['replay','autoClip','clipHud'].forEach(k=>{if(SET[k]===undefined)SET[k]=true;});
+
+function recMime(){if(!window.MediaRecorder)return '';const L=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+  for(const m of L){try{if(MediaRecorder.isTypeSupported(m))return m;}catch(e){}}return '';}
+function recSupported(){return !!(window.MediaRecorder&&HTMLCanvasElement.prototype.captureStream&&recMime());}
+function recInit(){if(REC.stream)return true;if(!recSupported())return false;
+  REC.mime=recMime();REC.ext=/mp4/.test(REC.mime)?'mp4':'webm';
+  const cv=document.createElement('canvas');REC.cv=cv;REC.cx=cv.getContext('2d');recSize();
+  REC.stream=cv.captureStream(30);
+  try{if(!AU.ctx)AU.init();if(AU.ctx&&AU.master){REC.aDest=AU.ctx.createMediaStreamDestination();AU.master.connect(REC.aDest);REC.aDest.stream.getAudioTracks().forEach(t=>REC.stream.addTrack(t));}}catch(e){}
+  return true;}
+function recSize(){const src=renderer.domElement,w=src.width||1280,h=src.height||720,s=Math.min(1,1280/w,720/h);
+  const W=Math.max(2,Math.round(w*s/2)*2),H=Math.max(2,Math.round(h*s/2)*2);if(REC.cv&&(REC.cv.width!==W||REC.cv.height!==H)){REC.cv.width=W;REC.cv.height=H;}}
+function recActive(){return !!(REC.man||REC.slots.some(s=>s.rec));}
+
+// ---------- compositing: copy the 3D frame right after it renders, draw a light HUD over it ----------
+const _recRender=render;render=function(){const r=_recRender.apply(this,arguments);if(recActive())try{recFrame();}catch(e){}return r;};
+function recFrame(){recSize();const c=REC.cx,W=REC.cv.width,H=REC.cv.height;c.drawImage(renderer.domElement,0,0,W,H);
+  if(SET.clipHud===false)return;const u=H/720;c.save();c.textBaseline='middle';
+  if(typeof KC!=='undefined'&&KC.on){c.fillStyle='#000';c.fillRect(0,0,W,H*.09);c.fillRect(0,H*.91,W,H*.09);}
+  c.font=`${Math.round(30*u)}px "Bebas Neue",Impact,sans-serif`;c.globalAlpha=.75;c.fillStyle='#ffd23f';c.textAlign='right';c.fillText('SURGE',W-18*u,H-24*u);c.globalAlpha=1;
+  if(ME&&inMatch()){const x=22*u,y=H-70*u,bw=260*u;c.textAlign='left';c.font=`${Math.round(26*u)}px "Bebas Neue",Impact,sans-serif`;
+    c.fillStyle='#fff';c.fillText(((ME.hero.name||'')+' · '+(ME.name||'')).toUpperCase(),x,y-20*u);
+    c.fillStyle='rgba(0,0,0,.55)';c.fillRect(x,y,bw,14*u);c.fillStyle=ME.hp>35?'#5dff8a':'#ff4d4d';c.fillRect(x,y,bw*Math.max(0,ME.hp)/100,14*u);
+    c.fillStyle='rgba(0,0,0,.55)';c.fillRect(x,y+18*u,bw,7*u);c.fillStyle=ME.meter>=100?'#ffd23f':'#4fd2ff';c.fillRect(x,y+18*u,bw*Math.min(100,ME.meter||0)/100,7*u);
+    const alive=FS.filter(f=>!f.dead).length;c.textAlign='right';c.font=`${Math.round(24*u)}px "Bebas Neue",Impact,sans-serif`;c.fillStyle='#fff';
+    c.fillText(`${alive} ALIVE · ${REC.kos} KO`,W-18*u,26*u);
+    const now=performance.now();REC.feed=REC.feed.filter(e=>now-e.t<5000);c.font=`${Math.round(19*u)}px Rajdhani,sans-serif`;
+    REC.feed.forEach((e,i)=>{c.globalAlpha=Math.min(1,(5000-(now-e.t))/600);c.fillStyle='rgba(0,0,0,.5)';const tw=c.measureText(e.s).width;c.fillRect(W-24*u-tw,48*u+i*26*u,tw+12*u,23*u);c.fillStyle=e.c;c.fillText(e.s,W-18*u,60*u+i*26*u);});c.globalAlpha=1;
+    if(REC.ultB&&now-REC.ultB.t<1700){const a=Math.min(1,(1700-(now-REC.ultB.t))/400);c.globalAlpha=a;c.textAlign='center';c.font=`${Math.round(64*u)}px "Bebas Neue",Impact,sans-serif`;
+      c.lineWidth=6*u;c.strokeStyle='#000';c.strokeText(REC.ultB.s,W/2,H*.3);c.fillStyle=REC.ultB.c;c.fillText(REC.ultB.s,W/2,H*.3);c.globalAlpha=1;}}
+  if(REC.man){const s=Math.floor((performance.now()-REC.manT0)/1000);c.textAlign='left';c.fillStyle='#ff3b3b';c.beginPath();c.arc(24*u,24*u,8*u,0,7);c.fill();
+    c.font=`${Math.round(20*u)}px Rajdhani,sans-serif`;c.fillStyle='#fff';c.fillText(`REC ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`,38*u,25*u);}
+  c.restore();}
+onEv('kill',(d,a)=>{if(!d)return;const nm=f=>(f.name||f.hero.name||'?').toUpperCase();
+  REC.feed.unshift({t:performance.now(),s:a&&a!==d?`${nm(a)}  ✕  ${nm(d)}`:`${nm(d)} WAS KO'D`,c:a===ME?'#ffd23f':d===ME?'#ff6a6a':'#fff'});REC.feed.length=Math.min(REC.feed.length,4);
+  if(a===ME&&d!==ME){REC.kos++;if(SET.autoClip!==false&&SET.replay!==false&&inMatch()){REC.autoT=performance.now()+3000;REC.autoWhy=REC.autoWhy?REC.autoWhy.replace(/^(\d+)?x?\s?KO/,(m,n)=>`${(+n||1)+1}x KO`):'KO on '+nm(d);}}});
+onEv('ult',f=>{if(f===ME||(ME&&f.pos&&f.pos.distanceTo(ME.pos)<25))REC.ultB={t:performance.now(),s:(typeof ultLabel==='function'?ultLabel(f):'ULTIMATE').toUpperCase(),c:f.hero.css||'#ffd23f'};});
+
+// ---------- instant replay: two staggered recorders, so one always holds 15–30 s ----------
+function slotStart(s){if(!REC.stream)return;s.chunks=[];s.want=null;s.restart=false;let r;
+  try{r=new MediaRecorder(REC.stream,{mimeType:REC.mime,videoBitsPerSecond:5e6,audioBitsPerSecond:128e3});}catch(e){s.rec=null;return;}
+  s.rec=r;s.t0=performance.now();r.ondataavailable=e=>{if(e.data&&e.data.size)s.chunks.push(e.data);};
+  r.onstop=()=>{const want=s.want,ch=s.chunks,dur=(performance.now()-s.t0)/1000;s.rec=null;s.chunks=[];
+    if(want)clipSave(new Blob(ch,{type:REC.mime.split(';')[0]}),Math.min(dur,CLIP_L*2),want);if(s.restart&&REC.replayOn)slotStart(s);};
+  try{r.start(1000);}catch(e){s.rec=null;}}
+function replayStart(){if(SET.replay===false||REC.replayOn||!recInit())return;REC.replayOn=true;REC.slots=[{},{}];slotStart(REC.slots[0]);
+  REC.slotT=setTimeout(()=>{if(REC.replayOn)slotStart(REC.slots[1]);},CLIP_L*1000);}
+function replayStop(){REC.replayOn=false;clearTimeout(REC.slotT);REC.slots.forEach(s=>{if(s.rec){s.restart=false;try{s.rec.stop();}catch(e){}}});}
+setInterval(()=>{const now=performance.now();
+  REC.slots.forEach(s=>{if(s.rec&&!s.want&&now-s.t0>CLIP_L*2000){s.restart=true;try{s.rec.stop();}catch(e){}}});
+  if(REC.autoT&&now>REC.autoT){REC.autoT=0;const w=REC.autoWhy;REC.autoWhy='';clipNow({auto:true,why:w});}
+  if(REC.man&&now-REC.manT0>CLIP_MANUAL_MAX*1000)recToggle();
+  const d=$('recDot');if(d){d.style.display=REC.man?'flex':'none';if(REC.man){const s=Math.floor((now-REC.manT0)/1000);d.lastChild.textContent=` REC ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}}},250);
+function clipNow(o){o=o||{};if(!REC.replayOn){if(!o.auto)announceSmall(SET.replay===false?'INSTANT REPLAY IS OFF (SETTINGS)':recSupported()?'INSTANT REPLAY STARTS WHEN A MATCH DOES':'THIS BROWSER CAN\'T RECORD VIDEO');return false;}
+  const L=REC.slots.filter(s=>s.rec&&!s.want).sort((a,b)=>a.t0-b.t0),s=L[0];if(!s||performance.now()-s.t0<3000){if(!o.auto)announceSmall('NOT ENOUGH FOOTAGE YET');return false;}
+  s.want={auto:!!o.auto,why:o.why||(o.auto?'':'INSTANT REPLAY'),thumb:clipThumb(),hero:ME&&ME.hero.name};s.restart=true;try{s.rec.stop();}catch(e){}return true;}
+onEv('matchStart',()=>{REC.kos=0;REC.feed=[];REC.autoT=0;REC.autoWhy='';setTimeout(replayStart,500);});
+onEv('win',w=>{const won=ME&&w&&(w===ME||(typeof ally==='function'&&ally(w,ME)));
+  if(won&&SET.autoClip!==false&&REC.replayOn){REC.autoT=0;const why='VICTORY'+(REC.autoWhy?' · '+REC.autoWhy:'');REC.autoWhy='';setTimeout(()=>clipNow({auto:true,why}),2500);}});
+onEv('matchEnd',()=>{if(REC.autoT){REC.autoT=0;clipNow({auto:true,why:REC.autoWhy});REC.autoWhy='';}setTimeout(replayStop,300);});
+
+// ---------- manual recording ----------
+function recToggle(){if(REC.man){const r=REC.man;REC.man=null;try{r.stop();}catch(e){}return;}
+  if(!recInit()){announceSmall('THIS BROWSER CAN\'T RECORD VIDEO');return;}let r;
+  try{r=new MediaRecorder(REC.stream,{mimeType:REC.mime,videoBitsPerSecond:6e6,audioBitsPerSecond:128e3});}catch(e){announceSmall('RECORDING FAILED TO START');return;}
+  const ch=[],t0=performance.now(),thumb=clipThumb();r.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data);};
+  r.onstop=()=>{const dur=(performance.now()-t0)/1000;if(dur<1)return;clipSave(new Blob(ch,{type:REC.mime.split(';')[0]}),dur,{auto:false,why:'RECORDING',thumb:clipThumb()||thumb,hero:ME&&ME.hero.name});};
+  r.start(1000);REC.man=r;REC.manT0=t0;announceSmall('● RECORDING · F8 TO STOP');AU.ui&&AU.ui();}
+function clipThumb(){try{if(!REC.cv)return '';const t=document.createElement('canvas');t.width=320;t.height=180;t.getContext('2d').drawImage(REC.cv,0,0,320,180);return t.toDataURL('image/jpeg',.7);}catch(e){return '';}}
+addEventListener('keydown',e=>{if(e.repeat)return;const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
+  if(e.code==='F8'){e.preventDefault();recToggle();}else if(e.code==='F9'){e.preventDefault();if(clipNow())announceSmall('💾 SAVING CLIP…');}});
+
+// ---------- storage ----------
+function clipDB(){return new Promise((res,rej)=>{if(REC.db)return res(REC.db);if(!window.indexedDB)return rej('no storage');const r=indexedDB.open('surge-clips',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('clips',{keyPath:'id'});r.onsuccess=()=>{REC.db=r.result;res(REC.db);};r.onerror=()=>rej(r.error);});}
+function clipStore(mode){return REC.db.transaction('clips',mode).objectStore('clips');}
+function clipAll(){return clipDB().then(()=>new Promise(res=>{const q=clipStore('readonly').getAll();q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.date-a.date));q.onerror=()=>res([]);})).catch(()=>[]);}
+function clipPut(c){return clipDB().then(()=>new Promise((res,rej)=>{const q=clipStore('readwrite').put(c);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);}));}
+function clipDel(id){return clipDB().then(()=>new Promise(res=>{const q=clipStore('readwrite').delete(id);q.onsuccess=q.onerror=()=>res();}));}
+async function clipSave(blob,dur,o){if(!blob||blob.size<2000)return;const d=new Date();
+  const c={id:'c'+d.getTime()+Math.random().toString(36).slice(2,6),blob,mime:blob.type,ext:/mp4/.test(blob.type)?'mp4':'webm',dur:Math.round(dur*10)/10,date:d.getTime(),
+    auto:!!o.auto,thumb:o.thumb||'',name:[o.hero,o.why].filter(Boolean).join(' · ').toUpperCase()||'CLIP'};
+  try{await clipPut(c);}catch(e){announceSmall('CLIP NOT SAVED: BROWSER STORAGE IS FULL');return;}
+  if(c.auto){const L=(await clipAll()).filter(x=>x.auto);for(const x of L.slice(CLIP_AUTO_KEEP))await clipDel(x.id);}
+  clipToast(c);const n=(await clipAll()).length;if(typeof achGive==='function'){achGive('clip1');if(n>=10)achGive('clip10');}
+  if($('clipBox')&&$('clipBox').classList.contains('on'))clipUI();}
+function clipToast(c){let t=$('clipToast');if(!t){t=document.createElement('div');t.id='clipToast';document.body.appendChild(t);}
+  t.innerHTML=`${c.thumb?`<img src="${c.thumb}">`:''}<div><b>${c.auto?'HIGHLIGHT SAVED':'CLIP SAVED'}</b><span>${clipEsc(c.name)} · ${clipDur(c.dur)}</span><span class="ct2">🎬 CLIPS on the title screen or pause menu</span></div>`;
+  t.classList.remove('on');void t.offsetWidth;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),4200);}
+function clipEsc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function clipDur(s){s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function clipFile(c){const nm=('surge-'+c.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')).slice(0,60)+'.'+c.ext;return new File([c.blob],nm,{type:c.mime||c.blob.type});}
+// inside the published Claude page, files are handed over through its downloads capability (the viewer confirms); elsewhere a normal download link
+let CLIP_DL=null;try{if(window.claude&&typeof window.claude.use==='function')CLIP_DL=window.claude.use('downloads').catch(()=>null);}catch(e){}
+async function clipDownload(c){const f=clipFile(c);const dl=CLIP_DL?await CLIP_DL:null;
+  if(dl){try{await dl.save({filename:f.name,data:c.blob});if(typeof achGive==='function')achGive('share');announceSmall('⬇ CLIP SAVED TO YOUR DEVICE');}
+    catch(e){const k=e&&e.code;if(k!=='declined')announceSmall(k==='rate_limited'?'A SAVE IS ALREADY WAITING, TRY AGAIN IN A MOMENT':'DOWNLOADS AREN\'T AVAILABLE HERE');}return;}
+  clipDownloadLink(c);}
+function clipDownloadLink(c){const f=clipFile(c),u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);
+  try{a.click();}catch(e){window.open(u,'_blank');}setTimeout(()=>{a.remove();URL.revokeObjectURL(u);},60000);if(typeof achGive==='function')achGive('share');}
+async function clipShare(c){const f=clipFile(c);
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'SURGE clip',text:c.name+' — played in SURGE'});if(typeof achGive==='function')achGive('share');return;}}
+  catch(e){if(e&&e.name==='AbortError')return;}
+  announceSmall('SHARING ISN\'T AVAILABLE HERE, SO THE CLIP WAS DOWNLOADED');clipDownload(c);}
+
+// trimming: replays the chosen part and re-records it (takes as long as the trimmed part)
+function clipTrim(c,a,b,onP){return new Promise((res,rej)=>{const v=document.createElement('video');v.src=URL.createObjectURL(c.blob);v.muted=false;v.playsInline=true;v.style.cssText='position:fixed;left:-9999px;width:2px;height:2px';document.body.appendChild(v);
+  const done=(e,blob)=>{try{v.pause();URL.revokeObjectURL(v.src);v.remove();}catch(_){}e?rej(e):res(blob);};
+  v.onloadedmetadata=async()=>{try{await clipFixDur(v);v.currentTime=a;await new Promise(r=>{v.onseeked=r;});
+    const st=v.captureStream?v.captureStream():v.mozCaptureStream(),out=new MediaStream(st.getVideoTracks());let ctxA=null;
+    // the clip's sound goes into the recording only, not out of the speakers
+    try{ctxA=new (window.AudioContext||window.webkitAudioContext)();const src=ctxA.createMediaElementSource(v),dst=ctxA.createMediaStreamDestination();src.connect(dst);dst.stream.getAudioTracks().forEach(t=>out.addTrack(t));}
+    catch(_){st.getAudioTracks().forEach(t=>out.addTrack(t));}
+    const mime=recMime(),r=new MediaRecorder(out,{mimeType:mime,videoBitsPerSecond:6e6});const ch=[];r.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data);};
+    r.onstop=()=>{try{ctxA&&ctxA.close();}catch(_){}done(null,new Blob(ch,{type:mime.split(';')[0]}));};
+    r.start(500);await v.play();
+    const tk=setInterval(()=>{onP&&onP((v.currentTime-a)/Math.max(.1,b-a));if(v.currentTime>=b||v.ended){clearInterval(tk);v.pause();r.stop();}},50);}catch(e){done(e);}};
+  v.onerror=()=>done('could not read the clip');});}
+// MediaRecorder files often report an unknown length; seek far ahead once so the browser works it out
+function clipFixDur(v){return new Promise(res=>{if(isFinite(v.duration)&&v.duration>0)return res();const f=()=>{if(isFinite(v.duration)){v.removeEventListener('durationchange',f);v.currentTime=0;res();}};
+  v.addEventListener('durationchange',f);v.currentTime=1e7;setTimeout(()=>{v.removeEventListener('durationchange',f);try{v.currentTime=0;}catch(e){}res();},2500);});}
+
+// ---------- gallery ----------
+async function clipUI(){let box=$('clipBox');if(!box){box=document.createElement('div');box.id='clipBox';document.body.appendChild(box);
+    box.addEventListener('keydown',e=>{if(e.code!=='F8'&&e.code!=='F9')e.stopPropagation();});box.addEventListener('mousedown',e=>e.stopPropagation());}
+  const L=await clipAll(),mb=L.reduce((n,c)=>n+c.blob.size,0)/1048576;box.classList.add('on');
+  box.innerHTML=`<div class="clIn"><div class="cvHd"><b>🎬 CLIPS</b><button class="chip" id="clX">✕ CLOSE</button></div>
+    <div class="clKeys"><span><kbd>F8</kbd> start / stop recording</span><span><kbd>F9</kbd> save the last 15–30 s</span><span>KOs and wins are clipped automatically</span></div>
+    <div class="rowb" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><button class="chip" id="clRec">${REC.man?'⏹ STOP RECORDING':'⏺ START RECORDING'}</button><button class="chip" id="clSave"${REC.replayOn?'':' disabled'}>💾 SAVE LAST 30 s</button>
+      <span class="clInfo">${L.length} clip${L.length===1?'':'s'} · ${mb.toFixed(0)} MB · stored in this browser only</span></div>
+    ${recSupported()?'':'<div class="cvErr">This browser can\'t record video. Try Chrome, Edge or Firefox.</div>'}
+    <div class="clGrid">${L.map(c=>`<div class="clCard" data-id="${c.id}"><div class="clTh" data-a="play">${c.thumb?`<img src="${c.thumb}">`:''}<span class="clD">${clipDur(c.dur)}</span>${c.auto?'<span class="clA">AUTO</span>':''}<span class="clPl">▶</span></div>
+      <div class="clNm" title="${clipEsc(c.name)}">${clipEsc(c.name)}</div><div class="clDt">${new Date(c.date).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} · ${(c.blob.size/1048576).toFixed(1)} MB · ${c.ext.toUpperCase()}</div>
+      <div class="clBt"><button class="chip" data-a="play" title="Play / trim">▶</button><button class="chip" data-a="share" title="Share">📤</button><button class="chip" data-a="dl" title="Download">⬇</button><button class="chip" data-a="ren" title="Rename">✎</button><button class="chip" data-a="del" title="Delete">🗑</button></div></div>`).join('')
+      ||'<div class="cvEmpty" style="padding:30px;text-align:center;font-size:16px">No clips yet. Press F9 in a match to save the last 30 seconds, or F8 to record.</div>'}</div></div>`;
+  $('clX').onclick=()=>{box.classList.remove('on');AU.ui&&AU.ui();};
+  $('clRec').onclick=()=>{recToggle();setTimeout(clipUI,100);};$('clSave').onclick=()=>{if(clipNow())announceSmall('💾 SAVING CLIP…');};
+  box.querySelectorAll('.clCard [data-a]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=b.closest('.clCard').dataset.id,c=L.find(x=>x.id===id);if(!c)return;const a=b.dataset.a;
+    if(a==='play')clipPlayer(c);else if(a==='share')clipShare(c);else if(a==='dl')clipDownload(c);
+    else if(a==='ren'){const nm=b.closest('.clCard').querySelector('.clNm');nm.innerHTML=`<input class="clRen" maxlength="60" value="${clipEsc(c.name)}">`;const i=nm.firstChild;i.focus();i.select();
+      const save=async()=>{const n=i.value.trim();if(n&&n.toUpperCase()!==c.name){c.name=n.toUpperCase().slice(0,60);await clipPut(c);}clipUI();};
+      i.onkeydown=e=>{e.stopPropagation();if(e.key==='Enter')save();if(e.key==='Escape')clipUI();};i.onblur=save;}
+    else if(a==='del'){if(b.dataset.sure){await clipDel(id);clipUI();}else{b.dataset.sure=1;b.textContent='SURE?';b.classList.add('warn');setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='🗑';b.classList.remove('warn');}},2500);}}});}
+function clipPlayer(c){const box=$('clipBox');let P=$('clipPlay');if(P)P.remove();P=document.createElement('div');P.id='clipPlay';box.appendChild(P);const u=URL.createObjectURL(c.blob);
+  P.innerHTML=`<div class="clPIn"><div class="cvHd"><b style="font-size:24px">${clipEsc(c.name)}</b><button class="chip" id="cpX">✕ BACK</button></div>
+    <video id="cpV" src="${u}" controls playsinline></video>
+    <div class="clTrim"><b>TRIM</b><label>START <input type="range" id="cpA" min="0" max="${c.dur}" step="0.1" value="0"><span id="cpAv">0:00</span></label>
+      <label>END <input type="range" id="cpB" min="0" max="${c.dur}" step="0.1" value="${c.dur}"><span id="cpBv">${clipDur(c.dur)}</span></label></div>
+    <div class="rowb" style="justify-content:flex-start;gap:8px"><button class="chip" id="cpSetA">⇤ START HERE</button><button class="chip" id="cpSetB">END HERE ⇥</button>
+      <button class="chip" id="cpT">✂ SAVE TRIMMED COPY</button><button class="chip" id="cpS">📤 SHARE</button><button class="chip" id="cpD">⬇ DOWNLOAD</button><span class="clInfo" id="cpMsg"></span></div></div>`;
+  const v=$('cpV'),A=$('cpA'),B=$('cpB'),fmt=()=>{$('cpAv').textContent=clipDur(+A.value);$('cpBv').textContent=clipDur(+B.value);};
+  v.onloadedmetadata=()=>clipFixDur(v).then(()=>{if(isFinite(v.duration)&&v.duration>0){A.max=B.max=v.duration.toFixed(1);if(+B.value>v.duration||+B.value===c.dur)B.value=v.duration.toFixed(1);fmt();}});
+  A.oninput=()=>{if(+A.value>+B.value-1)A.value=Math.max(0,+B.value-1);v.currentTime=+A.value;fmt();};
+  B.oninput=()=>{if(+B.value<+A.value+1)B.value=+A.value+1;v.currentTime=+B.value;fmt();};
+  v.ontimeupdate=()=>{if(!v.paused&&v.currentTime>=+B.value&&+B.value<+B.max-.05){v.pause();}};
+  $('cpSetA').onclick=()=>{A.value=v.currentTime.toFixed(1);A.oninput();};$('cpSetB').onclick=()=>{B.value=v.currentTime.toFixed(1);B.oninput();};
+  $('cpX').onclick=()=>{v.pause();URL.revokeObjectURL(u);P.remove();};
+  $('cpS').onclick=()=>clipShare(c);$('cpD').onclick=()=>clipDownload(c);
+  $('cpT').onclick=async()=>{const a=+A.value,b=+B.value;if(b-a<1)return;if(REC.busy){return;}REC.busy=1;v.pause();const m=$('cpMsg');
+    try{const blob=await clipTrim(c,a,b,p=>{m.textContent='✂ TRIMMING… '+Math.round(Math.min(1,p)*100)+'%';});
+      await clipPut({id:'c'+Date.now()+Math.random().toString(36).slice(2,6),blob,mime:blob.type,ext:/mp4/.test(blob.type)?'mp4':'webm',dur:Math.round((b-a)*10)/10,date:Date.now(),auto:false,thumb:c.thumb,name:(c.name+' (TRIMMED)').slice(0,60)});
+      m.textContent='✔ TRIMMED COPY SAVED';setTimeout(()=>{if($('clipPlay'))$('clipPlay').remove();clipUI();},900);}
+    catch(e){m.textContent='TRIM FAILED: '+e;}REC.busy=0;};}
+
+// ---------- entry points: title screen, pause menu, settings ----------
+(function(){const t=$('bSettings');if(t&&!$('bClips')){const b=document.createElement('button');b.className='chip tb2';b.id='bClips';b.textContent='🎬 CLIPS';b.onclick=()=>clipUI();t.parentNode.insertBefore(b,t);}
+  const p=$('bQuit');if(p&&!$('bPClips')){const b=document.createElement('button');b.className='btn ghost';b.id='bPClips';b.textContent='🎬 CLIPS';b.onclick=()=>clipUI();p.parentNode.insertBefore(b,p);}
+  if(!$('recDot')){const d=document.createElement('div');d.id='recDot';d.innerHTML='<i></i><span> REC</span>';d.onclick=()=>recToggle();d.title='Recording · F8 to stop';document.body.appendChild(d);}})();
+const _clSS=showSettings;showSettings=function(){const r=_clSS.apply(this,arguments);try{const L=$('setList');const h=document.createElement('div');h.className='seth';h.textContent='CLIPS & RECORDING';L.appendChild(h);
+  [['replay','INSTANT REPLAY (F9 SAVES THE LAST 15–30 S)'],['autoClip','AUTO-CLIP MY KOs AND WINS'],['clipHud','SHOW HUD IN CLIPS']].forEach(([k,n])=>{const row=document.createElement('div');row.className='setrow';
+    row.innerHTML=`<span class="setl">${n}</span>`;const b=document.createElement('button');b.className='chip'+(SET[k]!==false?' on':'');b.textContent=SET[k]!==false?'ON':'OFF';
+    b.onclick=()=>{SET[k]=SET[k]===false;setSave();if(k==='replay'){if(SET.replay===false)replayStop();else if(inMatch())replayStart();}showSettings();};row.appendChild(b);L.appendChild(row);});
+  const row=document.createElement('div');row.className='setrow';row.innerHTML='<span class="setl">YOUR CLIPS</span>';const b=document.createElement('button');b.className='chip';b.textContent='🎬 OPEN';b.onclick=()=>clipUI();row.appendChild(b);L.appendChild(row);}catch(e){}return r;};
+/* SECRET: on the title screen, press every letter A–Z (any order). Unlocks everything and maxes out every fighter:
+   all shop items, costumes and season rewards owned; every fighter at level 20 with all skills at rank 5 and mastery 10;
+   every story chapter (hero, villain, training) opened; +100,000 points. Ranked and achievements stay earned the normal way.
+   Saved like normal progress (and wiped with it by the anti-teaming penalty). */
+const SECRET={keys:new Set()};
+PROGRESS_KEYS.push('surge.secret');
+ACH.push({id:'secret',n:'ALPHABET SOUP',d:'Find the title-screen secret'});
+function secretOn(){return store.get('surge.secret')==='1';}
+const _secOwns=owns;owns=function(key){return secretOn()||_secOwns.apply(this,arguments);};
+
+function secretUnlock(){store.set('surge.secret','1');
+  // every fighter (built-in and your created ones): max level, max skills, max mastery
+  const ids=HEROES.map((h,i)=>i).concat(CSPECS.map((c,i)=>CUST0+i));let xp=0;for(let L=1;L<MAXLV;L++)xp+=lvNeed(L);
+  ids.forEach(i=>{try{const k=heroKey(i);PROG[k]=Math.max(PROG[k]||0,xp);const S={};SKILLS.forEach(([s])=>S[s]=SK_MAX);META.skills[k]=S;}catch(e){}});
+  HEROES.forEach(h=>{MAST[h.id]=Math.max(MAST[h.id]||0,MLV[MLV.length-1]);});
+  progSave();store.set('surge.mastery',JSON.stringify(MAST));
+  // season pass complete (its item rewards are covered by owning everything)
+  META.sxp=Math.max(META.sxp,SEASON.tiers.length*SEASON.per);META.claimed=SEASON.tiers.length;metaSave();
+  // every story chapter opened
+  Object.values(CAMPS).forEach(C=>{try{let v=null;try{v=JSON.parse(store.get(C.key)||'null');}catch(e){}v=v&&typeof v==='object'?v:{};v.done=C.arr.map((_,i)=>i);store.set(C.key,JSON.stringify(v));}catch(e){}});
+  POINTS+=100000;store.set('surge.points',String(POINTS));try{renderPoints();}catch(e){}
+  try{achGive('secret');}catch(e){}
+  secretShow();}
+function secretShow(){let b=$('secretBox');if(!b){b=document.createElement('div');b.id='secretBox';document.body.appendChild(b);}
+  b.innerHTML=`<div><small>SECRET FOUND</small><b>EVERYTHING UNLOCKED</b><span>All fighters maxed · every costume, emote, pose, card, tag and pet · all story chapters · +100,000 points</span></div>`;
+  b.classList.remove('on');void b.offsetWidth;b.classList.add('on');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('on'),5200);
+  try{AU.init();AU.scale=1;AU.levelUp&&AU.levelUp();setTimeout(()=>AU.fanfare&&AU.fanfare(),350);}catch(e){}
+  try{if(typeof buildCards==='function')buildCards();if(typeof previewHero==='function'&&PV&&PV.idx!=null)previewHero(PV.idx);}catch(e){}}
+addEventListener('keydown',e=>{const t=$('title');if(!t||!t.classList.contains('on')||inMatch()){SECRET.keys.clear();return;}
+  const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
+  const m=/^Key([A-Z])$/.exec(e.code);if(!m||e.ctrlKey||e.metaKey||e.altKey)return;SECRET.keys.add(m[1]);
+  if(SECRET.keys.size===26){SECRET.keys.clear();secretUnlock();}});
 /* Starts the game. Loaded last, after every other file. */
 buildGfx();if(!GFX.high)lampConeMat.visible=false;initPreview();makePortraits();$('load').style.display='none';showScreen('title');loop();
 })();

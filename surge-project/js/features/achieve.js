@@ -10,9 +10,9 @@ const ACH=[
   ['noult','NO SHORTCUTS','Win without using your ultimate'],['clutch','BY A THREAD','Win with under 15 HP'],['fresh','UNTOUCHABLE','Win with over 75 HP'],
   ['combo10','COMBO KING','Land a 10-hit combo'],['dmg1k','HEAVY HITTER','Deal 1,000 damage in one match'],['ko5','RAMPAGE','5 KOs in one match'],
   ['car','CAR TOSS','KO someone with a thrown car'],['meteor','DUCK AND COVER','Survive a Meteor Shower'],['gold','GOLD DIGGER','Grab 5 gold orbs in one match'],
-  ['avalanche','OVER THE TOP','Survive an avalanche'],['crushed','WRONG PLACE, WRONG TIME','Get flattened by a falling container'],['train','LAST STOP','Get hit by the train'],
+  ['clip1','DIRECTOR','Save your first clip'],['clip10','HIGHLIGHT REEL','Save 10 clips'],['train','LAST STOP','Get hit by the train'],
   ['awaken','AWAKENED','Awaken your power'],['teamup','TEAM PLAYER','Pull off a team-up'],['civ','RESCUER','Save 10 civilians'],
-  ['maps','WORLD TRAVELER','Win on every map'],['roster10','VERSATILE','Win with 10 different fighters'],['roster','FULL ROSTER','Play every fighter'],
+  ['share','GOING VIRAL','Share or download a clip'],['roster10','VERSATILE','Win with 10 different fighters'],['roster','FULL ROSTER','Play every fighter'],
   ['law','THE LAW','Lay down a law as Decree'],['erase','NOT ON MY WATCH','Erase a power for 5 s as Snare'],['wall','STRAIGHT UP','Glide up a 30 m wall as Skitter'],
   ['rankpro','GOING PRO','Reach PRO rank'],['master','MASTER','Reach mastery 10 with any fighter']].map(([id,n,d])=>({id,n,d}));
 const ACHS=(()=>{try{return JSON.parse(store.get('surge.ach')||'{}');}catch(e){return {};}})();ACHS.u=ACHS.u||{};ACHS.c=ACHS.c||{};
@@ -33,19 +33,17 @@ onEv('recap',S=>{if(S.best>=10)achGive('combo10');if(S.dmg>=1000)achGive('dmg1k'
 onEv('tick',dt=>{if(!ME||!real())return;
   if(typeof SURGE!=='undefined'){if(SURGE.ev==='meteors'){AM.met=true;}else if(AM.met){AM.met=false;if(!ME.dead)achGive('meteor');}
 }
-  if(typeof MAPD!=='undefined'&&MAPD.resort&&MAP_CUR==='resort'){const A=MAPD.resort.aval;if(A)AM.av=A;else if(AM.av){if(!ME.dead&&!AM.av.hit.has(ME))achGive('avalanche');AM.av=null;}}
   if(ME.glideOn&&ME.pos.y>30)achGive('wall');
   if(heroIs(ME,'snare')&&ME.eyeT>=5)achGive('erase');
   if(ME.trainT>game.time&&!AM.tr){AM.tr=1;achGive('train');}});
 if(typeof surgeTake==='function'){const _st=surgeTake;surgeTake=function(i,f){const r=_st.apply(this,arguments);if(f===ME&&real()){AM.gold++;if(AM.gold>=5)achGive('gold');}return r;};}
-if(typeof craneDrop==='function'){const _cd=craneDrop;craneDrop=function(x,z){const r=_cd.apply(this,arguments);setTimeout(()=>{if(ME&&!ME.dead&&Math.abs(ME.pos.x-x)<6.6&&Math.abs(ME.pos.z-z)<2.2&&ME.pos.y<4)achGive('crushed');},1850);return r;};}
 if(typeof giveOrder==='function'){const _go=giveOrder;giveOrder=function(f,k){const r=_go.apply(this,arguments);if(f===ME&&k==='law')achGive('law');return r;};}
 
 /* ---------- end of match: wins, rank, mastery ---------- */
 function matchDone(){if(AM.ended||!ME||!real())return;AM.ended=true;const won=game.winner&&ally(game.winner,ME),S=typeof rcS==='function'?rcS(ME.id):{dmg:0,kos:0};
   if(won){const n=achAdd('wins');achGive('win1');if(n>=10)achGive('win10');if(n>=50)achGive('win50');if(!AM.ult)achGive('noult');if(ME.hp<15)achGive('clutch');if(ME.hp>75)achGive('fresh');
-    const W=ACHS.c.wonWith||{};W[ME.hero.id]=1;ACHS.c.wonWith=W;const M=ACHS.c.wonOn||{};M[AM.mapk]=1;ACHS.c.wonOn=M;achSave();
-    if(Object.keys(W).length>=10)achGive('roster10');if(MAP_KEYS.every(k=>M[k]))achGive('maps');}
+    const W=ACHS.c.wonWith||{};W[ME.hero.id]=1;ACHS.c.wonWith=W;achSave();
+    if(Object.keys(W).length>=10)achGive('roster10');}
   if(game.rules==='br')rankApply(won);masteryApply(won,S);}
 onEv('tick',()=>{if(game.phase==='over')matchDone();if(ME&&ME.dead&&RC.died&&game.rules==='br'&&!game.story&&game.time-RC.died>.5)matchDone();});
 

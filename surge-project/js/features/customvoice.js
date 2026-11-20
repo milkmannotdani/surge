@@ -26,8 +26,9 @@ function cvId(f){try{return (f.hero&&KIT(f.hero,'elem'))||f.hero.id;}catch(e){re
 function cvClips(fid,slot){return CV.map[fid+':'+slot]||[];}
 function cvHas(f,slot){return SET.customVoice!==false&&cvClips(cvId(f),slot).length>0;}
 function cvStop(){if(CV.playing){try{CV.playing.pause();}catch(e){}CV.playing=null;}}
-function cvPlayClip(c,vol){cvStop();const u=CV.urls[c.id];if(!u)return null;const a=new Audio(u);
-  a.volume=Math.max(0,Math.min(1,(SET.sfx==null?85:SET.sfx)/100*(vol||1)));CV.playing=a;
+function cvPlayClip(c,vol){cvStop();const u=CV.urls[c.id];if(!u)return null;const a=new Audio(u);const v=Math.max(0,Math.min(1,(SET.sfx==null?85:SET.sfx)/100*(vol||1)));
+  // played through the game's audio graph so recordings/clips include it
+  try{if(AU.ctx&&AU.master){const src=AU.ctx.createMediaElementSource(a),g=AU.ctx.createGain();g.gain.value=v;src.connect(g);g.connect(AU.master);}else a.volume=v;}catch(e){a.volume=v;}CV.playing=a;
   a.onloadedmetadata=()=>{if(typeof duckMusic==='function'&&isFinite(a.duration))duckMusic(Math.min(6,a.duration+.3));};
   a.play().catch(()=>{});return a;}
 function cvPlay(f,slot,vol){if(!cvHas(f,slot))return false;const L=cvClips(cvId(f),slot);
