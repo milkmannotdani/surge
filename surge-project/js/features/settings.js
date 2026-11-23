@@ -1,6 +1,6 @@
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true,customVoice:true,ultSfx:false};
+const SET_DEF={cinematic:true,cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true,customVoice:true,ultSfx:false};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];

@@ -549,7 +549,7 @@ const XMOVES={
   void:[['STAR SHOWER','rain','void','star',[]],['NULL BEAM','beam','void','star',['push']]],
   ronin:[['IAI DASH','dash','blade','sword',['pierce']],['SPIRIT SLASHES','volley','blade','crescent',[]]],
   quake:[['BOULDER TOSS','bolt','earth','boulder',['launch'],{size:1.8}],['FAULT RING','burst','earth','shard',['launch','slow']]],
-  marrow:[['BONE RAIN','rain','blood','bone',['lifesteal']],['BLOOD SPRAY','cone','blood','orb',['lifesteal','slow']]],
+  marrow:[['BONE RAIN','rain','blood','bone',['lifesteal']],['BONE TENDRIL','grab','blood','bone',['lifesteal','pull']]],
   entropy:[['DECAY ORB','bolt','poison','orb',['poison','slow']],['ASH CLOUD','zone','poison','orb',['poison']]],
   sovereign:[['IRON GRASP','grab','shadow','hand',['drain']],['TYRANT ORBS','orbit','void','orb',['drain']]],
   strobe:[['AFTERIMAGE','blink','time','ring',['stun']],['STOPWATCH FIELD','zone','time','ring',['slow','stun']]],

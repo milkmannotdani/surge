@@ -511,3 +511,9 @@ body.calm #flash{display:none!important}
 #clashP span{display:block;font:800 14px 'Rajdhani',sans-serif;letter-spacing:.3em;margin:2px 0 6px;animation:awkPulse .25s ease-in-out infinite alternate}
 #clashP .cbar{width:340px;height:14px;background:#ff3a3a;border:2px solid #fff;box-shadow:0 0 14px rgba(0,0,0,.6);margin:0 auto;overflow:hidden}#clashP .cbar i{display:block;height:100%;width:50%;background:linear-gradient(90deg,#4fd2ff,#ffffff);transition:width .1s}
 #clashP.pp b{animation:secPop .2s}
+/* cinematic moves */
+#impactFx{position:fixed;inset:0;z-index:16;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 30%,var(--c,#fff) 140%);mix-blend-mode:screen}
+#impactFx.on{animation:impF .32s ease-out}@keyframes impF{0%{opacity:var(--a,.4);background:radial-gradient(ellipse at center,rgba(255,255,255,.35) 0%,transparent 45%,var(--c,#fff) 140%)}100%{opacity:0}}
+#cineBars{position:fixed;inset:0;z-index:15;pointer-events:none}#cineBars i{position:absolute;left:0;right:0;height:0;background:#000;transition:height .35s cubic-bezier(.2,.8,.2,1)}
+#cineBars i:first-child{top:0}#cineBars i:last-child{bottom:0}#cineBars.on i{height:9vh}
+body.cineM #clashP b{display:none}body.cineM #clashP span{font-size:11px;opacity:.75}

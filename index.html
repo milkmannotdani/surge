@@ -520,6 +520,12 @@ body.calm #flash{display:none!important}
 #clashP span{display:block;font:800 14px 'Rajdhani',sans-serif;letter-spacing:.3em;margin:2px 0 6px;animation:awkPulse .25s ease-in-out infinite alternate}
 #clashP .cbar{width:340px;height:14px;background:#ff3a3a;border:2px solid #fff;box-shadow:0 0 14px rgba(0,0,0,.6);margin:0 auto;overflow:hidden}#clashP .cbar i{display:block;height:100%;width:50%;background:linear-gradient(90deg,#4fd2ff,#ffffff);transition:width .1s}
 #clashP.pp b{animation:secPop .2s}
+/* cinematic moves */
+#impactFx{position:fixed;inset:0;z-index:16;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 30%,var(--c,#fff) 140%);mix-blend-mode:screen}
+#impactFx.on{animation:impF .32s ease-out}@keyframes impF{0%{opacity:var(--a,.4);background:radial-gradient(ellipse at center,rgba(255,255,255,.35) 0%,transparent 45%,var(--c,#fff) 140%)}100%{opacity:0}}
+#cineBars{position:fixed;inset:0;z-index:15;pointer-events:none}#cineBars i{position:absolute;left:0;right:0;height:0;background:#000;transition:height .35s cubic-bezier(.2,.8,.2,1)}
+#cineBars i:first-child{top:0}#cineBars i:last-child{bottom:0}#cineBars.on i{height:9vh}
+body.cineM #clashP b{display:none}body.cineM #clashP span{font-size:11px;opacity:.75}
 </style>
 </head>
 <body>
@@ -734,7 +740,7 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 function angLerp(a,b,t){let d=b-a;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return a+d*t;}
 function angDiff(a,b){let d=b-a;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return d;}
 const TMP=new V3(), TMP2=new V3(), TMP3=new V3(), UP=new V3(0,1,0);
-const BOUND=138;
+const BOUND=186;   // play area half-size (was 138: the city is now an 8x8 grid of blocks, ~1.8x the area)
 // seeded RNG for the shared map (identical for every player)
 let _s=0x5eed7;function srnd(){_s|=0;_s=_s+0x6D2B79F5|0;let t=Math.imul(_s^_s>>>15,1|_s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 const sr=(a,b)=>a+srnd()*(b-a);
@@ -1189,7 +1195,7 @@ function sfx2(f,kind,a,p,th,gv){
 /* ================= WORLD (seeded, identical for all players) ================= */
 const PRE_WORLD=new Set(scene.children);
 const world=new THREE.Group();scene.add(world);
-const ROADS=[-144,-96,-48,0,48,96,144], RW=14, BLOCKS=[-120,-72,-24,24,72,120], INNER=ROADS.slice(1,-1);
+const ROADS=[-192,-144,-96,-48,0,48,96,144,192], RW=14, BLOCKS=[-168,-120,-72,-24,24,72,120,168], INNER=ROADS.slice(1,-1);
 const MAPH=BOUND+10;   // half-size of the minimap
 const BLD=[];       // colliders {x0,x1,z0,z1,y0,h}: boxes from height y0 (default 0) up to h
 const BLDG=[];      // whole buildings, for street dressing: {x0,x1,z0,z1,h,doors:[{nx,nz,x,z}]}
@@ -1445,7 +1451,7 @@ BLOCKS.forEach(cx=>BLOCKS.forEach(cz=>{
   else{[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([qx,qz])=>{if(srnd()<.22)return;const k=SMALL_KINDS[Math.floor(srnd()*SMALL_KINDS.length)];const s=k==='pencil'?sr(8,9.5):sr(9,12),s2=sr(9,12);building(cx+qx*7.6,cz+qz*7.6,s,s2,kh(k),true,k);});}
 }));
 // distant skyline (no collision)
-for(let gx=-10;gx<=10;gx++)for(let gz=-10;gz<=10;gz++){const x=gx*26,z=gz*26;if(Math.max(Math.abs(x),Math.abs(z))<BOUND+28)continue;if(Math.abs(x)<10||Math.abs(z)<10)continue;
+for(let gx=-12;gx<=12;gx++)for(let gz=-12;gz<=12;gz++){const x=gx*26,z=gz*26;if(Math.max(Math.abs(x),Math.abs(z))<BOUND+28)continue;if(Math.abs(x)<10||Math.abs(z)<10)continue;
   if(srnd()<.25)continue;building(x+sr(-3,3),z+sr(-3,3),sr(14,20),sr(14,20),sr(30,120),false);}
 
 mergeCity();
@@ -2371,8 +2377,8 @@ class Fighter{
         }
         const moving=mv.lengthSq()>.02;
         this.sprinting=moving&&I.sprint&&!lock;
-        const sp=8.4*this.hero.spd*(this.sprinting?1.5:1)*(this.vowT>0?1.2:1)*(this.slowT>0?.62:1)*(this.hasteT>0?1.3:1);
-        const k=1-Math.exp(-(moving?10:13)*dt);
+        const sp=9.2*this.hero.spd*(this.sprinting?1.6:1)*(this.vowT>0?1.2:1)*(this.slowT>0?.62:1)*(this.hasteT>0?1.3:1);
+        const k=1-Math.exp(-(moving?9:11)*dt);
         this.vel.x=lerp(this.vel.x,mv.x*sp,k);this.vel.z=lerp(this.vel.z,mv.z*sp,k);
         const hs=Math.hypot(this.vel.x,this.vel.z);this.state=hs>.7?'run':'idle';
         if(lock){const r=new V3(-dirO.z,0,dirO.x);this.lat=lerp(this.lat,(this.vel.x*r.x+this.vel.z*r.z)/Math.max(sp,1),Math.min(1,8*dt));}else this.lat=lerp(this.lat,0,Math.min(1,8*dt));
@@ -2899,7 +2905,7 @@ class Fighter{
   applyPose(dt){
     const R=this.rig;
     if(this.state!=='framed'){const T=this.targetPose(dt),P=this.P;
-      const rate=(this.state==='attack'||this.state==='ult'||this.state==='hit'||this.state==='dash')?28:(this.state==='fly'||this.state==='down')?10:14;
+      const rate=(this.state==='attack'||this.state==='ult'||this.state==='hit'||this.state==='dash')?28:(this.state==='fly'||this.state==='down')?10:(this.state==='run'||this.state==='idle')?11:14;
       const k=Math.min(1,rate*dt);for(const key in T)P[key]+=(T[key]-P[key])*k;}
     const P=this.P;
     R.root.position.copy(this.pos);R.root.rotation.y=this.face;
@@ -5317,7 +5323,7 @@ const XMOVES={
   void:[['STAR SHOWER','rain','void','star',[]],['NULL BEAM','beam','void','star',['push']]],
   ronin:[['IAI DASH','dash','blade','sword',['pierce']],['SPIRIT SLASHES','volley','blade','crescent',[]]],
   quake:[['BOULDER TOSS','bolt','earth','boulder',['launch'],{size:1.8}],['FAULT RING','burst','earth','shard',['launch','slow']]],
-  marrow:[['BONE RAIN','rain','blood','bone',['lifesteal']],['BLOOD SPRAY','cone','blood','orb',['lifesteal','slow']]],
+  marrow:[['BONE RAIN','rain','blood','bone',['lifesteal']],['BONE TENDRIL','grab','blood','bone',['lifesteal','pull']]],
   entropy:[['DECAY ORB','bolt','poison','orb',['poison','slow']],['ASH CLOUD','zone','poison','orb',['poison']]],
   sovereign:[['IRON GRASP','grab','shadow','hand',['drain']],['TYRANT ORBS','orbit','void','orb',['drain']]],
   strobe:[['AFTERIMAGE','blink','time','ring',['stun']],['STOPWATCH FIELD','zone','time','ring',['slow','stun']]],
@@ -5540,9 +5546,9 @@ Object.assign(XMOVES,{
   crimson:[['KNIFE TOSS','volley','blood','blade',['drain'],{count:3}],['BLOOD MIST','zone','blood','orb',['slow','drain']]],
   sawback:[['BLADE SPIN','burst','blade','blade',['push']],['SPINNING CHARGE','dash','blade','blade',['launch']]],
   resect:[['RESTORE','buff','earth','shard',[],{self:['heal','shield']}],['STONE SURGE','wave','earth','spike',['launch']]],
-  verdict:[['SHADOW STEP','blink','shadow','blade',['mark']],['CROSS CUT','cone','blade','blade',['slow','pierce']]],
+  verdict:[['SHADOW STEP','blink','shadow','blade',['mark']],['CROSS CUT','wave','blade','crescent',['slow','pierce']]],
   cushion:[['BELLY BUMP','dash','earth','orb',['push']],['FAT SHIELD','shield','light','orb',[]]],
-  corrosa:[['ACID SPLASH','cone','poison','orb',['poison','slow']],['ACID GEYSER','pillar','poison','orb',['poison','launch'],{count:3}]]});
+  corrosa:[['ACID POOL','zone','poison','bubble',['poison','slow']],['ACID GEYSER','pillar','poison','orb',['poison','launch'],{count:3}]]});
 
 /* ---------- looks ---------- */
 const _mhaParts0=mhaParts;
@@ -6476,7 +6482,7 @@ onEv('tick',dt=>{for(const f of FS){if(!isHyper(f)||!nearCam(f.pos,60))continue;
    Marrow FEEDS on fear: every terrified foe within 15 m charges his ultimate and heals him a little.
      1  DREAD WAVE        a cone of ghostly fear — damages and terrifies       (hold: PANIC BURST — a terrifying ring around him)
      2  NIGHTMARE GRASP   a spectral hand drags a far foe to him, terrified
-     3  PHANTOM SWARM     a volley of fear phantoms        4  SCREAM   a stunning cone of sound
+     3  PHANTOM SWARM     a volley of fear phantoms        4  TERROR SCREAM   a stunning shockwave of sound all around
      Q  ABSOLUTE DREAD    darkness falls: every foe nearby is terrified for 6 s and drained each second (he heals)
      Q+back  FEAR INCARNATE  8 s as a towering shadow — armored, stronger, and everyone close to him is terrified
    The form switch goes through the host, so everyone sees the same form online. */
@@ -6486,7 +6492,7 @@ Object.assign(HERO_SND,{dread:SND.curse?'curse':'power'});
 Object.assign(ULT_RANGE,{absdread:18});
 Object.assign(SPECIAL_AI,{dread:[0,9,.6]});
 Object.assign(XSPK,{dread:1});
-Object.assign(XMOVES,{dread:[['PHANTOM SWARM','volley','shadow','orb',['slow']],['SCREAM','cone','sound','ring',['stun']]]});
+Object.assign(XMOVES,{dread:[['PHANTOM SWARM','volley','shadow','orb',['slow']],['TERROR SCREAM','burst','sound','skull',['stun']]]});
 // (the voice tables load later, so register once everything is loaded)
 setTimeout(()=>{try{VPROF.dread={sex:'m',a:'au',p:.48,r:.82,v:1.05,vi:3};VCRY.dread=[['Can you feel it?',0],['Your fear... it tastes wonderful.',-.06]];}catch(e){}},0);
 if(typeof TRAIT_DESC!=='undefined')TRAIT_DESC.dread='feeds on fear: terrified foes nearby charge his ultimate and heal him · press 5 to switch form';
@@ -6682,7 +6688,7 @@ const TQ=0x4ab0ff,TW=0xe8f6ff;
     ult:ab({name:'MAXIMUM OUTPUT',form:'beam',style:'spirit',shape:'orb',size:2.2,range:36,dur:3,power:1.5,fx:['push','launch']}),
     ultAlt:ab({name:'SATURATION FIRE',form:'rain',style:'spirit',shape:'bullet',count:12,size:1.1,range:16,power:1.25,fx:['explode']})};
   h.specCD=cabSpecTime(h.cab.sp);
-  h._xm=[ab({name:'OVERFLOW',form:'burst',style:'spirit',shape:'ring',size:1.4,power:1.05,fx:['push']}),ab({name:'POINT BLANK',form:'cone',style:'explosion',shape:'orb',range:9,power:1.2,fx:['push','launch']})];
+  h._xm=[ab({name:'OVERFLOW',form:'burst',style:'spirit',shape:'ring',size:1.4,power:1.05,fx:['push']}),ab({name:'POINT BLANK',form:'burst',style:'explosion',shape:'orb',size:1.6,power:1.2,fx:['push','launch']})];
   Object.assign(HERO_SND,{torrent:'power'});Object.assign(DULT_OF,{torrent:'barrage'});
   if(typeof PROJ_SIG!=='undefined')PROJ_SIG.torrent='bullet';
   if(typeof TRAIT_DESC!=='undefined')TRAIT_DESC.torrent='raw output: his beams win clashes more easily';
@@ -6903,9 +6909,9 @@ mhaParts=function(h,X){const out=_mhaPartsH(h,X);if(h.human){try{humanize(h,X);}
 $('armorBtn').onclick=()=>{AU.init();AU.ui();ARMOR_OFF=!ARMOR_OFF;store.set('surge.armor',ARMOR_OFF?'off':'on');previewHero(PV.idx);};
 /* Match flow, controls (MOVE_SLOTS / ULT_KEYS), camera, HUD */
 /* ================= ZONE / ORBS ================= */
-const ZONE={cx:0,cz:0,r:200,fx:0,fz:0,fr:135,tx:0,tz:0,tr:80,pi:0,st:'wait',t:0,dps:2};
-const ZPH=[{w:26,s:22,r:125,d:2},{w:22,s:20,r:80,d:2},{w:18,s:18,r:50,d:4},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
-function zoneReset(){Object.assign(ZONE,{cx:0,cz:0,r:200,pi:0,st:'wait',t:0,dps:2});zonePick();}
+const ZONE={cx:0,cz:0,r:270,fx:0,fz:0,fr:185,tx:0,tz:0,tr:110,pi:0,st:'wait',t:0,dps:2};
+const ZPH=[{w:30,s:26,r:170,d:2},{w:26,s:22,r:110,d:2},{w:20,s:18,r:66,d:4},{w:17,s:16,r:40,d:5},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
+function zoneReset(){Object.assign(ZONE,{cx:0,cz:0,r:270,pi:0,st:'wait',t:0,dps:2});zonePick();}
 function zonePick(){const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.fx=ZONE.cx;ZONE.fz=ZONE.cz;ZONE.fr=ZONE.r;
   let tx=0,tz=0;for(let k=0;k<30;k++){const a=rand(0,6.28),m=rand(0,Math.max(0,Math.min(ZONE.r,BOUND+10)-ph.r)*.8);tx=ZONE.cx+Math.cos(a)*m;tz=ZONE.cz+Math.sin(a)*m;
     if(Math.abs(tx)+ph.r*.3<BOUND&&Math.abs(tz)+ph.r*.3<BOUND&&!insideBld(tx,tz,2))break;}
@@ -8705,7 +8711,7 @@ onEv('frame',()=>{const T=$('touch');if(T)T.classList.toggle('on',TOUCH.on&&inMa
 buildTouch();
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true,customVoice:true,ultSfx:false};
+const SET_DEF={cinematic:true,cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true,customVoice:true,ultSfx:false};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];
@@ -10135,7 +10141,7 @@ const FORMS={
  riptide:{n:'TIDAL',d:'the deep ocean answers',c:0x0a4aff,a:0x6af0ff,s:[1.1,1.05,1],k:'bk el bk ax|sk|water',
    sp:FA('TSUNAMI EDGE','wave','water','crescent',['push']),alt:FA('RIP CURRENT','orbit','water','bubble',['slow']),x:[FA('UNDERTOW','grab','water','bubble',['pull']),FA('TIDE SHARDS','volley','water','shard',[])],u:FA('MONSOON','rain','water','bubble',['slow','push'],{power:1.3})},
  gale:{n:'TEMPEST',d:'a living storm',c:0x8af0ff,a:0xffffff,s:[1.05,1.2,1.05],k:'hk hk lk sk|dk|wind',
-   sp:FA('GALE FANS','volley','wind','crescent',['push']),alt:FA('SLIPSTREAM','blink','wind','tornado',[],{self:['haste']}),x:[FA('DOWNBURST','cone','wind','tornado',['push']),FA('SKY DROP','slam','wind','tornado',['launch'])],u:FA('EYE OF THE STORM','zone','wind','tornado',['pull','float'],{power:1.3})},
+   sp:FA('GALE FANS','volley','wind','crescent',['push']),alt:FA('SLIPSTREAM','blink','wind','tornado',[],{self:['haste']}),x:[FA('DOWNBURST','bolt','wind','tornado',['push','pierce'],{size:2.2,speed:15,range:22}),FA('SKY DROP','slam','wind','tornado',['launch'])],u:FA('EYE OF THE STORM','zone','wind','tornado',['pull','float'],{power:1.3})},
  nitro:{n:'OVERDRIVE',d:'sweat pushed to the limit',c:0xffb020,a:0xff2a00,s:[1.25,1.05,1.15],k:'pa jR jL sm|ds|blast',
    sp:FA('AP CANNON','bolt','explosion','bomb',['explode']),alt:FA('CRATER DIVE','slam','explosion','bomb',['explode','launch']),x:[FA('FLASH BANG','burst','explosion','star',['stun']),FA('ROCKET STEP','dash','explosion','bomb',['explode'])],u:FA('HOWITZER LINE','beam','explosion','bomb',['explode','launch'],{power:1.35})},
  titan:{n:'PEAK FORM',d:'one last blaze of power',c:0xfff2a0,a:0x3a8aff,s:[1.3,1,1.1],k:'jR jL jR jL sm|sm|impact',
@@ -10143,7 +10149,7 @@ const FORMS={
  volta:{n:'OVERLOAD',d:'more voltage than she can hold',c:0xfff23a,a:0x6ad8ff,s:[1.15,1.1,1.1],k:'jR jL jR jL up|dk|spark',
    sp:FA('ARC LANCE','bolt','lightning','lightning',['chain']),alt:FA('STORM CAGE','zone','lightning','lightning',['stun']),x:[FA('FLASHSTEP','blink','lightning','lightning',[],{self:['haste']}),FA('THUNDERCLAP','rain','lightning','lightning',['stun'])],u:FA('GIGAVOLT','beam','lightning','lightning',['chain','stun'],{power:1.3})},
  umbra:{n:'FERAL ECLIPSE',d:'the beast takes the wheel',c:0x2a0a4a,a:0xff3a6a,s:[1.2,1.1,1.1],
-   sp:FA('NIGHT MAW','grab','shadow','hand',['pull']),alt:FA('BAT HALO','orbit','shadow','bat',['slow']),x:[FA('PREDATOR LUNGE','dash','shadow','bat',[]),FA('HOWL','cone','sound','ring',['slow'])],u:FA('THE PACK','summon','shadow','bat',['mark'],{power:1.3})},
+   sp:FA('NIGHT MAW','grab','shadow','hand',['pull']),alt:FA('BAT HALO','orbit','shadow','bat',['slow']),x:[FA('PREDATOR LUNGE','dash','shadow','bat',[]),FA('HOWL','burst','shadow','bat',['slow','push'],{size:1.3})],u:FA('THE PACK','summon','shadow','bat',['mark'],{power:1.3})},
  drift:{n:'FREEFALL',d:'gravity is optional',c:0xd88aff,a:0xfff0ff,s:[1.05,1.1,1],k:'pa pa bk up|ds|void',
    sp:FA('DEBRIS BARRAGE','volley','void','boulder',['float']),alt:FA('NULL FIELD','zone','void','orb',['float','slow']),x:[FA('TETHER','grab','void','ring',['float']),FA('METEOR','slam','earth','boulder',['launch'])],u:FA('COMET SHOWER','rain','void','boulder',['float'],{power:1.3})},
  bastion:{n:'BULWARK',d:'harder than steel, slower than ever',c:0xff2a2a,a:0xffd0a0,s:[1.05,.88,.65],k:'el el sm|sm|metal',
@@ -10153,13 +10159,13 @@ const FORMS={
  void:{n:'EVENT HORIZON',d:'nothing escapes',c:0x1a0a3a,a:0x8ac4ff,s:[1.1,1,1.05],k:'pa bk pa cm|cm|void',
    sp:FA('SINGULARITY','zone','void','eye',['pull']),alt:FA('PHASE OUT','blink','void','ring',[],{self:['shield']}),x:[FA('GRAVITY HOOK','grab','void','ring',['pull']),FA('NULL RING','bolt','void','ring',['slow'])],u:FA('COLLAPSE POINT','burst','void','eye',['pull','launch'],{power:1.35})},
  ronin:{n:'KENSEI',d:'the blade and the spirit as one',c:0xffffff,a:0x6affd8,s:[1.15,1.05,1.05],
-   sp:FA('MOON CUT','wave','blade','crescent',['pierce']),alt:FA('IAI DASH','dash','blade','sword',[]),x:[FA('THOUSAND CUTS','cone','blade','blade',['mark']),FA('SWORD FOREST','pillar','blade','sword',['launch'])],u:FA('BLADE TEMPEST','rain','blade','sword',['pierce'],{power:1.3})},
+   sp:FA('MOON CUT','wave','blade','crescent',['pierce']),alt:FA('IAI DASH','dash','blade','sword',[]),x:[FA('THOUSAND CUTS','dash','blade','sword',['mark','pierce']),FA('SWORD FOREST','pillar','blade','sword',['launch'])],u:FA('BLADE TEMPEST','rain','blade','sword',['pierce'],{power:1.3})},
  quake:{n:'TECTONIC',d:'the ground itself fights',c:0xff7a2a,a:0x5a3a1a,s:[1.2,.92,.85],k:'el sm el ds|ds|earth',
    sp:FA('FAULT SPIRES','pillar','earth','spike',['launch']),alt:FA('LANDSLIDE','wave','earth','boulder',['push']),x:[FA('EPICENTER','slam','earth','boulder',['stun']),FA('ROCK BARRAGE','volley','earth','boulder',[])],u:FA('MAGNITUDE TEN','burst','earth','boulder',['launch','stun'],{power:1.4})},
  entropy:{n:'CATASTROPHE',d:'everything crumbles',c:0x5a5560,a:0xff2a3a,s:[1.2,1,1.1],k:'pa bk el cm|ds|decay',
    sp:FA('CRUMBLE','cone','poison','hand',['drain'],{range:14}),alt:FA('RUIN SPIRES','pillar','poison','spike',['launch']),x:[FA('TOUCH OF RUIN','grab','poison','hand',['pull','drain']),FA('DUST FIELD','zone','poison','skull',['slow','drain'])],u:FA('ENDTIMES','burst','poison','skull',['drain','launch'],{power:1.4})},
  sovereign:{n:'ARSENAL',d:'every stolen power at once',c:0x1a1a2a,a:0xff3a3a,s:[1.25,.95,1],k:'pa pa bk up|sm|spirit',
-   sp:FA('STOLEN CANNON','volley','void','orb',['explode']),alt:FA('RAPTURE GRIP','grab','spirit','hand',['pull','stun']),x:[FA('COMPOUND SHOCK','cone','lightning','lightning',['chain']),FA('IRON SPIRES','pillar','metal','spike',['launch'])],u:FA('APEX RAY','beam','void','eye',['explode','pierce'],{power:1.4})},
+   sp:FA('STOLEN CANNON','volley','void','orb',['explode']),alt:FA('RAPTURE GRIP','grab','spirit','hand',['pull','stun']),x:[FA('COMPOUND SHOCK','rain','lightning','lightning',['chain','stun'],{count:8}),FA('IRON SPIRES','pillar','metal','spike',['launch'])],u:FA('APEX RAY','beam','void','eye',['explode','pierce'],{power:1.4})},
  strobe:{n:'ACCELERANT',d:'faster than the frame rate',c:0x3fe0c5,a:0xffffff,s:[.95,1.3,1],k:'jR jL jR jL jR jL|dk|time',
    sp:FA('AFTERIMAGE','dash','time','star',[]),alt:FA('REWIND','blink','time','star',[],{self:['heal']}),x:[FA('FRAME SHARDS','volley','time','shard',['slow']),FA('STOP FIELD','zone','time','star',['stun'])],u:FA('STOPPED SECOND','burst','time','star',['stun'],{power:1.3})},
  pyre:{n:'HELLBLOOM',d:'flames hot enough to burn himself',c:0x3a8aff,a:0xd8f0ff,s:[1.3,1,1.2],k:'jR el jR sk|cm|bluefire',
@@ -10170,13 +10176,13 @@ const FORMS={
  hex:{n:'BLACK SEAL',d:'every sigil at full strength',c:0x1a3a1a,a:0x5aff8a,s:[1.1,1,1.05],k:'pa bk pa bk ax|cm|curse',
    sp:FA('SIGIL CARDS','volley','shadow','card',['mark']),alt:FA('HEX CIRCLE','zone','shadow','eye',['slow','mark']),x:[FA('BINDING SEAL','grab','shadow','card',['stun']),FA('CURSE PILLARS','pillar','shadow','eye',['launch'])],u:FA('GRAND CURSE','rain','shadow','card',['mark','drain'],{power:1.3})},
  scathe:{n:'WRAITH',d:'you never see the blade',c:0x2a0a0a,a:0xff3a2a,s:[1.15,1.15,1.1],
-   sp:FA('GHOST CUT','dash','blade','blade',['pierce']),alt:FA('VANISH','blink','shadow','blade',[],{self:['haste']}),x:[FA('RIBBON CUTS','cone','blade','blade',['mark']),FA('KNIFE HALO','orbit','blade','knife',[])],u:FA('RED HARVEST','rain','blade','knife',['pierce'],{power:1.3})},
+   sp:FA('GHOST CUT','dash','blade','blade',['pierce']),alt:FA('VANISH','blink','shadow','blade',[],{self:['haste']}),x:[FA('RIBBON CUTS','zone','blade','blade',['mark']),FA('KNIFE HALO','orbit','blade','knife',[])],u:FA('RED HARVEST','rain','blade','knife',['pierce'],{power:1.3})},
  solstice:{n:'EQUINOX',d:'ice and fire at full blast',c:0xffffff,a:0xff5a1f,s:[1.15,1,1.05],k:'jR el bk sk|up|icefire',
    sp:FA('GLACIER LINE','wave','ice','snowflake',['freeze']),alt:FA('FURNACE BEAM','beam','fire','flame',['burn']),x:[FA('ICE SPIRES','pillar','ice','spike',['freeze','launch']),FA('FLASHFIRE','cone','fire','flame',['burn'],{range:15,size:1.5,dur:1.2})],u:FA('SOLSTICE BREAK','burst','ice','snowflake',['freeze','burn'],{power:1.4})},
  piston:{n:'REDLINE',d:'engines past their limit',c:0xff3a1a,a:0xffd23f,s:[1.1,1.3,1.1],
    sp:FA('REDLINE KICK','dash','metal','star',['push']),alt:FA('PISTON DROP','slam','metal','star',['launch']),x:[FA('EXHAUST BLAST','cone','fire','flame',['push','burn']),FA('GEAR SHIFT','blink','wind','star',[],{self:['haste']})],u:FA('TOP GEAR','dash','metal','star',['launch'],{power:1.5})},
  snare:{n:'CAPTURE',d:'nobody gets away',c:0x2a2a2a,a:0xffd23f,s:[1.05,1.1,.95],k:'lk hk lk ax|dk|light',
-   sp:FA('BINDING CLOTH','grab','metal','ring',['pull','stun']),alt:FA('GLARE','zone','light','eye',['slow']),x:[FA('WEIGHTED SCARF','bolt','metal','ring',['stun']),FA('TAKEDOWN','slam','metal','ring',['stun'])],u:FA('NULL GAZE','cone','light','eye',['stun','slow'],{power:1.3})},
+   sp:FA('BINDING CLOTH','grab','metal','ring',['pull','stun']),alt:FA('GLARE','zone','light','eye',['slow']),x:[FA('WEIGHTED SCARF','bolt','metal','ring',['stun']),FA('TAKEDOWN','slam','metal','ring',['stun'])],u:FA('NULL GAZE','beam','light','eye',['stun','slow'],{power:1.3,size:.8,dur:2.4})},
  marble:{n:'SHOWSTOPPER',d:'the whole stage is his',c:0xffd23f,a:0x3a1a6a,s:[1.05,1.05,1],k:'pa pa bk cm|cm|crystal',
    sp:FA('MARBLE VOLLEY','volley','crystal','orb',['stun']),alt:FA('PALM TRAP','grab','crystal','orb',['pull','stun']),x:[FA('VANISHING ACT','blink','crystal','star',[]),FA('GRAND FINALE','rain','crystal','orb',['stun'])],u:FA('BIG TOP','zone','crystal','star',['stun','pull'],{power:1.3})},
  legion:{n:'MULTIPLY',d:'there are more of him',c:0x3a3a3a,a:0xfff0d8,s:[1.05,1.05,1.05],k:'jR jL jR jL sm|ds|teal',
@@ -10184,25 +10190,25 @@ const FORMS={
  recoil:{n:'SNIPER NEST',d:'patience, then one shot',c:0x2a3a2a,a:0xffd23f,s:[1.15,.9,1.05],
    sp:FA('RAILSHOT','beam','metal','bullet',['pierce']),alt:FA('SPREAD SHOT','volley','metal','bullet',[]),x:[FA('MORTAR','rain','explosion','bomb',['explode']),FA('RECOIL HOP','blink','wind','bullet',[],{self:['haste']})],u:FA('ONE SHOT','bolt','explosion','bullet',['pierce','explode'],{power:1.5,size:2})},
  crimson:{n:'SANGUINE',d:'the thirst takes over',c:0xc4102a,a:0xffb0c0,s:[1.1,1.15,1.1],k:'el bk el bk sk|dk|blood',
-   sp:FA('NEEDLE RUSH','dash','blood','knife',['lifesteal']),alt:FA('MIMIC STEP','blink','blood','heart',[],{self:['haste']}),x:[FA('NEEDLE FAN','volley','blood','knife',['lifesteal']),FA('EMBRACE','grab','blood','heart',['drain'])],u:FA('CRIMSON KISS','cone','blood','heart',['drain','stun'],{power:1.3})},
+   sp:FA('NEEDLE RUSH','dash','blood','knife',['lifesteal']),alt:FA('MIMIC STEP','blink','blood','heart',[],{self:['haste']}),x:[FA('NEEDLE FAN','volley','blood','knife',['lifesteal']),FA('EMBRACE','grab','blood','heart',['drain'])],u:FA('CRIMSON KISS','grab','blood','heart',['drain','stun'],{power:1.4})},
  sawback:{n:'RAZOR BLOOM',d:'blades from every pore',c:0xd8d8e0,a:0xff3a3a,s:[1.15,1,.95],k:'el el bk sm|sm|blade',
-   sp:FA('BLADE GARDEN','pillar','blade','spike',['launch']),alt:FA('SHRAPNEL FAN','cone','blade','shard',['pierce']),x:[FA('SPINNING SAWS','orbit','blade','chakram',[]),FA('RAZOR CHARGE','dash','blade','blade',['pierce'])],u:FA('THOUSAND BLADES','burst','blade','blade',['pierce','launch'],{power:1.4})},
+   sp:FA('BLADE GARDEN','pillar','blade','spike',['launch']),alt:FA('SHRAPNEL FAN','volley','blade','shard',['pierce'],{count:7}),x:[FA('SPINNING SAWS','orbit','blade','chakram',[]),FA('RAZOR CHARGE','dash','blade','blade',['pierce'])],u:FA('THOUSAND BLADES','burst','blade','blade',['pierce','launch'],{power:1.4})},
  resect:{n:'SURGEON',d:'the battlefield is the operating table',c:0x3a2a1a,a:0xffd8a0,s:[1.1,1,1],k:'pa el pa cm|cm|redcrackle',
-   sp:FA('REBUILD SPIKES','pillar','earth','spike',['launch']),alt:FA('DISSECT','grab','earth','hand',['stun']),x:[FA('FLOOR REWRITE','wave','earth','spike',['launch']),FA('SHRAPNEL','cone','earth','shard',[])],u:FA('OPERATING THEATER','zone','earth','spike',['launch','stun'],{power:1.35})},
+   sp:FA('REBUILD SPIKES','pillar','earth','spike',['launch']),alt:FA('DISSECT','grab','earth','hand',['stun']),x:[FA('FLOOR REWRITE','wave','earth','spike',['launch']),FA('SPIKE CROWN','burst','earth','spike',['launch'],{size:1.3})],u:FA('OPERATING THEATER','zone','earth','spike',['launch','stun'],{power:1.35})},
  cushion:{n:'BURN MODE',d:'stored energy, all at once — lean and fast',c:0xffd23f,a:0xff7a1a,s:[1.3,1.15,1.15],k:'jR jR jL jR sm|sm|impact',
    sp:FA('STORED SHOT','bolt','earth','fist',['push'],{power:1.3}),alt:FA('BELLY DROP','slam','earth','fist',['launch']),x:[FA('SHOCKWAVE','burst','earth','ring',['push']),FA('LEAN RUSH','dash','earth','fist',['push'])],u:FA('FULL RELEASE','beam','earth','fist',['launch','push'],{power:1.45})},
  corrosa:{n:'ACID RUSH',d:'skating on her own acid',c:0x9aff3a,a:0xff6ad8,s:[1.05,1.2,1.05],k:'hk lk hk sk ax|dk|acid',
-   sp:FA('ACID SURF','wave','poison','bubble',['poison']),alt:FA('ACID SPRAY','cone','poison','bubble',['poison']),x:[FA('ACID RAIN','rain','poison','bubble',['poison']),FA('CORROSION POOL','zone','poison','bubble',['slow','poison'])],u:FA('MELTDOWN','burst','poison','bubble',['poison','launch'],{power:1.35})},
+   sp:FA('ACID SURF','wave','poison','bubble',['poison']),alt:FA('ACID GLOBS','volley','poison','bubble',['poison'],{count:5}),x:[FA('ACID RAIN','rain','poison','bubble',['poison']),FA('CORROSION POOL','zone','poison','bubble',['slow','poison'])],u:FA('MELTDOWN','burst','poison','bubble',['poison','launch'],{power:1.35})},
  verdict:{n:'PURGE',d:'judgment without mercy',c:0x2a0a0a,a:0xff2a2a,s:[1.2,1.1,1.1],k:'el bk el bk el sk|dk|blood',
-   sp:FA('EXECUTIONER DASH','dash','blade','knife',['pierce']),alt:FA('JUDGMENT KNIVES','volley','blade','knife',['mark']),x:[FA('TASTE OF GUILT','grab','blood','knife',['stun']),FA('SHADOW STEP','blink','shadow','knife',[],{self:['haste']})],u:FA('FINAL VERDICT','cone','blade','knife',['stun','pierce'],{power:1.4})},
+   sp:FA('EXECUTIONER DASH','dash','blade','knife',['pierce']),alt:FA('JUDGMENT KNIVES','volley','blade','knife',['mark']),x:[FA('TASTE OF GUILT','grab','blood','knife',['stun']),FA('SHADOW STEP','blink','shadow','knife',[],{self:['haste']})],u:FA('FINAL VERDICT','dash','blade','knife',['stun','pierce'],{power:1.45})},
  decree:{n:'FULL AUTHORITY',d:'the law, unrestrained',c:0xffffff,a:0x3a6aff,s:[1.15,1,1],k:'pa jR pa jR cm|cm|gold',
-   sp:FA('STAR DECREE','cone','light','star',['stun']),alt:FA('EDICT SHIELD','shield','light','star',[]),x:[FA('STARFALL','rain','light','star',[]),FA('SUMMONS','grab','light','star',['pull'])],u:FA('ORBITAL LAW','beam','light','star',['stun','launch'],{power:1.4})},
+   sp:FA('STAR DECREE','bolt','light','star',['stun','explode'],{size:2.2,speed:30}),alt:FA('EDICT SHIELD','shield','light','star',[]),x:[FA('STARFALL','rain','light','star',[]),FA('SUMMONS','grab','light','star',['pull'])],u:FA('ORBITAL LAW','beam','light','star',['stun','launch'],{power:1.4})},
  skitter:{n:'STREET LEGEND',d:'the fastest thing on the street',c:0x2aff6a,a:0xffffff,s:[1.05,1.3,1],k:'lk lk lk hk sk|dk|wind',
    sp:FA('SKID BLITZ','dash','wind','star',['push']),alt:FA('FLICK SHOT','bolt','wind','star',['stun']),x:[FA('ROOF HOP','blink','wind','star',[],{self:['haste']}),FA('PEBBLE STORM','volley','earth','star',[])],u:FA('MIDNIGHT RUN','dash','wind','star',['launch'],{power:1.35})},
  oldguard:{n:'LAST STAND',d:'too stubborn to fall',c:0xd8b080,a:0xffffff,s:[1.25,.95,.85],k:'jR jL jR el up|sm|impact',
    sp:FA('IRON KNUCKLE','dash','metal','fist',['push']),alt:FA('GUARD UP','shield','metal','fist',[]),x:[FA('HAYMAKER DROP','slam','earth','fist',['launch']),FA('KNUCKLE STORM','cone','metal','fist',['push'],{range:10,dur:1})],u:FA('ONE MORE ROUND','burst','metal','fist',['launch','stun'],{power:1.45})},
  hopstar:{n:'ENCORE STAGE',d:'the crowd is on its feet',c:0xff6ad8,a:0x6af0ff,s:[1.05,1.15,1],k:'hk lk hk ax|ds|sound',
-   sp:FA('STAGE DIVE','slam','sound','note',['stun']),alt:FA('HIGH NOTE','cone','sound','note',['stun']),x:[FA('MELODY SHOTS','volley','sound','note',[]),FA('BACKFLIP','blink','sound','note',[],{self:['haste']})],u:FA('FINALE','zone','sound','note',['stun'],{power:1.3})},
+   sp:FA('STAGE DIVE','slam','sound','note',['stun']),alt:FA('HIGH NOTE','burst','sound','note',['stun'],{size:1.3}),x:[FA('MELODY SHOTS','volley','sound','note',[]),FA('BACKFLIP','blink','sound','note',[],{self:['haste']})],u:FA('FINALE','zone','sound','note',['stun'],{power:1.3})},
  headliner:{n:'SHOWTIME',d:'cameras rolling, maximum might',c:0xffd23f,a:0xff3a6a,s:[1.15,1.1,1],k:'jR jL jR up|dk|gold',
    sp:FA('STAR DIVE','dash','light','star',['launch']),alt:FA('AUTOGRAPH SHOT','bolt','light','star',['mark']),x:[FA('TOUCHDOWN','slam','light','star',['launch']),FA('SPOTLIGHT RING','orbit','light','star',[])],u:FA('PRIME TIME BEAM','beam','light','star',['launch'],{power:1.4})},
  torrent:{n:'FULL THROTTLE',d:'no holding back',c:0xffffff,a:0x2a8aff,s:[1.2,.95,1.1],k:'pa jR jR jL cm|cm|spirit',
@@ -10210,7 +10216,7 @@ const FORMS={
    x:[FA('SHOCK OUTPUT','burst','lightning','ring',['stun']),FA('GROUND BLAST','pillar','spirit','orb',['launch'],{count:4})],u:FA('OVERLOAD CANNON','beam','spirit','orb',['launch','explode'],{size:2.6,range:40,dur:3.4,power:1.6})},
  zanshin:{n:'RESONANCE',d:'the spirit inside, unleashed',c:0x0a0a0a,a:0xff2a2a,s:[1.2,1.1,1.1],k:'el bk el bk ds|cm|spirit',
    sp:FA('BLACK CRESCENT','wave','spirit','crescent',['pierce'],{colors:[0x0a0a0a,0xff2a2a]}),alt:FA('INSTANT STEP','dash','spirit','sword',[]),
-   x:[FA('SPIRIT ROAR','cone','spirit','ring',['stun']),FA('CRESCENT FLURRY','volley','spirit','crescent',[],{colors:[0x0a0a0a,0xff2a2a]})],u:FA('SOUL CANNON','beam','spirit','crescent',['launch','pierce'],{power:1.4,colors:[0x1a0a0a,0xff2a2a]})}};
+   x:[FA('SPIRIT ROAR','burst','spirit','ring',['stun','push'],{size:1.4}),FA('CRESCENT FLURRY','volley','spirit','crescent',[],{colors:[0x0a0a0a,0xff2a2a]})],u:FA('SOUL CANNON','beam','spirit','crescent',['launch','pierce'],{power:1.4,colors:[0x1a0a0a,0xff2a2a]})}};
 
 /* ---------- combos for each mode (built like uniqatk.js) ---------- */
 (function(){for(const id in FORMS){const F=FORMS[id];if(!F.k)continue;const [c,h,fx]=F.k.split('|');const key='f_'+id;UATK[key]={c,h,fx};
@@ -10377,6 +10383,88 @@ const _bmLine=lineFoes;lineFoes=function(f){if(CLASH.size&&inClash(f))return [];
 onEv('matchEnd',()=>{[...CLASH.values()].forEach(c=>clashEnd(c,null,true));});
 (function(){if(!$('clashP')){const d=document.createElement('div');d.id='clashP';d.innerHTML='<b>BEAM CLASH!</b><span>MASH J · K · 1 · SPACE</span><div class="cbar"><i></i></div>';document.body.appendChild(d);}
   if(typeof ACH!=='undefined'&&!ACH.some(a=>a.id==='clash'))ACH.push({id:'clash',n:'OVERPOWERED',d:'Win a beam clash'});})();
+/* POWER — moves hit with the destructive force of the show.
+   · Specials, ultimates and heavy attacks hit harder and throw people much further:
+       specials ×1.2 damage, ultimates ×1.25, heavy attacks ×1.15; knockback ×1.4, launch height ×1.2
+   · Big hits wreck their surroundings: the ground craters, cars, benches, signs and vending machines in the blast
+     radius are destroyed, rubble flies, a dust shockwave rolls out, and walls next to the impact crack open.
+   · Ultimates release a shockwave the moment they fire, smashing everything around the user.
+   · Explosions are 20% bigger. */
+const PW={dmgSp:1.2,dmgUlt:1.25,dmgHeavy:1.15,kb:1.4,up:1.2,lastT:0};
+const _pwHit=applyHit;applyHit=function(att,def,o){
+  if(o&&att&&att!==def&&!o._pw){const ult=att.state==='ult'||o.ult,sp=att.state==='special',hv=o.heavy||(att.state==='attack'&&MOVES[att.moveName]&&MOVES[att.moveName].heavy);
+    if(ult||sp||hv){o=Object.assign({},o,{_pw:1});o.dmg=(o.dmg||0)*(ult?PW.dmgUlt:sp?PW.dmgSp:PW.dmgHeavy);if(o.kb)o.kb*=PW.kb;if(o.up)o.up*=PW.up;}}
+  return _pwHit.call(this,att,def,o);};
+// destruction around an impact point
+function smashArea(p,R,big){if(NET.role!=='client')props.forEach(pp=>{if(!pp.broken&&Math.hypot(pp.x-p.x,pp.z-p.z)<R+pp.r)breakProp(pp);});
+  if(!nearCam(p,90))return;const g=TMP2.set(p.x,Math.max(.2,(p.y||0)+.2),p.z).clone();
+  crater(p.x,p.z,R*.6,null);dust(g,Math.round(8+R*4),1+R*.25);debris(TMP3.set(p.x,(p.y||0)+.6,p.z).clone(),Math.round(4+R*2.5),0,8+R*2,.3+R*.06);
+  ring(TMP3.set(p.x,(p.y||0)+.15,p.z).clone(),0xd8ccb8,R*2.4,.5,true,1.2);
+  // walls right next to the impact crack open
+  for(let k=0;k<6;k++){const a=k/6*6.283,x=p.x+Math.cos(a)*(R*.6+.8),z=p.z+Math.sin(a)*(R*.6+.8);
+    if(insideBld(x,z,0,(p.y||0)+1.2)){if(typeof wallCrack==='function')wallCrack(new V3(x-Math.cos(a)*.9,(p.y||0)+1.4,z-Math.sin(a)*.9),new V3(-Math.cos(a),0,-Math.sin(a)),Math.min(4,1.4+R*.4));
+      debris(new V3(x-Math.cos(a),(p.y||0)+1.6,z-Math.sin(a)),5,0,7,.35);break;}}
+  if(big)xSnd(p,()=>{AU.boom(true);AU.crash&&AU.crash();});}
+onEv('hit',(att,def,dmg,o)=>{if(!def||!inMatch()||!(dmg>=13||(att&&att.state==='ult'&&dmg>=6)))return;const now=game.time;if(now-PW.lastT<.12)return;PW.lastT=now;
+  const ult=att&&att.state==='ult';smashArea(def.pos.clone(),clamp(1.4+dmg*.09,2,5)*(ult?1.4:1),ult||dmg>=22);});
+onEv('ult',f=>{setTimeout(()=>{if(!inMatch()||f.dead)return;const p=f.pos.clone();smashArea(p,5.5,true);ring(TMP2.set(p.x,p.y+1,p.z).clone(),f.hero.color,9,.55,false,2.4);shake(.7,p);},420);});
+const _pwExp=explosion;explosion=function(pos,radius){const a=[...arguments];a[1]=(radius||1)*1.2;return _pwExp.apply(this,a);};
+/* MOTION — smoother, more fluid movement.
+   · Fighters lean into their speed, bank into turns and pitch with acceleration (forward when speeding up,
+     back when braking), all smoothed so poses flow instead of snapping.
+   · Locomotion poses blend more gradually; attacks stay crisp.
+   · The camera trails a touch more smoothly and widens slightly at speed.
+   (Base run speed and acceleration are tuned in fighter.js: run 9.2, sprint ×1.6.) */
+const _mvPose=Fighter.prototype.applyPose;
+Fighter.prototype.applyPose=function(dt){const r=_mvPose.apply(this,arguments);if(!dt||this.dead||this.state==='framed')return r;const R=this.rig;
+  const sp=Math.hypot(this.vel.x,this.vel.z),loco=this.state==='run'||this.state==='idle'||this.state==='air';
+  // turn rate → bank, speed change → pitch
+  const dF=angTo(this._mvF==null?this.face:this._mvF,this.face)/dt;this._mvF=this.face;const acc=(sp-(this._mvS||0))/dt;this._mvS=sp;
+  const k=1-Math.exp(-9*dt);
+  this._bank=lerp(this._bank||0,loco&&sp>2?clamp(-dF*.045,-.22,.22):0,k);
+  this._lean=lerp(this._lean||0,loco?clamp(sp*.016+acc*.012,-.18,.3):0,k);
+  if(loco||Math.abs(this._bank)>.003)R.root.rotation.z=this._bank;if(loco||Math.abs(this._lean)>.003){R.spine.rotation.x+=this._lean;R.hips.rotation.x+=this._lean*.35;}
+  if(this.state==='run'&&sp>2)R.head.rotation.x-=this._lean*.5;   // keep the eyes level
+  return r;};
+// smoother camera trailing and a gentle speed FOV
+const _mvCam=updateCamera;updateCamera=function(dt){const p0=camera.position.clone();const r=_mvCam.apply(this,arguments);
+  if(inMatch()&&!game.cine&&ME&&!ME.dead){camera.position.lerpVectors(p0,camera.position,Math.min(1,.82+dt*2));camera.lookAt(camLook);}
+  return r;};
+/* CINEMATIC MOVES — moves speak for themselves: no text pop-ups during fights, more weight and drama instead.
+   With Cinematic Moves on (Settings, default on), during a match:
+   · no move callouts or flavour pop-ups (ultimate name banners, PARRY!, GUARD BREAK, POWER STOLEN, mode and clash text…).
+     Messages you need still show: the zone, eliminations / knock-downs / revives, hazard warnings, objectives,
+     anti-teaming strikes, recording and settings messages, and effects that are happening to you.
+   · achievement pop-ups wait until the match is over.
+   · big hits land with a freeze-frame, a camera punch-in and an impact flash; ultimates get letterbox bars and
+     a slow-motion beat when they connect (offline); knock-outs near you get a slow-motion moment (offline). */
+if(SET.cinematic===undefined)SET.cinematic=true;
+try{SET_ROWS.push(['cinematic','CINEMATIC MOVES (NO MOVE TEXT POP-UPS)','toggle']);}catch(e){}
+function cineOn(){return SET.cinematic!==false&&inMatch();}
+const CINE_KEEP=/ZONE|ELIMINATED|KNOCKED|REVIV|RESPAWN|STRIKE|TEAMING|SOLO MATCH|CLIP|RECORD|FOOTAGE|DOWNLOAD|SHARING|BROWSER|MICROPHONE|VOICE CHAT|CONTROLLER|LOCK-ON|LOCKED ON|INCOMING|METEORS|SURGE OVER|CIVILIAN|TRIAL|UNLOCKED|SEASON|LEVEL|^YOUR |DRY EYES|BLINKED|TERRIFIED|PARALYZED|STUCK|PRESS |HOLD |HIT BY|FIGHT|CAN'T|MOVE!|JUMP!/;
+const _ciSmall=announceSmall;announceSmall=function(t){if(cineOn()&&!CINE_KEEP.test(String(t)))return;return _ciSmall.apply(this,arguments);};
+const _ciBig=announce;announce=function(t){if(cineOn()&&!CINE_KEEP.test(String(t)))return;return _ciBig.apply(this,arguments);};
+const _ciBan=banner;banner=function(){if(cineOn())return;return _ciBan.apply(this,arguments);};
+const _ciFeed=feed;feed=function(h){if(cineOn()&&/beam clash/i.test(String(h)))return;return _ciFeed.apply(this,arguments);};
+// achievements: hold the pop-up until the match ends
+const CINE_ACH=[];const _ciAch=achGive;achGive=function(id){if(cineOn()&&!ACHS.u[id]&&!game.practice){if(CINE_ACH.indexOf(id)<0)CINE_ACH.push(id);return;}return _ciAch.apply(this,arguments);};
+onEv('matchEnd',()=>{const L=CINE_ACH.splice(0);L.forEach((id,i)=>setTimeout(()=>_ciAch(id),1800+i*900));});
+
+/* ---------- weight & drama ---------- */
+const CN={punch:0};
+onEv('hit',(att,def,dmg,o)=>{if(!att||!def||SET.cinematic===false)return;const meIn=att===ME||def===ME,near=ME&&def.pos.distanceTo(ME.pos)<22;if(!meIn&&!near)return;
+  const ult=att.state==='ult',sp=att.state==='special',big=ult||(o&&o.heavy&&dmg>=10)||dmg>=14;if(!big)return;
+  hitStop(ult?.16:sp?.12:.1);CN.punch=Math.min(10,CN.punch+(ult?8:5));
+  if(meIn||dmg>=18)impactFlash(ult?.55:.32,ult?att.hero.color:0xffffff);
+  if(ult&&o&&(o.launch||o.kb>12)&&NET.role==='off'&&!game.slowT)game.slowT=.35;});
+onEv('kill',(d,a)=>{if(SET.cinematic===false||NET.role!=='off'||!ME)return;if(a===ME||d.pos.distanceTo(ME.pos)<18){if(!(typeof KC!=='undefined'&&KC.on))game.slowT=Math.max(game.slowT,.55);}});
+function impactFlash(a,col){const e=$('impactFx');if(!e)return;e.style.setProperty('--c','#'+new THREE.Color(col).getHexString());e.style.setProperty('--a',a);e.classList.remove('on');void e.offsetWidth;e.classList.add('on');}
+const _ciCam=updateCamera;updateCamera=function(dt){const r=_ciCam.apply(this,arguments);
+  if(CN.punch>.01){camera.fov-=CN.punch;camera.updateProjectionMatrix();CN.punch*=Math.exp(-dt*7);camera.fov+=CN.punch;camera.updateProjectionMatrix();}
+  const bars=$('cineBars');if(bars)bars.classList.toggle('on',!!(game.cine&&SET.cinematic!==false&&inMatch()));return r;};
+(function(){if(!$('impactFx')){const d=document.createElement('div');d.id='impactFx';document.body.appendChild(d);}
+  if(!$('cineBars')){const d=document.createElement('div');d.id='cineBars';d.innerHTML='<i></i><i></i>';document.body.appendChild(d);}
+  document.body.classList.toggle('cineM',SET.cinematic!==false);setInterval(()=>document.body.classList.toggle('cineM',SET.cinematic!==false),1000);})();
 /* Starts the game. Loaded last, after every other file. */
 buildGfx();if(!GFX.high)lampConeMat.visible=false;initPreview();makePortraits();$('load').style.display='none';showScreen('title');loop();
 })();

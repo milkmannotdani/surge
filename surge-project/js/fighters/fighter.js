@@ -93,8 +93,8 @@ class Fighter{
         }
         const moving=mv.lengthSq()>.02;
         this.sprinting=moving&&I.sprint&&!lock;
-        const sp=8.4*this.hero.spd*(this.sprinting?1.5:1)*(this.vowT>0?1.2:1)*(this.slowT>0?.62:1)*(this.hasteT>0?1.3:1);
-        const k=1-Math.exp(-(moving?10:13)*dt);
+        const sp=9.2*this.hero.spd*(this.sprinting?1.6:1)*(this.vowT>0?1.2:1)*(this.slowT>0?.62:1)*(this.hasteT>0?1.3:1);
+        const k=1-Math.exp(-(moving?9:11)*dt);
         this.vel.x=lerp(this.vel.x,mv.x*sp,k);this.vel.z=lerp(this.vel.z,mv.z*sp,k);
         const hs=Math.hypot(this.vel.x,this.vel.z);this.state=hs>.7?'run':'idle';
         if(lock){const r=new V3(-dirO.z,0,dirO.x);this.lat=lerp(this.lat,(this.vel.x*r.x+this.vel.z*r.z)/Math.max(sp,1),Math.min(1,8*dt));}else this.lat=lerp(this.lat,0,Math.min(1,8*dt));
@@ -621,7 +621,7 @@ class Fighter{
   applyPose(dt){
     const R=this.rig;
     if(this.state!=='framed'){const T=this.targetPose(dt),P=this.P;
-      const rate=(this.state==='attack'||this.state==='ult'||this.state==='hit'||this.state==='dash')?28:(this.state==='fly'||this.state==='down')?10:14;
+      const rate=(this.state==='attack'||this.state==='ult'||this.state==='hit'||this.state==='dash')?28:(this.state==='fly'||this.state==='down')?10:(this.state==='run'||this.state==='idle')?11:14;
       const k=Math.min(1,rate*dt);for(const key in T)P[key]+=(T[key]-P[key])*k;}
     const P=this.P;
     R.root.position.copy(this.pos);R.root.rotation.y=this.face;

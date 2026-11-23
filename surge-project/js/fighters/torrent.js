@@ -13,7 +13,7 @@ const TQ=0x4ab0ff,TW=0xe8f6ff;
     ult:ab({name:'MAXIMUM OUTPUT',form:'beam',style:'spirit',shape:'orb',size:2.2,range:36,dur:3,power:1.5,fx:['push','launch']}),
     ultAlt:ab({name:'SATURATION FIRE',form:'rain',style:'spirit',shape:'bullet',count:12,size:1.1,range:16,power:1.25,fx:['explode']})};
   h.specCD=cabSpecTime(h.cab.sp);
-  h._xm=[ab({name:'OVERFLOW',form:'burst',style:'spirit',shape:'ring',size:1.4,power:1.05,fx:['push']}),ab({name:'POINT BLANK',form:'cone',style:'explosion',shape:'orb',range:9,power:1.2,fx:['push','launch']})];
+  h._xm=[ab({name:'OVERFLOW',form:'burst',style:'spirit',shape:'ring',size:1.4,power:1.05,fx:['push']}),ab({name:'POINT BLANK',form:'burst',style:'explosion',shape:'orb',size:1.6,power:1.2,fx:['push','launch']})];
   Object.assign(HERO_SND,{torrent:'power'});Object.assign(DULT_OF,{torrent:'barrage'});
   if(typeof PROJ_SIG!=='undefined')PROJ_SIG.torrent='bullet';
   if(typeof TRAIT_DESC!=='undefined')TRAIT_DESC.torrent='raw output: his beams win clashes more easily';

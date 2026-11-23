@@ -2,7 +2,7 @@
 /* ================= WORLD (seeded, identical for all players) ================= */
 const PRE_WORLD=new Set(scene.children);
 const world=new THREE.Group();scene.add(world);
-const ROADS=[-144,-96,-48,0,48,96,144], RW=14, BLOCKS=[-120,-72,-24,24,72,120], INNER=ROADS.slice(1,-1);
+const ROADS=[-192,-144,-96,-48,0,48,96,144,192], RW=14, BLOCKS=[-168,-120,-72,-24,24,72,120,168], INNER=ROADS.slice(1,-1);
 const MAPH=BOUND+10;   // half-size of the minimap
 const BLD=[];       // colliders {x0,x1,z0,z1,y0,h}: boxes from height y0 (default 0) up to h
 const BLDG=[];      // whole buildings, for street dressing: {x0,x1,z0,z1,h,doors:[{nx,nz,x,z}]}
@@ -258,7 +258,7 @@ BLOCKS.forEach(cx=>BLOCKS.forEach(cz=>{
   else{[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([qx,qz])=>{if(srnd()<.22)return;const k=SMALL_KINDS[Math.floor(srnd()*SMALL_KINDS.length)];const s=k==='pencil'?sr(8,9.5):sr(9,12),s2=sr(9,12);building(cx+qx*7.6,cz+qz*7.6,s,s2,kh(k),true,k);});}
 }));
 // distant skyline (no collision)
-for(let gx=-10;gx<=10;gx++)for(let gz=-10;gz<=10;gz++){const x=gx*26,z=gz*26;if(Math.max(Math.abs(x),Math.abs(z))<BOUND+28)continue;if(Math.abs(x)<10||Math.abs(z)<10)continue;
+for(let gx=-12;gx<=12;gx++)for(let gz=-12;gz<=12;gz++){const x=gx*26,z=gz*26;if(Math.max(Math.abs(x),Math.abs(z))<BOUND+28)continue;if(Math.abs(x)<10||Math.abs(z)<10)continue;
   if(srnd()<.25)continue;building(x+sr(-3,3),z+sr(-3,3),sr(14,20),sr(14,20),sr(30,120),false);}
 
 mergeCity();

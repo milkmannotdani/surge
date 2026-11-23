@@ -1,8 +1,8 @@
 /* Match flow, controls (MOVE_SLOTS / ULT_KEYS), camera, HUD */
 /* ================= ZONE / ORBS ================= */
-const ZONE={cx:0,cz:0,r:200,fx:0,fz:0,fr:135,tx:0,tz:0,tr:80,pi:0,st:'wait',t:0,dps:2};
-const ZPH=[{w:26,s:22,r:125,d:2},{w:22,s:20,r:80,d:2},{w:18,s:18,r:50,d:4},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
-function zoneReset(){Object.assign(ZONE,{cx:0,cz:0,r:200,pi:0,st:'wait',t:0,dps:2});zonePick();}
+const ZONE={cx:0,cz:0,r:270,fx:0,fz:0,fr:185,tx:0,tz:0,tr:110,pi:0,st:'wait',t:0,dps:2};
+const ZPH=[{w:30,s:26,r:170,d:2},{w:26,s:22,r:110,d:2},{w:20,s:18,r:66,d:4},{w:17,s:16,r:40,d:5},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
+function zoneReset(){Object.assign(ZONE,{cx:0,cz:0,r:270,pi:0,st:'wait',t:0,dps:2});zonePick();}
 function zonePick(){const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.fx=ZONE.cx;ZONE.fz=ZONE.cz;ZONE.fr=ZONE.r;
   let tx=0,tz=0;for(let k=0;k<30;k++){const a=rand(0,6.28),m=rand(0,Math.max(0,Math.min(ZONE.r,BOUND+10)-ph.r)*.8);tx=ZONE.cx+Math.cos(a)*m;tz=ZONE.cz+Math.sin(a)*m;
     if(Math.abs(tx)+ph.r*.3<BOUND&&Math.abs(tz)+ph.r*.3<BOUND&&!insideBld(tx,tz,2))break;}

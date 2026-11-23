@@ -129,9 +129,9 @@ Object.assign(XMOVES,{
   crimson:[['KNIFE TOSS','volley','blood','blade',['drain'],{count:3}],['BLOOD MIST','zone','blood','orb',['slow','drain']]],
   sawback:[['BLADE SPIN','burst','blade','blade',['push']],['SPINNING CHARGE','dash','blade','blade',['launch']]],
   resect:[['RESTORE','buff','earth','shard',[],{self:['heal','shield']}],['STONE SURGE','wave','earth','spike',['launch']]],
-  verdict:[['SHADOW STEP','blink','shadow','blade',['mark']],['CROSS CUT','cone','blade','blade',['slow','pierce']]],
+  verdict:[['SHADOW STEP','blink','shadow','blade',['mark']],['CROSS CUT','wave','blade','crescent',['slow','pierce']]],
   cushion:[['BELLY BUMP','dash','earth','orb',['push']],['FAT SHIELD','shield','light','orb',[]]],
-  corrosa:[['ACID SPLASH','cone','poison','orb',['poison','slow']],['ACID GEYSER','pillar','poison','orb',['poison','launch'],{count:3}]]});
+  corrosa:[['ACID POOL','zone','poison','bubble',['poison','slow']],['ACID GEYSER','pillar','poison','orb',['poison','launch'],{count:3}]]});
 
 /* ---------- looks ---------- */
 const _mhaParts0=mhaParts;

@@ -33,6 +33,9 @@ js/
     combatrules.js    10 s heal lock after damage, combo lock (only the BREAK escapes, 1 s invuln), 1.6x leap/slam moves (whole move), per-variant special cooldowns
     forms.js          MODES (replaces Awakening): every fighter's second mode on 5 — new specials, extra moves, ultimate, combo, look and stats (FORMS table)
     beams.js          steerable beams (turn with aim, slow walk) and BEAM CLASHES (mash to push, winner overpowers)
+    power.js          stronger specials/ults/heavies (more damage + knockback) and area destruction on big hits (craters, smashed props, cracked walls)
+    motion.js         fluid movement: lean into speed, bank into turns, smoother pose blending and camera
+    cinema.js         CINEMATIC MOVES: no move text pop-ups in fights; freeze-frames, camera punch-in, impact flash, ult letterbox, slow-mo
     dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
     hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)

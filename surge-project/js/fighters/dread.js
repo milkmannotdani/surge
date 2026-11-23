@@ -5,7 +5,7 @@
    Marrow FEEDS on fear: every terrified foe within 15 m charges his ultimate and heals him a little.
      1  DREAD WAVE        a cone of ghostly fear — damages and terrifies       (hold: PANIC BURST — a terrifying ring around him)
      2  NIGHTMARE GRASP   a spectral hand drags a far foe to him, terrified
-     3  PHANTOM SWARM     a volley of fear phantoms        4  SCREAM   a stunning cone of sound
+     3  PHANTOM SWARM     a volley of fear phantoms        4  TERROR SCREAM   a stunning shockwave of sound all around
      Q  ABSOLUTE DREAD    darkness falls: every foe nearby is terrified for 6 s and drained each second (he heals)
      Q+back  FEAR INCARNATE  8 s as a towering shadow — armored, stronger, and everyone close to him is terrified
    The form switch goes through the host, so everyone sees the same form online. */
@@ -15,7 +15,7 @@ Object.assign(HERO_SND,{dread:SND.curse?'curse':'power'});
 Object.assign(ULT_RANGE,{absdread:18});
 Object.assign(SPECIAL_AI,{dread:[0,9,.6]});
 Object.assign(XSPK,{dread:1});
-Object.assign(XMOVES,{dread:[['PHANTOM SWARM','volley','shadow','orb',['slow']],['SCREAM','cone','sound','ring',['stun']]]});
+Object.assign(XMOVES,{dread:[['PHANTOM SWARM','volley','shadow','orb',['slow']],['TERROR SCREAM','burst','sound','skull',['stun']]]});
 // (the voice tables load later, so register once everything is loaded)
 setTimeout(()=>{try{VPROF.dread={sex:'m',a:'au',p:.48,r:.82,v:1.05,vi:3};VCRY.dread=[['Can you feel it?',0],['Your fear... it tastes wonderful.',-.06]];}catch(e){}},0);
 if(typeof TRAIT_DESC!=='undefined')TRAIT_DESC.dread='feeds on fear: terrified foes nearby charge his ultimate and heal him · press 5 to switch form';
