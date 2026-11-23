@@ -139,7 +139,8 @@ const VPROF={ // sex m/f · a: accent (us gb au in) · p: pitch · r: rate · v:
   hopstar:{sex:'f',a:'au',p:1.45,r:1.15,v:1.1},  // bright idol
   headliner:{sex:'m',a:'us',p:.92,r:1.02,v:1.15},// big American showman
   zanshin:{sex:'m',a:'us',p:.88,r:1.06,v:1.1},  // determined, protective
-  torrent:{sex:'m',a:'us',p:.72,r:.96,v:1.2}};  // booming, cocky
+  torrent:{sex:'m',a:'us',p:.72,r:.96,v:1.2},
+  heir:{sex:'m',a:'us',p:1.08,r:1.08,v:1.1}};  // earnest, determined  // booming, cocky
 // spread fighters across the installed voices so two fighters with the same gender/accent still sound different
 (function(){const n={};Object.keys(VPROF).forEach(k=>{const P=VPROF[k],key=P.sex+P.a;P.vi=n[key]=(n[key]||0)+1;});})();
 const ACC={us:/en[-_]US/i,gb:/en[-_]GB/i,au:/en[-_]AU/i,in:/en[-_]IN/i};
@@ -162,7 +163,8 @@ const VCRY={
   hopstar:'Showtime! Everybody, eyes on me!',
   headliner:'Smile for the cameras, folks — the star has arrived!',
   zanshin:'I\'ll protect them. No matter what!',
-  torrent:'Come on — show me you can take my full output!'};
+  torrent:'Come on — show me you can take my full output!',
+  heir:'Everyone who came before me — lend me your strength!'};
 const _vfOld=voiceFor;
 voiceFor=function(f){const P=VPROF[KIT(f.hero,'elem')];if(!P)return _vfOld(f);if(!VOICES.length)loadVoices();if(!VOICES.length)return null;
   const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);

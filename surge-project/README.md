@@ -26,6 +26,7 @@ js/
     projshape.js      projectile looks per fighter (PROJ_SIG) and per extra move (PROJ_MOVE)
     uniqatk.js        unique light combo + heavy per fighter (UATK, built from TPL move templates; UATK_KEEP keeps old chains)
     torrent.js        TORRENT (inspired by Ryu Ishigori, Jujutsu Kaisen — Gege Akutami): huge steerable output beams, finger guns
+    heir.js           HEIR (inspired by Izuku Midoriya / Deku): Blackwhip, Gearshift, Fa Jin, Smokescreen, LEGACY STRIKE one-hit ult with director camera
     movefx.js         real rock/ice for ground moves (waves, pillars, slams, bursts) and full-size styled cone attacks (flame torrents, slash storms, fist flurries…)
     customvoice.js    CUSTOM SOUNDS: player-added voice clips per fighter (ult/kill/hurt/win/theme) and music (menu/battle/boss/victory), IndexedDB only; SET.ultSfx gates built-in ult sounds
     clips.js          CLIPS: F8 record, F9 instant replay (two staggered MediaRecorders), auto KO/win highlights, gallery with trim/download/share (IndexedDB)
@@ -36,6 +37,7 @@ js/
     power.js          stronger specials/ults/heavies (more damage + knockback) and area destruction on big hits (craters, smashed props, cracked walls)
     motion.js         fluid movement: lean into speed, bank into turns, smoother pose blending and camera
     cinema.js         CINEMATIC MOVES: no move text pop-ups in fights; freeze-frames, camera punch-in, impact flash, ult letterbox, slow-mo
+    sigs.js           SIGNATURES: each inspired fighter's constant signature look, inspiration-matched extra moves (Glacier Wall, Unpack, Curved Shot, Acid Shot), directed ult cinematics
     dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
     hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)

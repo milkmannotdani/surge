@@ -1929,7 +1929,10 @@ const HEROES=[
   desc:'A spirit swordsman with a huge black greatsword that throws crescent waves of spirit energy. Crescent Fang (1) swings out a crescent that cuts through everything in its path — HOLD to charge a giant one. Flash Step (2) vanishes and reappears behind a foe with a cut. Ultimate FINAL RELEASE erupts in a pillar of spirit and fires a giant black crescent, then for 12 s his sword becomes a slim black blade: much faster, and every swing throws a crescent. Alt ult INNER BEAST: 8 s tougher and stronger, and every hit heals him.',spd:1.06,pow:1.06,scale:1.02,special:'crescent',specCD:2.4,ult:'finalrelease',ultName:'FINAL RELEASE',altName:'INNER BEAST'},
  {id:'torrent',bulk:1.12,pat:'circuit',patK:.35,faction:'hero',name:'TORRENT',power:'Max Output',cls:'Ranged',diff:'Easy',tags:['Huge Beams','Output'],color:0x4ab0ff,accent:0xe8f6ff,suit:0x14141c,mainCol:0x1a1a24,css:'#5ac0ff',
   desc:'A towering powerhouse with absurd energy output. Output Cannon (1) fires a huge beam you can steer — HOLD to charge it even bigger. Finger Guns (2) rattles off rapid energy shots. Overflow (3) bursts energy out all around him; Point Blank (4) blasts everything in front of him away. Ultimate MAXIMUM OUTPUT is a colossal, long beam that wins most beam clashes. Alt ult SATURATION FIRE rains energy shots over a whole area.',
-  spd:.98,pow:1.08,scale:1.08,specCD:2.8,as:{elem:'torrent',alt:'cab',wpn:'torrent'},special:'cab',ult:'cab',spName:'OUTPUT CANNON',ultName:'MAXIMUM OUTPUT',altName:'SATURATION FIRE'}
+  spd:.98,pow:1.08,scale:1.08,specCD:2.8,as:{elem:'torrent',alt:'cab',wpn:'torrent'},special:'cab',ult:'cab',spName:'OUTPUT CANNON',ultName:'MAXIMUM OUTPUT',altName:'SATURATION FIRE'},
+ {id:'heir',bulk:.95,pat:'circuit',patK:.3,faction:'hero',name:'HEIR',power:'Inherited Power',cls:'All-Rounder',diff:'Medium',tags:['Inherited Powers','Mobility','Finisher'],color:0x2aff6a,accent:0xd8ffe0,suit:0x1a4a2e,mainCol:0x163a26,css:'#3aff7a',
+  desc:'The successor to a power passed down through generations — green lightning crackles over his body at all times. BLACKWHIP (1) lashes black tendrils that snatch a foe and yank them in (or grapple a wall to pull himself there) — HOLD to bind everyone nearby. GEARSHIFT (2) spins up his speed and rockets through the enemy line with a kick. FA JIN (3) releases stored kinetic energy for an explosive burst of movement, even in mid-air. SMOKESCREEN (4) blankets the area in thick smoke that hides him and his allies. Ultimate LEGACY STRIKE: every inherited power at once, then one super punch that takes out everything around the impact. Alt ult FLICK STORM: air-pressure flicks at everyone nearby.',
+  spd:1.05,pow:1.05,scale:.98,specCD:3.2,as:{elem:'heir',alt:'heir',wpn:'heir'},special:'blackwhip',ult:'legacy',spName:'BLACKWHIP',ultName:'LEGACY STRIKE',altName:'FLICK STORM'}
 ];
 const SPNAME={rend:'REND',sigil:'CURSE SIGIL',fireball:'FIREBALL',blade:'TIDE BLADE',cyclone:'CYCLONE',fault:'FAULT LINE',erode:'EROSION',bubble:'GRAVITY BUBBLE',airburst:'AIR BURST',featherfan:'FEATHER FAN',chainbolt:'CHAIN BOLT',bluelash:'BLUE LASH'};
 const STEALABLE=Object.keys(SPNAME);
@@ -4554,6 +4557,7 @@ const SKINS_H={cinder:[['Blue Flame',0x0e1a3a,0x2a6aff,0x9ad0ff,0x4fd2ff],['Magm
   snare:[['Underground',0x0a0a0c,0x16161a,0x8a8e9a,0xffd23f],['Pro Hero',0x0a1430,0x2a4aa8,0xffffff,0x8ad8ff]],marble:[['Ringmaster',0x2a0606,0xc4102a,0xffd23f,0xffe08a],['Emerald Act',0x061a0e,0x0a4a2a,0x1ab86a,0x8affc0]],
   crimson:[['School Uniform',0x0a0a1a,0x2a3a6a,0xd81a3a,0xffd23f],['Vampire',0x06000a,0x1a0010,0xff2a4a,0xff8a9a]],sawback:[['Reptile Gold',0x14100a,0x6a5a2a,0xffd23f,0xfff2b0],['Rusted',0x1a0a06,0x5a2a1a,0xa86a3a,0xffb070]],
   resect:[['Plague White',0xe8e8ee,0x8a8a96,0x2a2a32,0xff3a4a],['Eight Bullets',0x0a0a0c,0x2a0a0e,0xffd23f,0xffe08a]],cushion:[['Slim Mode',0x0a1a2a,0x2a4a8a,0xffd23f,0xffffff],['Gold Medal',0x1a1406,0xd8a820,0xffffff,0xfff2b0]],
+  heir:[['Alt Costume',0xe8f0e8,0x1a2a20,0x2aff6a,0xd8ffe0],['Dark Hero',0x1a1a1a,0x0a0a0a,0x2aff6a,0x8aff9a]],
   torrent:[['Overcast',0x8a8a92,0x2a2a32,0xd8e4f0,0xffffff],['Red Output',0x2a0a0a,0x140a0a,0xff3a2a,0xffb08a]],
   zanshin:[['White Release',0xe8e8f0,0x8a8a92,0x3ad8ff,0xb0f0ff],['Ember Coat',0x3a0a0a,0x1a0a0a,0xffa21a,0xffd88a]],
   oldguard:[['Night Shift',0x0a0a10,0x1a1a22,0xc8ccd4,0xffffff],['Rust Belt',0x8a3a1a,0x4a2a1a,0xffa21a,0xffd88a]],hopstar:[['Encore Pink',0xff6ab0,0x8a2a5a,0xffe03a,0xfff4a0],['Midnight Set',0x0a0a1e,0x1a1a3a,0x6affe0,0xb0fff0]],headliner:[['Red Carpet',0xc4102a,0x5a0a12,0xffd86a,0xfff4d8],['Silver Screen',0xd8dce4,0x8a8e9a,0x3ad8ff,0xb0f0ff]],
@@ -6648,7 +6652,7 @@ Fighter.prototype.heavyMove=function(){if(this.hero.gear&&this.hero.gear.type!==
 if(typeof dreadHero==='function'){const _dh=dreadHero;dreadHero=function(b){const D=_dh(b);D.as.wpn='dread';return D;};}
 
 /* ---------- swing trails + element hits ---------- */
-const UFX={fire:[0xff6a1a,0xffd23f],water:[0x2a8aff,0x9ae0ff],wind:[0xd8f4ff,0x8ad8c8],blast:[0xff8a1a,0xffe03a],earth:[0xa8906a,0x6a5a4a],spark:[0xffe03a,0x9ad8ff],
+const UFX={ofa:[0x2aff6a,0xd8ffe0],fire:[0xff6a1a,0xffd23f],water:[0x2a8aff,0x9ae0ff],wind:[0xd8f4ff,0x8ad8c8],blast:[0xff8a1a,0xffe03a],earth:[0xa8906a,0x6a5a4a],spark:[0xffe03a,0x9ad8ff],
   void:[0x9a6aff,0x2a0a4a],metal:[0xc8d0dc,0x7a8494],feather:[0xfff0e0,0x9ad8ff],decay:[0x8a8290,0x5a5560],spirit:[0x7affd8,0xffffff],time:[0x3fe0c5,0xffffff],
   bluefire:[0x3a8aff,0x9ad8ff],curse:[0x9a2aff,0x5aff8a],icefire:[0xbfefff,0xff6a1a],light:[0xff2a2a,0xe8e8f0],crystal:[0x9ad8ff,0xff9af0],mud:[0x6a4a2a,0x3a2a1a],
   blood:[0xc4102a,0xff3a4a],blade:[0xd8e0e8,0xffffff],redcrackle:[0xff2a3a,0xe8e0d0],cushion:[0xffd23f,0xffa21a],acid:[0xb8ff3a,0x6aff2a],gold:[0xffd86a,0xfff4d8],
@@ -6702,6 +6706,179 @@ const TQ=0x4ab0ff,TW=0xe8f6ff;
   const H=Object.assign({},TPL.cm);H.dmg=13;H.rng=4;H.launch=true;H.heavy=true;H.kb=13;H.vfx=2;MOVES.u_torrent_H=H;
   // his second mode, FULL THROTTLE, is in the FORMS table (forms.js)
   if(typeof UO!=='undefined')UO.torrent=(f,t,c)=>{if(uo1(f,'a'))aura(f,TQ,TW,1.2);uoSwirl(f,c,TQ,TW,5,ADD);if(uo1(f,'r',.5))ring(c,TW,4,.3,false,2.6);};})();
+/* HEIR — successor to a power handed down through generations. Original design (green suit with white accents,
+   curly dark-green hair, freckles, constant green lightning); credited in credits.js as inspired by Izuku Midoriya (Deku)
+   from My Hero Academia by Kōhei Horikoshi. Moves are original takes on that kind of fighter, with original names.
+     1  BLACKWHIP     black tendrils snatch the nearest foe and yank them in — or grapple a wall and pull him there
+        hold 1        BLACKWHIP BIND: tendrils seize everyone nearby, bind them and drag them in
+     2  GEARSHIFT     spins his speed up through the gears, then rockets through the line with a kick (+4 s of haste)
+     3  FA JIN        releases stored kinetic energy: an explosive burst of movement in any direction, even mid-air
+     4  SMOKESCREEN   a thick cloud of smoke; while inside it he and his allies can't be targeted from range
+     Q  LEGACY STRIKE every inherited power at once, then a single super punch: everyone around the impact is taken
+                      out in one hit (story bosses take a huge hit instead). Its own cinematic camera, slow motion, the works.
+     Q+back FLICK STORM  air-pressure finger flicks at everyone nearby
+   Mode (5): FULL POWER — see FORMS.heir in forms.js. Signature: green lightning always crackles over him. */
+const HEIR_G=0x2aff6a,HEIR_G2=0x9affb0,HEIR_W=0xeaffee,HEIR_K=0x050806;
+Object.assign(SPNAME,{blackwhip:'BLACKWHIP'});Object.assign(HERO_SND,{heir:'power'});Object.assign(ULT_RANGE,{legacy:22});
+Object.assign(SPECIAL_AI,{blackwhip:[3,18,.6]});Object.assign(XSPK,{blackwhip:1});Object.assign(DULT_OF,{heir:'barrage'});
+if(typeof PROJ_SIG!=='undefined')PROJ_SIG.heir='ring';
+if(typeof TRAIT_DESC!=='undefined')TRAIT_DESC.heir='inherited power: green lightning makes his kicks and punches hit a little harder';
+setTimeout(()=>{try{VCRY.heir=[['Here goes everything!',0],['This is my legacy!',.04]];}catch(e){}},0);
+function isHeir(f){return f&&f.hero&&(f.hero.id==='heir');}
+function hHand(f){return limbPos(f,'r',new V3());}
+function hBolt(a,b,col,w){bolt(a,b,col||HEIR_G,w||.05,.1);}
+
+/* ---------- BLACKWHIP tendrils (dark tubes with a green sheen) ---------- */
+const WHIPS=[];
+function whip(f,toFn,o){o=o||{};const g=new THREE.Group();scene.add(g);const W={f,toFn,t:0,ext:o.ext||.22,hold:o.hold||.35,ret:.18,n:o.n||3,g,ph:Math.random()*6,onReach:o.onReach,reached:false,meshes:[]};WHIPS.push(W);return W;}
+const WHIP_DARK=new THREE.MeshBasicMaterial({color:HEIR_K}),WHIP_GLOW=new THREE.MeshBasicMaterial({color:HEIR_G,transparent:true,opacity:.35,blending:THREE.AdditiveBlending,depthWrite:false});
+onEv('tick',dt=>{for(let i=WHIPS.length-1;i>=0;i--){const W=WHIPS[i];W.t+=dt;const f=W.f;const end=W.ext+W.hold+W.ret;
+    W.meshes.forEach(m=>{m.geometry.dispose();W.g.remove(m);});W.meshes.length=0;
+    if(W.t>=end||!f||f.dead||!inMatch()){scene.remove(W.g);WHIPS.splice(i,1);continue;}
+    const a=hHand(f),b=W.toFn();if(!b)continue;let k=W.t<W.ext?W.t/W.ext:W.t<W.ext+W.hold?1:1-(W.t-W.ext-W.hold)/W.ret;k=clamp(k,0,1);
+    if(!W.reached&&W.t>=W.ext){W.reached=true;if(W.onReach)W.onReach();}
+    if(!nearCam(a,80))continue;
+    for(let n=0;n<W.n;n++){const pts=[];const side=new V3(b.z-a.z,0,a.x-b.x).normalize();
+      for(let s=0;s<=10;s++){const u=s/10*k,p=a.clone().lerp(b,u);const wob=Math.sin(u*9+W.t*18+n*2.1+W.ph)*.55*(1-u*.6)*Math.sin(u*Math.PI);
+        p.addScaledVector(side,wob*(n-1)*.8+wob*.3);p.y+=Math.cos(u*7+n+W.t*14)*.35*Math.sin(u*Math.PI);pts.push(p);}
+      if(pts.length<2)continue;const cv=new THREE.CatmullRomCurve3(pts),r=.055*(1-n*.15);
+      const m1=new THREE.Mesh(new THREE.TubeGeometry(cv,18,r,5,false),WHIP_DARK),m2=new THREE.Mesh(new THREE.TubeGeometry(cv,18,r*2.1,5,false),WHIP_GLOW);
+      W.g.add(m1,m2);W.meshes.push(m1,m2);}
+    if(Math.random()<.5){const p=a.clone().lerp(b,k*Math.random());burst(ADD,p,1,{colors:[HEIR_G,HEIR_G2],speed:1,life:.25,size:.18,size1:0,bright:2.4});}}});
+onEv('matchEnd',()=>{WHIPS.forEach(W=>{W.meshes.forEach(m=>m.geometry.dispose());scene.remove(W.g);});WHIPS.length=0;});
+function yank(f,T,dur){const from=T.pos.clone(),t0=game.time;T.set('hit');
+  const step=()=>{if(!inMatch()||T.dead||f.dead)return;const k=Math.min(1,(game.time-t0)/dur),fw=f.fwd(),to=new V3(f.pos.x+fw.x*1.6,f.pos.y,f.pos.z+fw.z*1.6);
+    T.pos.lerpVectors(from,to,k*k*(3-2*k));T.vel.set(0,0,0);if(k<1)requestAnimationFrame(step);};step();}
+
+/* 1 — BLACKWHIP */
+SPECIALS.blackwhip=function(f){const V=f.vf;
+  once(f,.12,()=>{const T=tgtOf(f,20);if(T)faceTo(f,T);const fw=f.fwd(),c=f.chest(new V3());
+    if(T){V.T=T;whip(f,()=>T.chest(new V3()),{ext:.2,hold:.4,onReach:()=>{if(T.dead||NET.role==='client')return;hitO(f,T,{dmg:9,kb:0,up:0,stun:1});yank(f,T,.32);burst(ADD,T.chest(new V3()),14,{colors:[HEIR_G,HEIR_K],speed:5,life:.3,size:.3,size1:0,bright:2});}});}
+    else{const L=clearLen(f.pos,fw,18,c.y),tip=c.clone().addScaledVector(fw,L);const wall=L<17.5;
+      whip(f,()=>tip,{ext:.2,hold:wall?.45:.05,onReach:()=>{if(!wall)return;const from=f.pos.clone(),to=f.pos.clone().addScaledVector(fw,Math.max(0,L-1.2)),t0=game.time;
+        const step=()=>{if(!inMatch()||f.dead)return;const k=Math.min(1,(game.time-t0)/.4);f.pos.lerpVectors(from,to,k);f.pos.y=from.y+Math.sin(k*Math.PI)*1.6;f.vel.set(0,0,0);if(k<1)requestAnimationFrame(step);};step();}});}
+    xSnd(f.pos,()=>AU.whoosh(false));});
+  vpose(f,.12,'specw','spech');endAt(f,.62);return 10;};
+SPECVAR.blackwhip={
+  chg:['BLACKWHIP BIND',(f,dt,k)=>{once(f,.2,()=>{const L=foes(f,16+4*k).slice(0,4);if(!L.length){const fw=f.fwd(),c=f.chest(new V3());whip(f,()=>c.clone().addScaledVector(fw,12),{n:5,hold:.1});return;}
+      L.forEach(T=>whip(f,()=>T.chest(new V3()),{n:2,ext:.22,hold:.55,onReach:()=>{if(T.dead||NET.role==='client')return;hitO(f,T,{dmg:10+8*k,kb:0,up:0,stun:1.4+k*.6});yank(f,T,.45);}}));shake(.3,f.pos);xSnd(f.pos,()=>AU.whoosh(true));});
+    vpose(f,.2,'charge','spech');endAt(f,.85);return 10;}],
+  // 2 — GEARSHIFT
+  alt:['GEARSHIFT',(f,dt)=>{const V=f.vf,t=f.stateT;
+    if(t<.38){f.poseKey='charge';if(!V.g){V.g=1;const T=tgtOf(f,20);if(T)faceTo(f,T);}
+      const lg=limbPos(f,'f',new V3());if(Math.random()<.7)ring(lg,Math.random()<.5?HEIR_G:HEIR_W,.6+t*1.6,.15,true,2.6);if(Math.random()<.5)hBolt(lg,lg.clone().add(TMP2.set(rand(-.6,.6),rand(-.3,.6),rand(-.6,.6))));
+      if(!V.s0&&t>.05){V.s0=1;xSnd(f.pos,()=>{AU.whoosh(false);});}return 10;}
+    if(!V.go){V.go=1;V.from=f.pos.clone();const fw=f.fwd();V.to=f.pos.clone().addScaledVector(fw,clearLen(f.pos,fw,14,f.pos.y+1)-.8);V.hit={};f.invuln=Math.max(f.invuln,.35);f.hasteT=Math.max(f.hasteT||0,4);shake(.3,f.pos);xSnd(f.pos,()=>{AU.boom(false);AU.whoosh(true);});
+      ring(f.chest(new V3()),HEIR_G,3,.3,false,2.6);}
+    const k=Math.min(1,(t-.38)/.22);const prev=f.pos.clone();f.pos.lerpVectors(V.from,V.to,k);f.vel.set(0,0,0);f.poseKey='kickh';
+    trailSeg(prev.clone().add(TMP2.set(0,1,0)),f.pos.clone().add(TMP2.set(0,1,0)),HEIR_G,.18,.3);if(Math.random()<.8)hBolt(prev.clone().add(TMP2.set(0,1.1,0)),f.chest(new V3()));
+    for(const o of foes(f,2.4)){if(V.hit[o.id])continue;V.hit[o.id]=1;hitO(f,o,{dmg:14,kb:15,up:6,stun:.6,heavy:true});burst(ADD,o.chest(new V3()),20,{colors:[HEIR_G,HEIR_W],speed:9,life:.35,size:.35,size1:0,bright:2.6});}
+    endAt(f,.8);return 10;}]};
+
+/* ---------- extra moves with custom code ---------- */
+const XCUSTOM={
+  // 3 — FA JIN: stored kinetic energy → explosive burst of movement (works in the air)
+  fajin(f,dt){const V=f.vf,t=f.stateT;if(!V.go){V.go=1;let d=f.fwd();const I=f.intent;if(I&&(I.wx||I.wz)&&!f.isBot)d=new V3(I.wx,0,I.wz).normalize();
+      V.from=f.pos.clone();const L=clearLen(f.pos,d,15,f.pos.y+1);V.to=f.pos.clone().addScaledVector(d,Math.max(0,L-.8));V.air=!f.onGround;V.hit={};
+      f.face=Math.atan2(d.x,d.z);f.invuln=Math.max(f.invuln,.28);const c=f.chest(new V3());
+      ring(c,HEIR_G,2.4,.25,false,2.6);ring(new V3(f.pos.x,f.pos.y+.15,f.pos.z),HEIR_W,2.8,.3,true,2);burst(ADD,c,26,{colors:[HEIR_G,HEIR_G2,HEIR_W],speed:9,life:.3,size:.3,size1:0,bright:2.6});
+      for(let q=0;q<5;q++)hBolt(c,c.clone().add(TMP2.set(rand(-1.4,1.4),rand(-1,1.2),rand(-1.4,1.4))));dust(f.pos,8,.9);shake(.25,f.pos);xSnd(f.pos,()=>{AU.whoosh(true);AU.boom(false);});}
+    const k=Math.min(1,t/.2),e=1-(1-k)*(1-k),prev=f.pos.clone();f.pos.lerpVectors(V.from,V.to,e);f.pos.y=V.from.y+(V.air?.4:Math.sin(k*Math.PI)*.8)*k;f.vel.set(0,V.air?2:0,0);f.poseKey='dash';
+    if(k<1){trailSeg(prev.clone().add(TMP2.set(0,1,0)),f.pos.clone().add(TMP2.set(0,1,0)),HEIR_G,.12,.22);if(Math.random()<.6)hBolt(prev.clone().add(TMP2.set(0,1,0)),f.chest(new V3()));}
+    for(const o of foes(f,1.8)){if(V.hit[o.id])continue;V.hit[o.id]=1;hitO(f,o,{dmg:5,kb:9,up:3,stun:.3});}
+    if(t>.3){f.set(f.onGround?'idle':'air');}return 10;},
+  // 4 — SMOKESCREEN
+  smoke(f,dt){const t=f.stateT;once(f,.12,()=>{smokeCloud(f,f.pos.clone(),7,6);xSnd(f.pos,()=>AU.whoosh(false));});f.poseKey=t<.12?'specw':'spech';endAt(f,.4);return 10;}};
+const _hXm=SPECIALS.xm;SPECIALS.xm=function(f,dt){const A=f.xmA;if(A&&A.custom&&XCUSTOM[A.custom])return XCUSTOM[A.custom](f,dt);return _hXm.apply(this,arguments);};
+
+/* ---------- SMOKESCREEN cloud ---------- */
+const SMOKES=[];
+function smokeCloud(f,p,R,dur){const S={f,p,R,t:0,dur};SMOKES.push(S);burst(SMK,TMP2.set(p.x,p.y+1,p.z).clone(),40,{colors:[0x8a8a8a,0xb0b0b0,0x6a6a6a],speed:6,up:1,life:2.4,size:1.6,size1:4,drag:3,rad:1});}
+function inSmoke(o){for(const S of SMOKES){if(ally(o,S.f)||o===S.f){if(Math.hypot(o.pos.x-S.p.x,o.pos.z-S.p.z)<S.R)return true;}}return false;}
+onEv('tick',dt=>{for(let i=SMOKES.length-1;i>=0;i--){const S=SMOKES[i];S.t+=dt;if(S.t>S.dur||!inMatch()){SMOKES.splice(i,1);continue;}
+  const fade=S.t>S.dur-1.5?(S.dur-S.t)/1.5:1;if(nearCam(S.p,90)&&Math.random()<.9*fade){const a=Math.random()*6.28,r=Math.sqrt(Math.random())*S.R;
+    burst(SMK,TMP2.set(S.p.x+Math.cos(a)*r,S.p.y+rand(.3,2.6),S.p.z+Math.sin(a)*r).clone(),2,{colors:[0x8a8a8a,0xa6a6a6,0x707070],speed:.6,up:.4,life:2.2,size:1.8,size1:3.2,drag:1});}}});
+// hidden in the smoke: can't be picked as a target from outside 3 m
+const _hTgt=tgtOf;tgtOf=function(f,R){const T=_hTgt.apply(this,arguments);if(!T||!SMOKES.length||!inSmoke(T)||T.pos.distanceTo(f.pos)<3)return T;
+  let best=null,bd=1e9;for(const o of FS){if(ally(o,f)||o.dead||o.downed||o===f)continue;const d=o.pos.distanceTo(f.pos);if(d>(R||30)||(inSmoke(o)&&d>=3))continue;if(d<bd){bd=d;best=o;}}return best;};
+onEv('matchEnd',()=>{SMOKES.length=0;});
+// anyone (bot or player lock-on) targeting someone hidden in the smoke from more than 3 m away loses them
+onEv('tick',()=>{if(!SMOKES.length)return;for(const f of FS){const T=f.tgt;if(T&&!ally(T,f)&&inSmoke(T)&&T.pos.distanceTo(f.pos)>3){f.tgt=null;if(f.hardLock)f.hardLock=false;}}});
+const _hNeIv=setInterval(()=>{if(typeof nearestEnemy!=='function')return;clearInterval(_hNeIv);const _ne=nearestEnemy;nearestEnemy=function(f,maxD){const T=_ne.apply(this,arguments);if(!T||!SMOKES.length||!inSmoke(T)||T.pos.distanceTo(f.pos)<3)return T;
+  let best=null,bd=maxD||1e9;for(const o of FS){if(ally(o,f)||o.dead||o.dormant||o===f)continue;const d=Math.hypot(o.pos.x-f.pos.x,o.pos.z-f.pos.z)+(o.downed?6:0);if(d<bd&&!(inSmoke(o)&&d>=3)){bd=d;best=o;}}return best;};},5);
+
+/* ---------- signature: green lightning crackles over him ---------- */
+onEv('tick',dt=>{for(const f of FS){if(!isHeir(f)||f.dead||!nearCam(f.pos,40))continue;const busy=f.state==='special'||f.state==='ult'||f.state==='attack'||f.state==='dash';
+  if(Math.random()<(busy?.7:.28)){const c=f.chest(new V3()),a=c.clone().add(TMP2.set(rand(-.5,.5),rand(-.9,.8),rand(-.5,.5))),b=a.clone().add(TMP2.set(rand(-.5,.5),rand(-.5,.5),rand(-.5,.5)));hBolt(a,b,Math.random()<.8?HEIR_G:HEIR_W,.035);}}});
+onEv('hit',(a,d,dmg)=>{if(isHeir(a)&&d&&dmg>0&&a.state==='attack'&&nearCam(d.pos,40)){const p=d.chest(new V3());for(let q=0;q<2;q++)hBolt(p,p.clone().add(TMP2.set(rand(-1,1),rand(-.6,.9),rand(-1,1))));}});
+
+/* ---------- LEGACY STRIKE (ult) ---------- */
+const HCAM={on:false};
+ULTX.legacy={r:22,s(f){f.vf.t0=null;f.uEnd=99;f.invuln=Math.max(f.invuln,3);f.poseKey='charge';},
+  u(f,t){const V=f.vf;if(V.t0==null){V.t0=t;V.y0=f.pos.y;V.T=tgtOf(f,30);if(V.T)faceTo(f,V.T);f.uEnd=t+2.7;f.invuln=Math.max(f.invuln,3);
+      if(ME&&(f===ME||f.pos.distanceTo(ME.pos)<40)){HCAM.on=true;HCAM.f=f;HCAM.t0=game.time;HCAM.T=V.T;HCAM.imp=null;}
+      if(typeof duckMusic==='function')duckMusic(3);xSnd(f.pos,()=>{AU.whoosh(true);});}
+    const r=t-V.t0,c=f.chest(new V3());
+    // 1) every inherited power at once (0 – 1.0 s): lightning storm, black tendrils lashing, smoke, he rises
+    if(r<1){f.poseKey='charge';f.pos.y=V.y0+r*1.4;f.vel.set(0,0,0);
+      for(let q=0;q<3;q++)hBolt(c,c.clone().add(TMP2.set(rand(-2.2,2.2),rand(-1.4,2.4),rand(-2.2,2.2))),Math.random()<.7?HEIR_G:HEIR_W,.06);
+      if(Math.random()<.25){const a=Math.random()*6.28;whip(f,()=>c.clone().add(TMP2.set(Math.cos(a)*1.5,rand(-.4,1.2),Math.sin(a)*1.5)),{n:1,ext:.12,hold:.08});}
+      if(Math.random()<.5)burst(SMK,TMP2.set(f.pos.x,V.y0+.2,f.pos.z).clone(),2,{colors:[0x8a8a8a,0x5a5a5a],speed:4,up:.5,life:1,size:1,size1:2.4,drag:2});
+      if(Math.random()<.6)ring(c,HEIR_G,1+r*3,.2,false,2.8);
+      atT(f,'s1',V.t0+.3,()=>{xSnd(f.pos,()=>AU.boom(false));shake(.3,f.pos);});atT(f,'s2',V.t0+.7,()=>{xSnd(f.pos,()=>{AU.zap&&AU.zap(.9);AU.whoosh(true);});shake(.4,f.pos);});
+      return 10;}
+    // 2) the dive (1.0 – 1.3 s)
+    if(r<1.3){if(!V.dv){V.dv=1;const T=V.T&&!V.T.dead?V.T:null,fw=f.fwd();V.from=f.pos.clone();
+        V.imp=T?T.pos.clone().addScaledVector(xDirTo(f,T),-1):f.pos.clone().addScaledVector(fw,8);V.imp.y=floorAt(V.imp.x,V.imp.z,V.from.y+2);HCAM.imp=V.imp.clone();xSnd(f.pos,()=>AU.whoosh(true));}
+      const k=(r-1)/.3,prev=f.pos.clone();f.pos.lerpVectors(V.from,V.imp,k*k);f.vel.set(0,0,0);f.poseKey='kickh';
+      trailSeg(prev.clone().add(TMP2.set(0,1,0)),f.pos.clone().add(TMP2.set(0,1,0)),HEIR_G,.35,.4);hBolt(prev.clone().add(TMP2.set(0,1,0)),f.chest(new V3()),HEIR_W,.08);return 10;}
+    // 3) IMPACT (1.3 s): one hit takes out everything around it
+    if(!V.imp2){V.imp2=1;const p=V.imp||f.pos.clone();f.pos.copy(p);f.poseKey='slamLand';heirImpact(f,p);}
+    f.poseKey=r<1.9?'slamLand':'charge';return 10;}};
+function heirImpact(f,p){const R=13,c=TMP3.set(p.x,p.y+1.2,p.z).clone();
+  if(NET.role!=='client')for(const o of FS){if(o===f||ally(o,f)||o.dead||o.downed)continue;if(Math.hypot(o.pos.x-p.x,o.pos.z-p.z)>R||Math.abs(o.pos.y-p.y)>8)continue;
+    const boss=o.boss||(o.take&&o.take<.6);o.invuln=0;hitO(f,o,{dmg:boss?60:999,kb:32,up:20,launch:true,heavy:true,ult:true,stun:1.5,pt:o.chest(new V3()),_pw:1});}
+  // the blast
+  explosion(c,5,[HEIR_G,HEIR_G2,0x1a8a3a]);explosion(TMP2.set(p.x,p.y+.6,p.z).clone(),4,[HEIR_G,HEIR_G2,0x0a3a1a]);
+  for(let k=0;k<4;k++)setTimeout(()=>{if(!inMatch())return;ring(TMP2.set(p.x,p.y+.2+k*.1,p.z).clone(),k%2?HEIR_W:HEIR_G,R*(.7+k*.35),.6+k*.1,true,2.4);ring(c,k%2?HEIR_G:HEIR_W,4+k*4,.4,false,2.8);},k*90);
+  for(let q=0;q<14;q++){const a=q/14*6.283;hBolt(c,c.clone().add(TMP2.set(Math.cos(a)*rand(5,11),rand(-1,5),Math.sin(a)*rand(5,11))),q%3?HEIR_G:HEIR_W,.12);}
+  burst(ADD,c,110,{colors:[HEIR_G,HEIR_G2,HEIR_G,HEIR_W],speed:24,up:6,life:.9,size:.45,size1:0,bright:2.2});
+  dust(p,14,2);debris(TMP2.set(p.x,p.y+.8,p.z).clone(),18,0,18,.45);if(typeof crater==='function')crater(p.x,p.z,6,p.y);
+  if(typeof smashArea==='function'){smashArea(p,R,true);}
+  if(typeof bigFist==='function'){const A={shape:'fist',style:'wind',size:2.4,c1:HEIR_G,c2:HEIR_W,colors:[HEIR_G,HEIR_W]};try{bigFist(f,A,c,f.fwd());}catch(e){}}
+  flashLight(c,HEIR_G,22);shake(1.4,p);hitStop(.22);if(typeof impactFlash==='function')impactFlash(.35,HEIR_G);if(NET.role==='off')game.slowT=Math.max(game.slowT,.9);
+  xSnd(p,()=>{AU.boom(true);AU.crash&&AU.crash();});setTimeout(()=>xSnd(p,()=>{AU.boom(true);AU.zap&&AU.zap(1);}),120);setTimeout(()=>xSnd(p,()=>AU.boom(false)),320);
+  }
+// director's camera for LEGACY STRIKE (for the user and anyone within 40 m)
+const _hCamIv=setInterval(()=>{if(typeof updateCamera!=='function')return;clearInterval(_hCamIv);const _hCam=updateCamera;updateCamera=function(dt){const r=_hCam.apply(this,arguments);if(!HCAM.on)return r;const f=HCAM.f,e=game.time-HCAM.t0;
+  if(!f||!inMatch()||e>3.4||(f.dead&&e<1.3)){HCAM.on=false;return r;}
+  const fw=f.fwd(),side=new V3(fw.z,0,-fw.x),c=f.chest(new V3());let pos,look,fov;
+  if(e<1){const a=.5+e*1.3;pos=c.clone().addScaledVector(fw,Math.cos(a)*6.5).addScaledVector(side,Math.sin(a)*6.5).add(TMP2.set(0,.3,0));look=c.clone().add(TMP2.set(0,.3,0));fov=46;}
+  else if(e<1.3||!HCAM.imp){pos=c.clone().addScaledVector(fw,-5.5).addScaledVector(side,1.5).add(TMP2.set(0,2,0));look=c.clone().addScaledVector(fw,4);fov=60;}
+  else{const p=HCAM.imp;pos=p.clone().addScaledVector(side,11).addScaledVector(fw,-4).add(TMP2.set(0,4.2,0));look=p.clone().add(TMP2.set(0,1.2,0));fov=72;}
+  {const kk=rayBld(look,pos,16);if(kk<1)pos=look.clone().lerp(pos,Math.max(.25,kk*.9));}
+  const k=1-Math.exp(-(e<1.3?14:6)*dt);camera.position.lerp(pos,k);camera.lookAt(look);camera.fov=lerp(camera.fov,fov,k);camera.updateProjectionMatrix();
+  const bars=$('cineBars');if(bars&&SET.cinematic!==false)bars.classList.add('on');return r;};},5);   // installed once the camera code has loaded
+
+/* ---------- FLICK STORM (alt ult) ---------- */
+ALTULT.heir={name:'FLICK STORM',r:16,s(f){f.uEnd=1.9;f.poseKey='charge';},u(f,t){
+  const L=foes(f,24).slice(0,6);for(let i=0;i<6;i++)atT(f,'f'+i,.25+i*.22,()=>{const T=L[i%Math.max(1,L.length)];const c=hHand(f);f.poseKey=i%2?'jabL':'jabR';
+    const d=T?xDirTo(f,T):f.fwd();const to=T?T.chest(new V3()):c.clone().addScaledVector(d,18);if(T)faceTo(f,T);
+    ring(c,HEIR_W,1.6,.2,false,2.4);trailSeg(c,to,HEIR_W,.25,.25);ring(to,HEIR_G,2.2,.3,false,2.4);burst(ADD,to,18,{colors:[HEIR_G,HEIR_W],speed:10,life:.3,size:.35,size1:0,bright:2.6});
+    if(T&&!T.dead&&NET.role!=='client')hitO(f,T,{dmg:10,kb:14,up:5,stun:.5});shake(.25,c);xSnd(c,()=>{AU.boom(false);AU.whoosh(false);});});return 10;}};
+
+/* ---------- moves, combo and opening ---------- */
+(function(){const h=HEROES.find(x=>x.id==='heir');if(!h)return;
+  const ab=o=>sanitizeAbil(Object.assign({colors:[HEIR_G,HEIR_W]},o));
+  h._xm=[Object.assign(ab({name:'FA JIN',form:'dash',style:'wind',shape:'ring',fx:[]}),{custom:'fajin'}),Object.assign(ab({name:'SMOKESCREEN',form:'zone',style:'shadow',shape:'orb',fx:[]}),{custom:'smoke'})];
+  // his combo: kick-heavy fighting style — jab into kicks, finishing with an axe kick; heavy: a rising kick
+  UATK.heir={c:'jR hk lk sk ax',h:'up',fx:'ofa'};
+  const toks=UATK.heir.c.split(' '),raw=toks.reduce((s,t)=>s+TPL[t].dmg,0),k=15/raw*1.08;
+  toks.forEach((t,i)=>{const M=Object.assign({},TPL[t]);M.dmg=+(M.dmg*k).toFixed(1);const last=i===toks.length-1;
+    if(last){M.launch=true;M.heavy=true;M.kb=Math.max(M.kb,9);M.up=Math.max(M.up,5);}else{delete M.launch;if(t!=='ax')delete M.heavy;delete M.shock;M.kb=Math.min(M.kb,4);M.up=Math.min(M.up,2);M.next='u_heir_'+(i+1);}
+    MOVES['u_heir_'+i]=M;});
+  const H=Object.assign({},TPL.up);H.dmg=13;H.launch=true;H.heavy=true;H.kb=10;H.up=10;H.vfx=2;MOVES.u_heir_H=H;
+  if(typeof UO!=='undefined')UO.heir=(f,t,c)=>{if(uo1(f,'a'))aura(f,HEIR_G,HEIR_W,1.2);uoSwirl(f,c,HEIR_G,HEIR_W,5,ADD);if(Math.random()<.6)hBolt(c,c.clone().add(TMP2.set(rand(-1.5,1.5),rand(-1,1.5),rand(-1.5,1.5))));};})();
 /* COSTUME UPGRADE: an extra layer of original costume detail on every fighter, themed to their power.
    Each entry in LOOKS picks: em (chest emblem shape), belt, br (bracers), bt (boot style), sh (shoulders), col (collar)
    and an optional sig(X,h) function for one signature accessory. Colors come from the fighter (so shop skins recolor it).
@@ -6738,7 +6915,7 @@ const LOOKS={
   crimson:{em:'drop',belt:1,br:'band',bt:'cuff',sh:'none'},
   sawback:{em:'blade',belt:2,br:'spike',bt:'armor',sh:'spike'},
   zanshin:{em:'blade',belt:1,br:'band',bt:'cuff',sh:'none'},
-  torrent:{em:'target',belt:1,br:'band',bt:'armor',sh:'plate'},oldguard:{em:'fist',belt:1,br:'band',bt:'cuff',sh:'none'},hopstar:{em:'wing',belt:1,br:'band',bt:'cuff',sh:'none'},headliner:{em:'sun',belt:2,br:'armor',bt:'armor',sh:'plate'},
+  heir:{em:'bolt',belt:1,br:'band',bt:'armor',sh:'none'},torrent:{em:'target',belt:1,br:'band',bt:'armor',sh:'plate'},oldguard:{em:'fist',belt:1,br:'band',bt:'cuff',sh:'none'},hopstar:{em:'wing',belt:1,br:'band',bt:'cuff',sh:'none'},headliner:{em:'sun',belt:2,br:'armor',bt:'armor',sh:'plate'},
   skitter:{em:'wing',belt:1,br:'band',bt:'cuff',sh:'none'},
   decree:{em:'rune',belt:2,br:'band',bt:'armor',sh:'plate'},
   verdict:{em:'blade',belt:1,br:'band',bt:'cuff',sh:'none'},
@@ -6852,7 +7029,7 @@ const HUMAN={
   strobe:[0,0xff8a3a,'pony',0x3fe0c5,'freckles'],pyre:[1,0xb8682a,'slick',0x3a8aff],warp:[3,0x6a6a7a,'buzz',0x8a5aff,'shades'],hex:[2,0x2a8a4a,'twin',0x5aff8a],
   scathe:[3,0xc4202a,'mohawk',0xff4a1a,'earring'],solstice:[0,0x1a2a5a,'short',0x9ae8ff],piston:[2,0xd86a2a,'mohawk',0xffb03a,'glasses'],snare:[1,0xb89a5a,'bun',0x5a5a62,'stubble'],
   marble:[1,0x14141a,'slick',0x9ae8ff,'beard'],legion:[2,0xd8822a,'curly',0x8a8e9a],recoil:[0,0xe8e8f2,'short',0xff3a96,'earring'],crimson:[1,0x14060a,'pony',0xff1a3a],
-  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble'],decree:[2,0xe8d8b0,'long',0x3ad8ff],skitter:[1,0x3a2a1a,'messy',0x7affd8],oldguard:[2,0xe8e4dc,'short',0x6a8aaa],hopstar:[1,0x8a4ad8,'long',0x6affe0],headliner:[0,0xf2d27a,'slick',0x3a8aff],torrent:[2,0x14141a,'pomp',0x5ab0ff,'stubble'],zanshin:[1,0xd8d8e0,'spiky',0x8a6a4a]};
+  sawback:[3,0x5a3a1a,'buzz',0x7acc5a,'stubble'],resect:[0,0xf0ece4,'pony',0xd84a5a],cushion:[3,0x2a1a10,'afro',0xffd23f,'beard'],corrosa:[2,0x8a3ad8,'curly',0xb8ff3a,'freckles'],verdict:[1,0x1a1a1e,'messy',0xff3a3a,'stubble'],decree:[2,0xe8d8b0,'long',0x3ad8ff],skitter:[1,0x3a2a1a,'messy',0x7affd8],oldguard:[2,0xe8e4dc,'short',0x6a8aaa],hopstar:[1,0x8a4ad8,'long',0x6affe0],headliner:[0,0xf2d27a,'slick',0x3a8aff],heir:[1,0x1a3a26,'curly',0x2aff6a,'freckles'],torrent:[2,0x14141a,'pomp',0x5ab0ff,'stubble'],zanshin:[1,0xd8d8e0,'spiky',0x8a6a4a]};
 function humanLook(h){const id=h.as&&h.as.look&&HUMAN[h.as.look]?h.as.look:h.id;if(HUMAN[id])return HUMAN[id];let k=0;for(const c of (h.name||'x'))k=(k*31+c.charCodeAt(0))|0;k=Math.abs(k);
   return [k%6,[0x14141a,0x3a2414,0xa8401a,0xe8c84a,h.accent][k%5],['short','spiky','pony','curly','slick'][k%5],h.accent];}
 function geoKind(m){const g=m.geometry;if(!g)return '';const p=g.parameters||{};const t=g.type;
@@ -9155,7 +9332,8 @@ const VPROF={ // sex m/f · a: accent (us gb au in) · p: pitch · r: rate · v:
   hopstar:{sex:'f',a:'au',p:1.45,r:1.15,v:1.1},  // bright idol
   headliner:{sex:'m',a:'us',p:.92,r:1.02,v:1.15},// big American showman
   zanshin:{sex:'m',a:'us',p:.88,r:1.06,v:1.1},  // determined, protective
-  torrent:{sex:'m',a:'us',p:.72,r:.96,v:1.2}};  // booming, cocky
+  torrent:{sex:'m',a:'us',p:.72,r:.96,v:1.2},
+  heir:{sex:'m',a:'us',p:1.08,r:1.08,v:1.1}};  // earnest, determined  // booming, cocky
 // spread fighters across the installed voices so two fighters with the same gender/accent still sound different
 (function(){const n={};Object.keys(VPROF).forEach(k=>{const P=VPROF[k],key=P.sex+P.a;P.vi=n[key]=(n[key]||0)+1;});})();
 const ACC={us:/en[-_]US/i,gb:/en[-_]GB/i,au:/en[-_]AU/i,in:/en[-_]IN/i};
@@ -9178,7 +9356,8 @@ const VCRY={
   hopstar:'Showtime! Everybody, eyes on me!',
   headliner:'Smile for the cameras, folks — the star has arrived!',
   zanshin:'I\'ll protect them. No matter what!',
-  torrent:'Come on — show me you can take my full output!'};
+  torrent:'Come on — show me you can take my full output!',
+  heir:'Everyone who came before me — lend me your strength!'};
 const _vfOld=voiceFor;
 voiceFor=function(f){const P=VPROF[KIT(f.hero,'elem')];if(!P)return _vfOld(f);if(!VOICES.length)loadVoices();if(!VOICES.length)return null;
   const q=v=>(/natural|neural|online/i.test(v.name)?4:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
@@ -9420,7 +9599,7 @@ Fighter.prototype.physics=function(dt,fr,grav){if(SURGE.ev==='lowgrav'&&grav&&!t
 const VIG_SRC='My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)';
 const INSPIRED_SRC={zanshin:'Bleach by Tite Kubo',torrent:'Jujutsu Kaisen by Gege Akutami',oldguard:VIG_SRC,hopstar:VIG_SRC,headliner:VIG_SRC,skitter:'My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)'};
 const INSPIRED={solstice:'Shoto Todoroki',piston:'Tenya Iida',snare:'Shota Aizawa (Eraser Head)',marble:'Mr. Compress',legion:'Twice',recoil:'Lady Nagant',
-  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe',skitter:'Koichi Haimawari (The Crawler)',oldguard:'Knuckleduster',hopstar:'Pop☆Step (Kazuho Haneyama)',headliner:'Captain Celebrity',zanshin:'Ichigo Kurosaki',torrent:'Ryu Ishigori'};
+  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe',skitter:'Koichi Haimawari (The Crawler)',oldguard:'Knuckleduster',hopstar:'Pop☆Step (Kazuho Haneyama)',headliner:'Captain Celebrity',zanshin:'Ichigo Kurosaki',torrent:'Ryu Ishigori',heir:'Izuku Midoriya (Deku)'};
 // "Inspired by" note under a fighter's description
 const _previewHeroC=previewHero;
 previewHero=function(i){_previewHeroC(i);const h=heroAt(i),d=$('pvDesc');if(!d||!h||!INSPIRED[h.id])return;
@@ -10211,6 +10390,9 @@ const FORMS={
    sp:FA('STAGE DIVE','slam','sound','note',['stun']),alt:FA('HIGH NOTE','burst','sound','note',['stun'],{size:1.3}),x:[FA('MELODY SHOTS','volley','sound','note',[]),FA('BACKFLIP','blink','sound','note',[],{self:['haste']})],u:FA('FINALE','zone','sound','note',['stun'],{power:1.3})},
  headliner:{n:'SHOWTIME',d:'cameras rolling, maximum might',c:0xffd23f,a:0xff3a6a,s:[1.15,1.1,1],k:'jR jL jR up|dk|gold',
    sp:FA('STAR DIVE','dash','light','star',['launch']),alt:FA('AUTOGRAPH SHOT','bolt','light','star',['mark']),x:[FA('TOUCHDOWN','slam','light','star',['launch']),FA('SPOTLIGHT RING','orbit','light','star',[])],u:FA('PRIME TIME BEAM','beam','light','star',['launch'],{power:1.4})},
+ heir:{n:'FULL POWER',d:'past one hundred percent',c:0x2aff6a,a:0xff3a3a,s:[1.25,1.15,1.15],k:'hk lk hk sk ax|up|ofa',
+   sp:FA('FLICK CANNON','bolt','wind','ring',['push'],{size:1.6,speed:40}),alt:FA('SHOOT DIVE','slam','wind','ring',['launch']),
+   x:[FA('WHIP NET','grab','shadow','hand',['pull','stun']),FA('GEARSHIFT RUSH','dash','lightning','lightning',['launch'])],u:FA('HUNDRED PERCENT','burst','wind','fist',['launch','push'],{power:1.5,size:1.6})},
  torrent:{n:'FULL THROTTLE',d:'no holding back',c:0xffffff,a:0x2a8aff,s:[1.2,.95,1.1],k:'pa jR jR jL cm|cm|spirit',
    sp:FA('TORRENT BEAM','beam','spirit','orb',['push','launch'],{size:2.1,range:34,dur:1.5,power:1.25}),alt:FA('GATLING FINGERS','volley','spirit','bullet',['pierce'],{count:12,speed:56,power:1}),
    x:[FA('SHOCK OUTPUT','burst','lightning','ring',['stun']),FA('GROUND BLAST','pillar','spirit','orb',['launch'],{count:4})],u:FA('OVERLOAD CANNON','beam','spirit','orb',['launch','explode'],{size:2.6,range:40,dur:3.4,power:1.6})},
@@ -10398,7 +10580,7 @@ const _pwHit=applyHit;applyHit=function(att,def,o){
 // destruction around an impact point
 function smashArea(p,R,big){if(NET.role!=='client')props.forEach(pp=>{if(!pp.broken&&Math.hypot(pp.x-p.x,pp.z-p.z)<R+pp.r)breakProp(pp);});
   if(!nearCam(p,90))return;const g=TMP2.set(p.x,Math.max(.2,(p.y||0)+.2),p.z).clone();
-  crater(p.x,p.z,R*.6,null);dust(g,Math.round(8+R*4),1+R*.25);debris(TMP3.set(p.x,(p.y||0)+.6,p.z).clone(),Math.round(4+R*2.5),0,8+R*2,.3+R*.06);
+  crater(p.x,p.z,R*.6,null);dust(g,Math.min(28,Math.round(8+R*3)),1+Math.min(R,8)*.2);debris(TMP3.set(p.x,(p.y||0)+.6,p.z).clone(),Math.min(16,Math.round(4+R*1.6)),0,8+R*1.5,Math.min(.5,.25+R*.04));
   ring(TMP3.set(p.x,(p.y||0)+.15,p.z).clone(),0xd8ccb8,R*2.4,.5,true,1.2);
   // walls right next to the impact crack open
   for(let k=0;k<6;k++){const a=k/6*6.283,x=p.x+Math.cos(a)*(R*.6+.8),z=p.z+Math.sin(a)*(R*.6+.8);
@@ -10407,7 +10589,7 @@ function smashArea(p,R,big){if(NET.role!=='client')props.forEach(pp=>{if(!pp.bro
   if(big)xSnd(p,()=>{AU.boom(true);AU.crash&&AU.crash();});}
 onEv('hit',(att,def,dmg,o)=>{if(!def||!inMatch()||!(dmg>=13||(att&&att.state==='ult'&&dmg>=6)))return;const now=game.time;if(now-PW.lastT<.12)return;PW.lastT=now;
   const ult=att&&att.state==='ult';smashArea(def.pos.clone(),clamp(1.4+dmg*.09,2,5)*(ult?1.4:1),ult||dmg>=22);});
-onEv('ult',f=>{setTimeout(()=>{if(!inMatch()||f.dead)return;const p=f.pos.clone();smashArea(p,5.5,true);ring(TMP2.set(p.x,p.y+1,p.z).clone(),f.hero.color,9,.55,false,2.4);shake(.7,p);},420);});
+onEv('ult',f=>{if(f.hero&&f.hero.ult==='legacy')return;setTimeout(()=>{if(!inMatch()||f.dead)return;const p=f.pos.clone();smashArea(p,5.5,true);ring(TMP2.set(p.x,p.y+1,p.z).clone(),f.hero.color,9,.55,false,2.4);shake(.7,p);},420);});
 const _pwExp=explosion;explosion=function(pos,radius){const a=[...arguments];a[1]=(radius||1)*1.2;return _pwExp.apply(this,a);};
 /* MOTION — smoother, more fluid movement.
    · Fighters lean into their speed, bank into turns and pitch with acceleration (forward when speeding up,
@@ -10428,7 +10610,7 @@ Fighter.prototype.applyPose=function(dt){const r=_mvPose.apply(this,arguments);i
   return r;};
 // smoother camera trailing and a gentle speed FOV
 const _mvCam=updateCamera;updateCamera=function(dt){const p0=camera.position.clone();const r=_mvCam.apply(this,arguments);
-  if(inMatch()&&!game.cine&&ME&&!ME.dead){camera.position.lerpVectors(p0,camera.position,Math.min(1,.82+dt*2));camera.lookAt(camLook);}
+  if(inMatch()&&!game.cine&&!(typeof HCAM!=='undefined'&&HCAM.on)&&!(typeof DCAM!=='undefined'&&DCAM.on)&&ME&&!ME.dead){camera.position.lerpVectors(p0,camera.position,Math.min(1,.82+dt*2));camera.lookAt(camLook);}
   return r;};
 /* CINEMATIC MOVES — moves speak for themselves: no text pop-ups during fights, more weight and drama instead.
    With Cinematic Moves on (Settings, default on), during a match:
@@ -10461,10 +10643,112 @@ onEv('kill',(d,a)=>{if(SET.cinematic===false||NET.role!=='off'||!ME)return;if(a=
 function impactFlash(a,col){const e=$('impactFx');if(!e)return;e.style.setProperty('--c','#'+new THREE.Color(col).getHexString());e.style.setProperty('--a',a);e.classList.remove('on');void e.offsetWidth;e.classList.add('on');}
 const _ciCam=updateCamera;updateCamera=function(dt){const r=_ciCam.apply(this,arguments);
   if(CN.punch>.01){camera.fov-=CN.punch;camera.updateProjectionMatrix();CN.punch*=Math.exp(-dt*7);camera.fov+=CN.punch;camera.updateProjectionMatrix();}
-  const bars=$('cineBars');if(bars)bars.classList.toggle('on',!!(game.cine&&SET.cinematic!==false&&inMatch()));return r;};
+  const bars=$('cineBars');if(bars)bars.classList.toggle('on',!!((game.cine||(typeof HCAM!=='undefined'&&HCAM.on)||(typeof DCAM!=='undefined'&&DCAM.on))&&SET.cinematic!==false&&inMatch()));return r;};
 (function(){if(!$('impactFx')){const d=document.createElement('div');d.id='impactFx';document.body.appendChild(d);}
   if(!$('cineBars')){const d=document.createElement('div');d.id='cineBars';d.innerHTML='<i></i><i></i>';document.body.appendChild(d);}
   document.body.classList.toggle('cineM',SET.cinematic!==false);setInterval(()=>document.body.classList.toggle('cineM',SET.cinematic!==false),1000);})();
+/* SIGNATURES — every inspired fighter gets the HEIR treatment:
+   1) a constant signature look (like HEIR's green lightning) that says who they are at a glance
+   2) moves that didn't fit the inspiration replaced with ones that do
+   3) a directed cinematic for their ultimate: a slow close-up while it charges, then a wide shot of it landing,
+      letterbox bars, and the camera follows the impact (for the user and anyone within 35 m)
+   All original designs; inspirations are credited in credits.js. */
+const SIG_C={},nc=(f,R)=>nearCam(f.pos,R||38);
+function sHead(f){return f.chest(new V3()).add(TMP2.set(0,.55,0));}
+function sSide(f,s,up){const fw=f.fwd(),sd=new V3(fw.z,0,-fw.x).multiplyScalar(s);return f.chest(new V3()).add(sd).add(TMP2.set(0,up||0,0));}
+function pf(p,col,o){burst(o&&o.smk?SMK:ADD,p,1,Object.assign({colors:Array.isArray(col)?col:[col],speed:.6,up:1.5,life:.5,size:.18,size1:0,bright:2},o||{}));}
+const SIG={
+  // half ice, half fire: frost mist rises off his right side, embers off his left
+  solstice(f){if(Math.random()<.5)pf(sSide(f,-.3,rand(-.2,.4)),[0xcff4ff,0xffffff],{up:1.2,life:.6,size:.22});if(Math.random()<.5)pf(sSide(f,.3,rand(-.2,.4)),[0xff6a1a,0xffc04a],{up:2.4,life:.4,size:.18,bright:2.4});},
+  // engines in his calves: exhaust jets behind his legs while moving
+  piston(f){const sp=Math.hypot(f.vel.x,f.vel.z);if(sp<3||Math.random()>.8)return;const fw=f.fwd();for(const s of [-.14,.14]){const p=f.pos.clone().add(TMP2.set(fw.z*s-fw.x*.25,.45,-fw.x*s-fw.z*.25));
+    ADD.spawn(p.x,p.y,p.z,-fw.x*sp*.6,rand(0,.5),-fw.z*sp*.6,..._rgb(Math.random()<.5?0x8ad8ff:0xffffff,2),.18,.2,.02,0,0);}},
+  // red glowing eyes and floating hair while his stare is erasing someone
+  snare(f){const on=f.eyeT>(f._eyeP||0);f._eyeP=f.eyeT||0;if(!on)return;const h=sHead(f),fw=f.fwd(),sd=new V3(fw.z,0,-fw.x);
+    for(const s of [-.07,.07]){const e=h.clone().addScaledVector(fw,.2).addScaledVector(sd,s);pf(e,[0xff2a2a,0xffffff],{speed:.05,up:0,life:.12,size:.12,bright:3});}if(Math.random()<.3)pf(h.clone().add(TMP2.set(0,.25,0)),0x2a2a2a,{smk:1,up:1.5,life:.4,size:.12});},
+  // two compressed marbles orbit his hand
+  marble(f){if(!SIG_C.mb)SIG_C.mb=0;const h=limbPos(f,'r',new V3()),t=game.time*4;for(let k=0;k<2;k++){const a=t+k*Math.PI;const p=h.clone().add(TMP2.set(Math.cos(a)*.35,.15+Math.sin(a*1.3)*.1,Math.sin(a)*.35));pf(p,[0x6ad8ff,0xffffff],{speed:0,up:0,life:.07,size:.13,bright:2.6});}},
+  // unstable doubles: ghostly afterimages flicker off him when he moves fast
+  legion(f){const sp=Math.hypot(f.vel.x,f.vel.z);if(sp<6||Math.random()>.25)return;pf(f.chest(new V3()).add(TMP2.set(rand(-.3,.3),rand(-.6,.6),rand(-.3,.3))),[0x5affd8,0xd8d8ff],{speed:.3,up:0,life:.35,size:.5,bright:1.4});},
+  // a sniper's laser sight to her target, and a hot glow at the rifle arm
+  recoil(f){const h=limbPos(f,'r',new V3());if(Math.random()<.4)pf(h,[0xffd23f,0xff7a2a],{speed:.2,up:.3,life:.15,size:.1,bright:2.6});const T=f.tgt;
+    if(T&&!T.dead&&T.pos.distanceTo(f.pos)<45&&Math.random()<.35){const to=T.chest(new V3());bolt(h,to,0xff2a2a,.012,.06);pf(to,0xff2a2a,{speed:0,up:0,life:.08,size:.14,bright:3});}},
+  // blood drips from her hands
+  crimson(f){if(Math.random()<.25){const h=limbPos(f,Math.random()<.5?'r':'l',new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.5,rand(-.2,.2),..._rgb(0xc4102a,1.3),.6,.08,.06,-9,0);}},
+  // steel glints run along the blade bundle
+  sawback(f){if(Math.random()<.3){const h=limbPos(f,'r',new V3()).add(TMP2.set(rand(-.3,.3),rand(0,.8),rand(-.3,.3)));pf(h,[0xffffff,0xd8e0e8],{speed:.4,up:.2,life:.15,size:.12,bright:3});}},
+  // red restructuring cracks crawl over his hands
+  resect(f){if(Math.random()<.35){const h=limbPos(f,Math.random()<.5?'r':'l',new V3());const b=h.clone().add(TMP2.set(rand(-.25,.25),rand(-.25,.25),rand(-.25,.25)));bolt(h,b,0xff2a3a,.02,.1);}},
+  // stored kinetic energy glows inside him while he holds it
+  cushion(f){if(!(f.absT>0||f.stored>0)&&Math.random()>.12)return;pf(f.chest(new V3()).add(TMP2.set(rand(-.5,.5),rand(-.4,.4),rand(-.5,.5))),[0xffd23f,0xfff0a0],{speed:.4,up:.4,life:.4,size:.2,bright:2});},
+  // acid drips off her hands and feet and sizzles
+  corrosa(f){if(Math.random()<.3){const h=limbPos(f,pick(['r','l','f']),new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.3,rand(-.2,.2),..._rgb(pick([0x9aff3a,0xff6ad8]),1.6),.5,.09,.05,-8,0);}},
+  // a long blood-red scarf streams behind him
+  verdict(f){const sp=Math.hypot(f.vel.x,f.vel.z);const n=sHead(f).add(TMP2.set(0,-.35,0));if(f._vp&&(sp>2||Math.random()<.3)){const tail=f._vp.clone().add(TMP2.set(0,-.15,0));trailSeg(tail,n,0x9a0a1a,.09,.5);}f._vp=n;},
+  // stars sparkle around her
+  decree(f){if(Math.random()<.4){const a=Math.random()*6.28;pf(f.chest(new V3()).add(TMP2.set(Math.cos(a)*.8,rand(-.6,1),Math.sin(a)*.8)),[0xffffff,0xff4a5a,0x4a8aff],{speed:.2,up:.3,life:.45,size:.16,bright:2.8});}},
+  // skid streaks under his hands and feet when he's sliding fast
+  skitter(f){const sp=Math.hypot(f.vel.x,f.vel.z);if(sp<8||Math.random()>.7)return;const p=f.pos.clone().add(TMP2.set(rand(-.3,.3),.08,rand(-.3,.3)));pf(p,[0x2aff6a,0xffffff],{speed:.2,up:0,life:.3,size:.16,bright:2});if(Math.random()<.3)dust(f.pos,1,.4);},
+  // dust kicks up from his heavy steps; steam off his knuckles
+  oldguard(f){if(Math.random()<.15)pf(limbPos(f,Math.random()<.5?'r':'l',new V3()),[0xd8d8d8],{smk:1,up:.8,life:.6,size:.12,size1:.4});},
+  // music notes float off her as she moves
+  hopstar(f){if(Math.random()<.12)pf(f.chest(new V3()).add(TMP2.set(rand(-.6,.6),rand(.2,1),rand(-.6,.6))),[0xff6ad8,0x6af0ff,0xffffff],{speed:.3,up:1.2,life:.8,size:.22,bright:2.4});},
+  // celebrity glamour: sparkles and the odd camera flash
+  headliner(f){if(Math.random()<.25)pf(f.chest(new V3()).add(TMP2.set(rand(-.6,.6),rand(-.8,1),rand(-.6,.6))),[0xffd23f,0xffffff],{speed:.2,up:.4,life:.35,size:.14,bright:3});if(Math.random()<.01)flashLight(f.chest(new V3()),0xffffff,4);},
+  // spirit pressure rises off him (red-black while released)
+  zanshin(f){if(Math.random()<.45){const rel=f.relT>0;pf(f.pos.clone().add(TMP2.set(rand(-.5,.5),rand(0,1.6),rand(-.5,.5))),rel?[0xff2a2a,0x2a0a0a]:[0x9ad8ff,0xffffff],{speed:.2,up:2.6,life:.5,size:.2,bright:rel?1.6:2.2});}},
+  // raw output flickers off his fingertips
+  torrent(f){if(Math.random()<.4){const h=limbPos(f,Math.random()<.5?'r':'l',new V3());bolt(h,h.clone().add(TMP2.set(rand(-.3,.3),rand(-.3,.3),rand(-.3,.3))),0x9ad8ff,.025,.08);}}};
+onEv('tick',dt=>{for(const f of FS){if(f.dead||!nc(f))continue;const id=f.hero&&f.hero.id,fn=SIG[id];if(!fn)continue;try{fn(f,dt);}catch(e){}}});
+
+/* ---------- moves that now match the inspiration (custom extra moves, run by XCUSTOM in heir.js) ---------- */
+Object.assign(XCUSTOM,{
+  // SOLSTICE — GLACIER WALL: a towering wall of ice tears across the ground, freezing everyone it catches
+  icewall(f){const t=f.stateT,V=f.vf;if(!V.go){V.go=1;const T=tgtOf(f,20);if(T)faceTo(f,T);V.fw=f.fwd();V.o=f.pos.clone();V.d=1;V.hit={};shake(.35,f.pos);xSnd(f.pos,()=>{AU.boom(false);AU.whoosh(true);});}
+    f.poseKey=t<.15?'specw':'spech';const reach=Math.min(16,1+t*42);
+    while(V.d<reach){const p=V.o.clone().addScaledVector(V.fw,V.d),sd=new V3(V.fw.z,0,-V.fw.x);for(let k=-1;k<=1;k++){const q=p.clone().addScaledVector(sd,k*1.1);crag(q.x,q.z,(k?2.2:3.6)+V.d*.1+rand(0,.6),3.5,0xcff4ff);}
+      burst(ADD,p.clone().add(TMP2.set(0,1,0)),5,{colors:[0xcff4ff,0xffffff],speed:4,up:3,life:.5,size:.3,size1:0,bright:2});dust(p,2,.6);
+      for(const o of foes(f,3,p)){if(V.hit[o.id])continue;V.hit[o.id]=1;hitO(f,o,{dmg:12,kb:2,up:6,stun:1.3,freeze:1});}V.d+=1.3;}
+    if(t>.65)f.set(f.onGround?'idle':'air');return 10;},
+  // MARBLE — UNPACK: tosses a marble that unpacks into a burst of compressed rubble where it lands
+  unpack(f){const t=f.stateT,V=f.vf;if(!V.go){V.go=1;const T=tgtOf(f,18);if(T)faceTo(f,T);V.to=T?T.pos.clone():f.pos.clone().addScaledVector(f.fwd(),10);V.to.y=floorAt(V.to.x,V.to.z,f.pos.y+2);V.from=limbPos(f,'r',new V3());
+      V.m=new THREE.Mesh(new THREE.SphereGeometry(.16,12,10),new THREE.MeshStandardMaterial({color:0x6ad8ff,emissive:0x2a8aff,emissiveIntensity:1.2,roughness:.1}));scene.add(V.m);xSnd(f.pos,()=>AU.whoosh(false));}
+    f.poseKey=t<.12?'throwS':'spech';const k=Math.min(1,t/.45);if(V.m){V.m.position.lerpVectors(V.from,V.to,k);V.m.position.y+=Math.sin(k*Math.PI)*2.2;}
+    if(k>=1&&!V.pop){V.pop=1;if(V.m){scene.remove(V.m);V.m.geometry.dispose();V.m.material.dispose();V.m=null;}const p=V.to;
+      flashLight(p.clone().add(TMP2.set(0,1,0)),0x6ad8ff,10);ring(p.clone().add(TMP2.set(0,.6,0)),0x6ad8ff,3,.25,false,2.6);
+      if(typeof physRing==='function')physRing({style:'earth',size:1.1,c1:0x8a7a6a},p,2.4,9);debris(p.clone().add(TMP2.set(0,.8,0)),16,0,12,.5);shake(.4,p);xSnd(p,()=>{AU.boom(false);AU.crash&&AU.crash();});
+      for(const o of foes(f,3.6,p))hitO(f,o,{dmg:15,kb:10,up:8,stun:.6,launch:true});}
+    if(t>.75){if(V.m){scene.remove(V.m);V.m=null;}f.set(f.onGround?'idle':'air');}return 10;},
+  // RECOIL — CURVED SHOT: a round that bends through the air around cover to find its target
+  curve(f){const t=f.stateT,V=f.vf;f.poseKey='aim';if(!V.go){V.go=1;V.T=tgtOf(f,60)||nearestEnemy(f,60);if(V.T)faceTo(f,V.T);xSnd(f.pos,()=>{AU.gun?AU.gun():AU.boom(false);});}
+    if(t>.18&&!V.f){V.f=1;const a=limbPos(f,'r',new V3()),T=V.T,b=T&&!T.dead?T.chest(new V3()):a.clone().addScaledVector(f.fwd(),40);const fw=f.fwd(),sd=new V3(fw.z,0,-fw.x);
+      const mid=a.clone().lerp(b,.5).addScaledVector(sd,a.distanceTo(b)*.35*(Math.random()<.5?1:-1)).add(TMP2.set(0,a.distanceTo(b)*.18,0));const cv=new THREE.QuadraticBezierCurve3(a,mid,b);let prev=a;
+      for(let s=1;s<=14;s++){const p=cv.getPoint(s/14);trailSeg(prev,p,0xffd23f,.05,.35);prev=p;}burst(ADD,b,16,{colors:[0xffd23f,0xffffff],speed:7,life:.3,size:.3,size1:0,bright:2.6});
+      if(T&&!T.dead)hitO(f,T,{dmg:18,kb:8,up:3,stun:.5,mark:1});}
+    if(t>.5)f.set(f.onGround?'idle':'air');return 10;}});
+// assign them to the fighters' extra-move slots (and fix Corrosa's doubled Acid Pool → Acid Shot)
+(function(){const ab=(h,o)=>sanitizeAbil(Object.assign({colors:[h.color,h.accent]},o));
+  const SET1=[['solstice',1,{name:'GLACIER WALL',form:'wave',style:'ice',shape:'snowflake',fx:['freeze']},'icewall'],['marble',0,{name:'UNPACK',form:'bolt',style:'crystal',shape:'orb',fx:[]},'unpack'],
+    ['recoil',0,{name:'CURVED SHOT',form:'bolt',style:'metal',shape:'bullet',fx:[]},'curve']];
+  for(const [id,i,o,c] of SET1){const h=HEROES.find(x=>x.id===id);if(!h)continue;const L=xMoves(h);L[i]=Object.assign(ab(h,o),{custom:c});}
+  const C=HEROES.find(x=>x.id==='corrosa');if(C){const L=xMoves(C);L[0]=ab(C,{name:'ACID SHOT',form:'volley',style:'poison',shape:'bubble',fx:['poison'],count:4});}})();
+
+/* ---------- directed ultimates ---------- */
+const DCAM={on:false};
+const DCAM_SKIP={heir:1};   // HEIR has his own director
+onEv('ult',f=>{if(!f||!f.hero||!INSPIRED[f.hero.id]||DCAM_SKIP[f.hero.id]||SET.cinematic===false||!ME)return;if(f!==ME&&f.pos.distanceTo(ME.pos)>35)return;
+  const T=tgtOf(f,30);DCAM.on=true;DCAM.f=f;DCAM.t0=game.time;DCAM.T=T;DCAM.hit=null;DCAM.side=Math.random()<.5?1:-1;});
+onEv('hit',(a,d)=>{if(DCAM.on&&a===DCAM.f&&a.state==='ult'&&!DCAM.hit){DCAM.hit=d;DCAM.hitT=game.time;}});
+const _dcCam=updateCamera;updateCamera=function(dt){const r=_dcCam.apply(this,arguments);if(!DCAM.on)return r;const f=DCAM.f,e=game.time-DCAM.t0;
+  if(!f||f.dead||!inMatch()||e>4||(e>.6&&f.state!=='ult')){DCAM.on=false;return r;}
+  const fw=f.fwd(),sd=new V3(fw.z,0,-fw.x).multiplyScalar(DCAM.side),c=f.chest(new V3());let pos,look,fov;
+  if(e<.9){const a=.6+e*1.1;pos=c.clone().addScaledVector(fw,Math.cos(a)*5.8).addScaledVector(sd,Math.sin(a)*5.8).add(TMP2.set(0,.1,0));look=c;fov=46;}
+  else{const tgt=DCAM.hit&&!DCAM.hit.dead?DCAM.hit.pos:DCAM.T&&!DCAM.T.dead?DCAM.T.pos:f.pos.clone().addScaledVector(fw,9);const mid=f.pos.clone().lerp(tgt,.5),span=Math.max(6,f.pos.distanceTo(tgt));
+    pos=mid.clone().addScaledVector(sd,span*.9+5).addScaledVector(fw,-span*.25).add(TMP2.set(0,3.5+span*.12,0));look=mid.clone().add(TMP2.set(0,1.2,0));fov=DCAM.hit&&game.time-DCAM.hitT<.25?56:64;}
+  {const kk=rayBld(look,pos,16);if(kk<1)pos=look.clone().lerp(pos,Math.max(.3,kk*.9));}
+  const k=1-Math.exp(-(e<.9?12:5)*dt);camera.position.lerp(pos,k);camera.lookAt(look);camera.fov=lerp(camera.fov,fov,k);camera.updateProjectionMatrix();
+  const bars=$('cineBars');if(bars)bars.classList.add('on');return r;};
+onEv('matchEnd',()=>{DCAM.on=false;});
 /* Starts the game. Loaded last, after every other file. */
 buildGfx();if(!GFX.high)lampConeMat.visible=false;initPreview();makePortraits();$('load').style.display='none';showScreen('title');loop();
 })();

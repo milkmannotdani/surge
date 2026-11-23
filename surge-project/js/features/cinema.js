@@ -29,7 +29,7 @@ onEv('kill',(d,a)=>{if(SET.cinematic===false||NET.role!=='off'||!ME)return;if(a=
 function impactFlash(a,col){const e=$('impactFx');if(!e)return;e.style.setProperty('--c','#'+new THREE.Color(col).getHexString());e.style.setProperty('--a',a);e.classList.remove('on');void e.offsetWidth;e.classList.add('on');}
 const _ciCam=updateCamera;updateCamera=function(dt){const r=_ciCam.apply(this,arguments);
   if(CN.punch>.01){camera.fov-=CN.punch;camera.updateProjectionMatrix();CN.punch*=Math.exp(-dt*7);camera.fov+=CN.punch;camera.updateProjectionMatrix();}
-  const bars=$('cineBars');if(bars)bars.classList.toggle('on',!!(game.cine&&SET.cinematic!==false&&inMatch()));return r;};
+  const bars=$('cineBars');if(bars)bars.classList.toggle('on',!!((game.cine||(typeof HCAM!=='undefined'&&HCAM.on)||(typeof DCAM!=='undefined'&&DCAM.on))&&SET.cinematic!==false&&inMatch()));return r;};
 (function(){if(!$('impactFx')){const d=document.createElement('div');d.id='impactFx';document.body.appendChild(d);}
   if(!$('cineBars')){const d=document.createElement('div');d.id='cineBars';d.innerHTML='<i></i><i></i>';document.body.appendChild(d);}
   document.body.classList.toggle('cineM',SET.cinematic!==false);setInterval(()=>document.body.classList.toggle('cineM',SET.cinematic!==false),1000);})();

@@ -17,5 +17,5 @@ Fighter.prototype.applyPose=function(dt){const r=_mvPose.apply(this,arguments);i
   return r;};
 // smoother camera trailing and a gentle speed FOV
 const _mvCam=updateCamera;updateCamera=function(dt){const p0=camera.position.clone();const r=_mvCam.apply(this,arguments);
-  if(inMatch()&&!game.cine&&ME&&!ME.dead){camera.position.lerpVectors(p0,camera.position,Math.min(1,.82+dt*2));camera.lookAt(camLook);}
+  if(inMatch()&&!game.cine&&!(typeof HCAM!=='undefined'&&HCAM.on)&&!(typeof DCAM!=='undefined'&&DCAM.on)&&ME&&!ME.dead){camera.position.lerpVectors(p0,camera.position,Math.min(1,.82+dt*2));camera.lookAt(camLook);}
   return r;};

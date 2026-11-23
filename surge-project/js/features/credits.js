@@ -6,7 +6,7 @@
 const VIG_SRC='My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)';
 const INSPIRED_SRC={zanshin:'Bleach by Tite Kubo',torrent:'Jujutsu Kaisen by Gege Akutami',oldguard:VIG_SRC,hopstar:VIG_SRC,headliner:VIG_SRC,skitter:'My Hero Academia: Vigilantes by Hideyuki Furuhashi & Betten Court (based on Kōhei Horikoshi\'s series)'};
 const INSPIRED={solstice:'Shoto Todoroki',piston:'Tenya Iida',snare:'Shota Aizawa (Eraser Head)',marble:'Mr. Compress',legion:'Twice',recoil:'Lady Nagant',
-  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe',skitter:'Koichi Haimawari (The Crawler)',oldguard:'Knuckleduster',hopstar:'Pop☆Step (Kazuho Haneyama)',headliner:'Captain Celebrity',zanshin:'Ichigo Kurosaki',torrent:'Ryu Ishigori'};
+  crimson:'Himiko Toga',sawback:'Spinner',resect:'Overhaul',cushion:'Fat Gum',corrosa:'Mina Ashido',verdict:'Stain (the Hero Killer)',decree:'Star and Stripe',skitter:'Koichi Haimawari (The Crawler)',oldguard:'Knuckleduster',hopstar:'Pop☆Step (Kazuho Haneyama)',headliner:'Captain Celebrity',zanshin:'Ichigo Kurosaki',torrent:'Ryu Ishigori',heir:'Izuku Midoriya (Deku)'};
 // "Inspired by" note under a fighter's description
 const _previewHeroC=previewHero;
 previewHero=function(i){_previewHeroC(i);const h=heroAt(i),d=$('pvDesc');if(!d||!h||!INSPIRED[h.id])return;

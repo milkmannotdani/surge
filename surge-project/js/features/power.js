@@ -13,7 +13,7 @@ const _pwHit=applyHit;applyHit=function(att,def,o){
 // destruction around an impact point
 function smashArea(p,R,big){if(NET.role!=='client')props.forEach(pp=>{if(!pp.broken&&Math.hypot(pp.x-p.x,pp.z-p.z)<R+pp.r)breakProp(pp);});
   if(!nearCam(p,90))return;const g=TMP2.set(p.x,Math.max(.2,(p.y||0)+.2),p.z).clone();
-  crater(p.x,p.z,R*.6,null);dust(g,Math.round(8+R*4),1+R*.25);debris(TMP3.set(p.x,(p.y||0)+.6,p.z).clone(),Math.round(4+R*2.5),0,8+R*2,.3+R*.06);
+  crater(p.x,p.z,R*.6,null);dust(g,Math.min(28,Math.round(8+R*3)),1+Math.min(R,8)*.2);debris(TMP3.set(p.x,(p.y||0)+.6,p.z).clone(),Math.min(16,Math.round(4+R*1.6)),0,8+R*1.5,Math.min(.5,.25+R*.04));
   ring(TMP3.set(p.x,(p.y||0)+.15,p.z).clone(),0xd8ccb8,R*2.4,.5,true,1.2);
   // walls right next to the impact crack open
   for(let k=0;k<6;k++){const a=k/6*6.283,x=p.x+Math.cos(a)*(R*.6+.8),z=p.z+Math.sin(a)*(R*.6+.8);
@@ -22,5 +22,5 @@ function smashArea(p,R,big){if(NET.role!=='client')props.forEach(pp=>{if(!pp.bro
   if(big)xSnd(p,()=>{AU.boom(true);AU.crash&&AU.crash();});}
 onEv('hit',(att,def,dmg,o)=>{if(!def||!inMatch()||!(dmg>=13||(att&&att.state==='ult'&&dmg>=6)))return;const now=game.time;if(now-PW.lastT<.12)return;PW.lastT=now;
   const ult=att&&att.state==='ult';smashArea(def.pos.clone(),clamp(1.4+dmg*.09,2,5)*(ult?1.4:1),ult||dmg>=22);});
-onEv('ult',f=>{setTimeout(()=>{if(!inMatch()||f.dead)return;const p=f.pos.clone();smashArea(p,5.5,true);ring(TMP2.set(p.x,p.y+1,p.z).clone(),f.hero.color,9,.55,false,2.4);shake(.7,p);},420);});
+onEv('ult',f=>{if(f.hero&&f.hero.ult==='legacy')return;setTimeout(()=>{if(!inMatch()||f.dead)return;const p=f.pos.clone();smashArea(p,5.5,true);ring(TMP2.set(p.x,p.y+1,p.z).clone(),f.hero.color,9,.55,false,2.4);shake(.7,p);},420);});
 const _pwExp=explosion;explosion=function(pos,radius){const a=[...arguments];a[1]=(radius||1)*1.2;return _pwExp.apply(this,a);};
