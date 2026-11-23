@@ -26,6 +26,7 @@ js/
     projshape.js      projectile looks per fighter (PROJ_SIG) and per extra move (PROJ_MOVE)
     uniqatk.js        unique light combo + heavy per fighter (UATK, built from TPL move templates; UATK_KEEP keeps old chains)
     torrent.js        TORRENT (inspired by Ryu Ishigori, Jujutsu Kaisen — Gege Akutami): huge steerable output beams, finger guns
+    movefx.js         real rock/ice for ground moves (waves, pillars, slams, bursts) and full-size styled cone attacks (flame torrents, slash storms, fist flurries…)
     customvoice.js    CUSTOM SOUNDS: player-added voice clips per fighter (ult/kill/hurt/win/theme) and music (menu/battle/boss/victory), IndexedDB only; SET.ultSfx gates built-in ult sounds
     clips.js          CLIPS: F8 record, F9 instant replay (two staggered MediaRecorders), auto KO/win highlights, gallery with trim/download/share (IndexedDB)
     secret.js         SECRET: press every letter A–Z on the title screen to unlock everything and max out every fighter

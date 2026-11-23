@@ -98,11 +98,12 @@ function updateCab(dt){
     else if(w.type==='rain'){w.n-=dt;while(w.n<=0&&w.left>0){w.n+=w.dur/w.cnt;w.left--;const a=rand(0,6.28),r=Math.sqrt(Math.random())*w.R;
         cabProj(f,A,w.mul,1/w.cnt*1.4,new V3(w.p.x+Math.cos(a)*r,16+rand(0,3),w.p.z+Math.sin(a)*r),new V3(rand(-.1,.1),-1,rand(-.1,.1)),30,{grav:6,life:3,pierce:true});}
       if(Math.random()<.4)ring(TMP.set(w.p.x,.15,w.p.z),A.c1,w.R*2,.3,true,1.4);end=w.left<=0;}
-    else if(w.type==='pillar'){if(!w.done&&w.t>w.delay){w.done=1;const p=w.p;for(let k=0;k<6;k++)burst(ADD,TMP.set(p.x,k*.8,p.z),8,{colors:[A.c1,A.c2,0xffffff],speed:3,up:6,life:.6,size:.5,bright:2.4});
+    else if(w.type==='pillar'){if(!w.done&&w.t>w.delay&&isPhys(A)){w.done=1;physPillar(A,w.p,w.mul>1.5);foes(f,2.2*A.size,w.p).forEach(o=>cabHit(f,o,A,w.mul,w.share,null,{last:true}));}
+      else if(!w.done&&w.t>w.delay){w.done=1;const p=w.p;for(let k=0;k<6;k++)burst(ADD,TMP.set(p.x,k*.8,p.z),8,{colors:[A.c1,A.c2,0xffffff],speed:3,up:6,life:.6,size:.5,bright:2.4});
         explosion(TMP.set(p.x,1.5,p.z).clone(),1.8*A.size,[A.c1,A.c2]);if(A.style==='earth'||A.style==='plant'||A.style==='crystal'||A.style==='ice')spike(p.x,p.z,1.4*A.size);
-        foes(f,2.2*A.size,p).forEach(o=>cabHit(f,o,A,w.mul,w.share,null,{last:true}));}else if(!w.done&&Math.random()<.6)ring(TMP.set(w.p.x,.15,w.p.z),A.c1,2*A.size,.25,true,2);end=w.t>w.delay+.1;}
+        foes(f,2.2*A.size,p).forEach(o=>cabHit(f,o,A,w.mul,w.share,null,{last:true}));}else if(!w.done&&Math.random()<.6){if(isPhys(A)){dust(w.p,1,.6);if(Math.random()<.3)debris(TMP.set(w.p.x,.2,w.p.z).clone(),1,0,3,.25);}else ring(TMP.set(w.p.x,.15,w.p.z),A.c1,2*A.size,.25,true,2);}end=w.t>w.delay+.1;}
     else if(w.type==='wave'){const adv=w.spd*dt;w.d+=adv;const p=TMP.copy(w.o).addScaledVector(w.dir,w.d);if(w.mesh){w.mesh.position.set(p.x,0,p.z);w.mesh.material.opacity=Math.max(0,.7-w.d/w.L*.6);}
-      if(insideBld(p.x,p.z,0,.5))end=true;for(let k=0;k<3;k++)burst(ADD,TMP2.set(p.x+w.dir.z*rand(-w.W,w.W),.3,p.z-w.dir.x*rand(-w.W,w.W)),1,{colors:[A.c1,A.c2],speed:1,up:3,life:.4,size:.5,bright:2});
+      if(insideBld(p.x,p.z,0,.5))end=true;if(w.phys)physWaveStep(w,p);else for(let k=0;k<3;k++)burst(ADD,TMP2.set(p.x+w.dir.z*rand(-w.W,w.W),.3,p.z-w.dir.x*rand(-w.W,w.W)),1,{colors:[A.c1,A.c2],speed:1,up:3,life:.4,size:.5,bright:2});
       for(const o of FS){if(o.dead||ally(o,f)||w.hit[o.id])continue;const rx=o.pos.x-w.o.x,rz=o.pos.z-w.o.z,al=rx*w.dir.x+rz*w.dir.z,lt=Math.abs(rx*w.dir.z-rz*w.dir.x);
         if(Math.abs(al-w.d)<1.2&&lt<w.W&&o.pos.y<3){w.hit[o.id]=1;cabHit(f,o,A,w.mul,1,null,{last:true});}}end=end||w.d>w.L;}
     else if(w.type==='orbit'){const n=w.meshes.length;w.meshes.forEach((m,k)=>{const a=w.t*3.2+k/n*6.28;m.position.set(f.pos.x+Math.cos(a)*w.R,f.pos.y+1.1+Math.sin(w.t*4+k)*.25,f.pos.z+Math.sin(a)*w.R);m.rotation.y+=dt*6;
@@ -128,9 +129,9 @@ function cabTick(f,A,t,dt,mul,tier){const u=tier==='ult',sz=u?1.5:1,vf=f.vf,fw=f
       if(!vf.bt||t-vf.bt>.1){vf.bt=t;lineFoes(f,f.pos,fw,L,1+A.size*.6*sz).forEach(o=>cabHit(f,o,A,mul,.1/D,null,{hold:true,tick:true}));const e=c.clone().addScaledVector(fw,L);burst(ADD,e,6,{colors:[A.c1,A.c2,0xffffff],speed:5,life:.3,size:.35,bright:2.4});}
       f.poseKey='spech';if(t>D&&vf.beam){scene.remove(vf.beam);vf.beam=null;}return {fr:14,end:D+.15};}
     case 'wave':if(first){const W=1.6*A.size*sz;const m=new THREE.Mesh(cg('cab_wave',()=>{const q=new THREE.PlaneGeometry(1,1);q.translate(0,.5,0);return q;}),addMat(A.c1,1.6,.7));m.scale.set(W*2,1.6*A.size*sz,1);m.rotation.y=Math.atan2(fw.x,fw.z);scene.add(m);
-        CABW.push({type:'wave',f,A,mul,t:0,dur:4,o:f.pos.clone(),dir:fw.clone(),d:.5,L:A.range*(u?1.4:1),W,spd:Math.max(14,A.speed*.7),hit:{},mesh:m});dust(f.pos,10,1);}
+        CABW.push({type:'wave',f,A,mul,t:0,dur:4,o:f.pos.clone(),dir:fw.clone(),d:.5,L:A.range*(u?1.4:1),W,spd:Math.max(14,A.speed*.7),hit:{},mesh:m,phys:isPhys(A)});if(isPhys(A))m.visible=false;dust(f.pos,10,1);}
       f.poseKey='smashh';return {fr:12,end:.4};
-    case 'burst':if(first){const R=3.2*A.size*sz;explosion(c,R*.8,[A.c1,A.c2,0xffffff]);ring(TMP.set(f.pos.x,.2,f.pos.z).clone(),A.c1,R*2,.45,true,2.4);if(u){screenFlash(.35,f.pos);shake(.9,f.pos);}
+    case 'burst':if(first){const R=3.2*A.size*sz;if(isPhys(A))physRing(A,f.pos,R*.7,12);else explosion(c,R*.8,[A.c1,A.c2,0xffffff]);ring(TMP.set(f.pos.x,.2,f.pos.z).clone(),A.c1,R*2,.45,true,2.4);if(u){screenFlash(.35,f.pos);shake(.9,f.pos);}
         foes(f,R).forEach(o=>cabHit(f,o,A,mul,1,null,{last:true}));}f.poseKey='spech';return {fr:12,end:.45};
     case 'zone':if(first){const p=cabTarget(f,A,A.range*(u?1.3:1));const R=2.8*A.size*sz;const m=new THREE.Mesh(cg('cab_zone',()=>{const q=new THREE.RingGeometry(.92,1,64);return q;}),addMat(A.c1,1.6,.5));
         m.rotation.x=-Math.PI/2;m.position.set(p.x,.06,p.z);m.scale.setScalar(R);scene.add(m);CABW.push({type:'zone',f,A,mul,t:0,dur:A.dur*(u?1.4:1),p,R,n:0,mesh:m});orb(TMP.set(p.x,1,p.z).clone(),A.c1,R*.6,.4,1.6);}
@@ -153,8 +154,7 @@ function cabTick(f,A,t,dt,mul,tier){const u=tier==='ult',sz=u?1.5:1,vf=f.vf,fw=f
       if(t>.38&&!vf.h){vf.h=1;if(T&&!T.dead&&T.pos.distanceTo(f.pos)<3.4)cabHit(f,T,A,mul,.7,null,{last:true});}f.poseKey=t<.38?'command':'heavyh';return {fr:10,end:.7};}
     case 'orbit':if(first){const n=clamp(cnt,2,8),ms=[];for(let k=0;k<n;k++){const m=cabMesh(A,.8*A.size,f);scene.add(m);ms.push(m);}CABW.push({type:'orbit',f,A,mul,t:0,dur:A.dur*(u?1.5:1),R:1.6*A.size*sz,meshes:ms,cd:{}});}
       f.poseKey='command';return {fr:12,end:.35};
-    case 'cone':{const D=Math.min(1.4,A.dur||.9)*(u?1.4:1),R=Math.min(A.range,9)*(u?1.3:1);if(t<D){for(let q=0;q<6;q++){const a=rand(-.45,.45),d=fw.clone().applyAxisAngle(UP,a),sp=rand(R*1.2,R*2);
-          ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(-.5,1.2),d.z*sp,..._rgb(pick([A.c1,A.c2]),1.8),.45,.3*A.size,1.2,0,0);}
+    case 'cone':{const D=Math.min(1.4,A.dur||.9)*(u?1.4:1),R=clamp(A.range,10,15)*(u?1.3:1);if(t<D){coneFX(f,A,c,fw,R,t,D,vf,first,dt);
         if(!vf.bt||t-vf.bt>.12){vf.bt=t;foes(f,R,f.pos,.6).forEach(o=>cabHit(f,o,A,mul,.12/D,null,{hold:true,tick:true}));}}
       f.poseKey='spech';return {fr:12,end:D+.1};}
     case 'shield':{const D=1.1*(u?1.8:1);if(first){f.armorT=Math.max(f.armorT,D+1.5);ring(c,A.c1,2.6,.4,false,2.6);}if(t<D){reflectProjs(f,3.8);for(const p of CABP){if(!ally(p.f,f)&&p.pos.distanceTo(f.pos)<3.8){p.vel.negate();p.f=f;p.hit={};}}
@@ -163,7 +163,7 @@ function cabTick(f,A,t,dt,mul,tier){const u=tier==='ult',sz=u?1.5:1,vf=f.vf,fw=f
     case 'buff':{if(first){f.powT=Math.max(f.powT||0,5*(u?1.6:1));f.hasteT=Math.max(f.hasteT||0,5*(u?1.6:1));f.auraC=A.c1;ring(c,A.c1,3,.4,false,2.6);flashLight(c,A.c1,10);if(u)cabAoE(f,A,mul,1,f.pos,3.5,{last:true});}
       f.poseKey='charge';return {fr:12,end:.45};}
     case 'slam':{if(first){f.vel.set(fw.x*6,u?16:12,fw.z*6);f.onGround=false;f.pos.y+=.1;}
-      if(!vf.h)f.cabSwing=true;if(!vf.h&&t>.25&&f.onGround){vf.h=1;vf.ht=t;const p=f.pos.clone();explosion(TMP.set(p.x,.8,p.z).clone(),2.4*A.size*sz,[A.c1,A.c2,0xffffff]);dust(p,18,1.5);shake(u?1:.5,p);cabAoE(f,A,mul,1,p,3.4*A.size*sz,{last:true});}
+      if(!vf.h)f.cabSwing=true;if(!vf.h&&t>.25&&f.onGround){vf.h=1;vf.ht=t;const p=f.pos.clone();if(isPhys(A))physRing(A,p,2.4*A.size*sz,10);else explosion(TMP.set(p.x,.8,p.z).clone(),2.4*A.size*sz,[A.c1,A.c2,0xffffff]);dust(p,18,1.5);shake(u?1:.5,p);cabAoE(f,A,mul,1,p,3.4*A.size*sz,{last:true});}
       f.poseKey=vf.h?'slamLand':'slamAir';return {fr:vf.h?12:0,end:vf.h?vf.ht+.25:2.2};}
     case 'summon':if(first){const p=f.pos.clone().addScaledVector(fw,2);p.y=1.2;const m=cabMesh(A,1.3*A.size,f);m.position.copy(p);scene.add(m);const D=A.dur*(u?1.5:1);
         CABW.push({type:'summon',f,A,mul,share:.45/D*1.3,t:0,dur:D,p,n:.3,mesh:m});burst(ADD,p,30,{colors:[A.c1,A.c2,0xffffff],speed:5,life:.5,size:.35,bright:2.4});}

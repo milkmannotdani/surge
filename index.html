@@ -3760,11 +3760,12 @@ function updateCab(dt){
     else if(w.type==='rain'){w.n-=dt;while(w.n<=0&&w.left>0){w.n+=w.dur/w.cnt;w.left--;const a=rand(0,6.28),r=Math.sqrt(Math.random())*w.R;
         cabProj(f,A,w.mul,1/w.cnt*1.4,new V3(w.p.x+Math.cos(a)*r,16+rand(0,3),w.p.z+Math.sin(a)*r),new V3(rand(-.1,.1),-1,rand(-.1,.1)),30,{grav:6,life:3,pierce:true});}
       if(Math.random()<.4)ring(TMP.set(w.p.x,.15,w.p.z),A.c1,w.R*2,.3,true,1.4);end=w.left<=0;}
-    else if(w.type==='pillar'){if(!w.done&&w.t>w.delay){w.done=1;const p=w.p;for(let k=0;k<6;k++)burst(ADD,TMP.set(p.x,k*.8,p.z),8,{colors:[A.c1,A.c2,0xffffff],speed:3,up:6,life:.6,size:.5,bright:2.4});
+    else if(w.type==='pillar'){if(!w.done&&w.t>w.delay&&isPhys(A)){w.done=1;physPillar(A,w.p,w.mul>1.5);foes(f,2.2*A.size,w.p).forEach(o=>cabHit(f,o,A,w.mul,w.share,null,{last:true}));}
+      else if(!w.done&&w.t>w.delay){w.done=1;const p=w.p;for(let k=0;k<6;k++)burst(ADD,TMP.set(p.x,k*.8,p.z),8,{colors:[A.c1,A.c2,0xffffff],speed:3,up:6,life:.6,size:.5,bright:2.4});
         explosion(TMP.set(p.x,1.5,p.z).clone(),1.8*A.size,[A.c1,A.c2]);if(A.style==='earth'||A.style==='plant'||A.style==='crystal'||A.style==='ice')spike(p.x,p.z,1.4*A.size);
-        foes(f,2.2*A.size,p).forEach(o=>cabHit(f,o,A,w.mul,w.share,null,{last:true}));}else if(!w.done&&Math.random()<.6)ring(TMP.set(w.p.x,.15,w.p.z),A.c1,2*A.size,.25,true,2);end=w.t>w.delay+.1;}
+        foes(f,2.2*A.size,p).forEach(o=>cabHit(f,o,A,w.mul,w.share,null,{last:true}));}else if(!w.done&&Math.random()<.6){if(isPhys(A)){dust(w.p,1,.6);if(Math.random()<.3)debris(TMP.set(w.p.x,.2,w.p.z).clone(),1,0,3,.25);}else ring(TMP.set(w.p.x,.15,w.p.z),A.c1,2*A.size,.25,true,2);}end=w.t>w.delay+.1;}
     else if(w.type==='wave'){const adv=w.spd*dt;w.d+=adv;const p=TMP.copy(w.o).addScaledVector(w.dir,w.d);if(w.mesh){w.mesh.position.set(p.x,0,p.z);w.mesh.material.opacity=Math.max(0,.7-w.d/w.L*.6);}
-      if(insideBld(p.x,p.z,0,.5))end=true;for(let k=0;k<3;k++)burst(ADD,TMP2.set(p.x+w.dir.z*rand(-w.W,w.W),.3,p.z-w.dir.x*rand(-w.W,w.W)),1,{colors:[A.c1,A.c2],speed:1,up:3,life:.4,size:.5,bright:2});
+      if(insideBld(p.x,p.z,0,.5))end=true;if(w.phys)physWaveStep(w,p);else for(let k=0;k<3;k++)burst(ADD,TMP2.set(p.x+w.dir.z*rand(-w.W,w.W),.3,p.z-w.dir.x*rand(-w.W,w.W)),1,{colors:[A.c1,A.c2],speed:1,up:3,life:.4,size:.5,bright:2});
       for(const o of FS){if(o.dead||ally(o,f)||w.hit[o.id])continue;const rx=o.pos.x-w.o.x,rz=o.pos.z-w.o.z,al=rx*w.dir.x+rz*w.dir.z,lt=Math.abs(rx*w.dir.z-rz*w.dir.x);
         if(Math.abs(al-w.d)<1.2&&lt<w.W&&o.pos.y<3){w.hit[o.id]=1;cabHit(f,o,A,w.mul,1,null,{last:true});}}end=end||w.d>w.L;}
     else if(w.type==='orbit'){const n=w.meshes.length;w.meshes.forEach((m,k)=>{const a=w.t*3.2+k/n*6.28;m.position.set(f.pos.x+Math.cos(a)*w.R,f.pos.y+1.1+Math.sin(w.t*4+k)*.25,f.pos.z+Math.sin(a)*w.R);m.rotation.y+=dt*6;
@@ -3790,9 +3791,9 @@ function cabTick(f,A,t,dt,mul,tier){const u=tier==='ult',sz=u?1.5:1,vf=f.vf,fw=f
       if(!vf.bt||t-vf.bt>.1){vf.bt=t;lineFoes(f,f.pos,fw,L,1+A.size*.6*sz).forEach(o=>cabHit(f,o,A,mul,.1/D,null,{hold:true,tick:true}));const e=c.clone().addScaledVector(fw,L);burst(ADD,e,6,{colors:[A.c1,A.c2,0xffffff],speed:5,life:.3,size:.35,bright:2.4});}
       f.poseKey='spech';if(t>D&&vf.beam){scene.remove(vf.beam);vf.beam=null;}return {fr:14,end:D+.15};}
     case 'wave':if(first){const W=1.6*A.size*sz;const m=new THREE.Mesh(cg('cab_wave',()=>{const q=new THREE.PlaneGeometry(1,1);q.translate(0,.5,0);return q;}),addMat(A.c1,1.6,.7));m.scale.set(W*2,1.6*A.size*sz,1);m.rotation.y=Math.atan2(fw.x,fw.z);scene.add(m);
-        CABW.push({type:'wave',f,A,mul,t:0,dur:4,o:f.pos.clone(),dir:fw.clone(),d:.5,L:A.range*(u?1.4:1),W,spd:Math.max(14,A.speed*.7),hit:{},mesh:m});dust(f.pos,10,1);}
+        CABW.push({type:'wave',f,A,mul,t:0,dur:4,o:f.pos.clone(),dir:fw.clone(),d:.5,L:A.range*(u?1.4:1),W,spd:Math.max(14,A.speed*.7),hit:{},mesh:m,phys:isPhys(A)});if(isPhys(A))m.visible=false;dust(f.pos,10,1);}
       f.poseKey='smashh';return {fr:12,end:.4};
-    case 'burst':if(first){const R=3.2*A.size*sz;explosion(c,R*.8,[A.c1,A.c2,0xffffff]);ring(TMP.set(f.pos.x,.2,f.pos.z).clone(),A.c1,R*2,.45,true,2.4);if(u){screenFlash(.35,f.pos);shake(.9,f.pos);}
+    case 'burst':if(first){const R=3.2*A.size*sz;if(isPhys(A))physRing(A,f.pos,R*.7,12);else explosion(c,R*.8,[A.c1,A.c2,0xffffff]);ring(TMP.set(f.pos.x,.2,f.pos.z).clone(),A.c1,R*2,.45,true,2.4);if(u){screenFlash(.35,f.pos);shake(.9,f.pos);}
         foes(f,R).forEach(o=>cabHit(f,o,A,mul,1,null,{last:true}));}f.poseKey='spech';return {fr:12,end:.45};
     case 'zone':if(first){const p=cabTarget(f,A,A.range*(u?1.3:1));const R=2.8*A.size*sz;const m=new THREE.Mesh(cg('cab_zone',()=>{const q=new THREE.RingGeometry(.92,1,64);return q;}),addMat(A.c1,1.6,.5));
         m.rotation.x=-Math.PI/2;m.position.set(p.x,.06,p.z);m.scale.setScalar(R);scene.add(m);CABW.push({type:'zone',f,A,mul,t:0,dur:A.dur*(u?1.4:1),p,R,n:0,mesh:m});orb(TMP.set(p.x,1,p.z).clone(),A.c1,R*.6,.4,1.6);}
@@ -3815,8 +3816,7 @@ function cabTick(f,A,t,dt,mul,tier){const u=tier==='ult',sz=u?1.5:1,vf=f.vf,fw=f
       if(t>.38&&!vf.h){vf.h=1;if(T&&!T.dead&&T.pos.distanceTo(f.pos)<3.4)cabHit(f,T,A,mul,.7,null,{last:true});}f.poseKey=t<.38?'command':'heavyh';return {fr:10,end:.7};}
     case 'orbit':if(first){const n=clamp(cnt,2,8),ms=[];for(let k=0;k<n;k++){const m=cabMesh(A,.8*A.size,f);scene.add(m);ms.push(m);}CABW.push({type:'orbit',f,A,mul,t:0,dur:A.dur*(u?1.5:1),R:1.6*A.size*sz,meshes:ms,cd:{}});}
       f.poseKey='command';return {fr:12,end:.35};
-    case 'cone':{const D=Math.min(1.4,A.dur||.9)*(u?1.4:1),R=Math.min(A.range,9)*(u?1.3:1);if(t<D){for(let q=0;q<6;q++){const a=rand(-.45,.45),d=fw.clone().applyAxisAngle(UP,a),sp=rand(R*1.2,R*2);
-          ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(-.5,1.2),d.z*sp,..._rgb(pick([A.c1,A.c2]),1.8),.45,.3*A.size,1.2,0,0);}
+    case 'cone':{const D=Math.min(1.4,A.dur||.9)*(u?1.4:1),R=clamp(A.range,10,15)*(u?1.3:1);if(t<D){coneFX(f,A,c,fw,R,t,D,vf,first,dt);
         if(!vf.bt||t-vf.bt>.12){vf.bt=t;foes(f,R,f.pos,.6).forEach(o=>cabHit(f,o,A,mul,.12/D,null,{hold:true,tick:true}));}}
       f.poseKey='spech';return {fr:12,end:D+.1};}
     case 'shield':{const D=1.1*(u?1.8:1);if(first){f.armorT=Math.max(f.armorT,D+1.5);ring(c,A.c1,2.6,.4,false,2.6);}if(t<D){reflectProjs(f,3.8);for(const p of CABP){if(!ally(p.f,f)&&p.pos.distanceTo(f.pos)<3.8){p.vel.negate();p.f=f;p.hit={};}}
@@ -3825,7 +3825,7 @@ function cabTick(f,A,t,dt,mul,tier){const u=tier==='ult',sz=u?1.5:1,vf=f.vf,fw=f
     case 'buff':{if(first){f.powT=Math.max(f.powT||0,5*(u?1.6:1));f.hasteT=Math.max(f.hasteT||0,5*(u?1.6:1));f.auraC=A.c1;ring(c,A.c1,3,.4,false,2.6);flashLight(c,A.c1,10);if(u)cabAoE(f,A,mul,1,f.pos,3.5,{last:true});}
       f.poseKey='charge';return {fr:12,end:.45};}
     case 'slam':{if(first){f.vel.set(fw.x*6,u?16:12,fw.z*6);f.onGround=false;f.pos.y+=.1;}
-      if(!vf.h)f.cabSwing=true;if(!vf.h&&t>.25&&f.onGround){vf.h=1;vf.ht=t;const p=f.pos.clone();explosion(TMP.set(p.x,.8,p.z).clone(),2.4*A.size*sz,[A.c1,A.c2,0xffffff]);dust(p,18,1.5);shake(u?1:.5,p);cabAoE(f,A,mul,1,p,3.4*A.size*sz,{last:true});}
+      if(!vf.h)f.cabSwing=true;if(!vf.h&&t>.25&&f.onGround){vf.h=1;vf.ht=t;const p=f.pos.clone();if(isPhys(A))physRing(A,p,2.4*A.size*sz,10);else explosion(TMP.set(p.x,.8,p.z).clone(),2.4*A.size*sz,[A.c1,A.c2,0xffffff]);dust(p,18,1.5);shake(u?1:.5,p);cabAoE(f,A,mul,1,p,3.4*A.size*sz,{last:true});}
       f.poseKey=vf.h?'slamLand':'slamAir';return {fr:vf.h?12:0,end:vf.h?vf.ht+.25:2.2};}
     case 'summon':if(first){const p=f.pos.clone().addScaledVector(fw,2);p.y=1.2;const m=cabMesh(A,1.3*A.size,f);m.position.copy(p);scene.add(m);const D=A.dur*(u?1.5:1);
         CABW.push({type:'summon',f,A,mul,share:.45/D*1.3,t:0,dur:D,p,n:.3,mesh:m});burst(ADD,p,30,{colors:[A.c1,A.c2,0xffffff],speed:5,life:.5,size:.35,bright:2.4});}
@@ -3849,6 +3849,82 @@ function cabDescribe(A){if(!A)return '';if(A.desc)return A.desc;const F={bolt:'f
   rain:'rains down on an area',pillar:'erupts under foes',dash:'dashes through foes',blink:'teleports and strikes',grab:'grabs and pulls',orbit:'circles you with orbs',cone:'breathes a cone',shield:'raises a shield',
   buff:'powers you up',slam:'leaps and slams',summon:'summons a turret'}[A.form];return `${A.style} — ${F}${A.fx.length?' · '+A.fx.join(', '):''}`;}
 window.__cabw=()=>CABW.map(w=>w.type+':'+w.t.toFixed(1)+'@'+(w.p?w.p.x.toFixed(1)+','+w.p.z.toFixed(1):'')).join(' ');
+/* MOVE FX — makes ability-engine moves look like proper attacks.
+   GROUND MOVES (earth / metal / plant / ice / crystal styles): waves, pillars, slams and bursts are made of real rock
+     (or ice) — spikes tear up out of the ground in a line, boulders erupt, craters, rubble and dust — instead of glowing energy.
+   CONE MOVES (the old "small arc"): now a full-size attack shaped by its style, reaching up to 15 m:
+     fire → a roaring flamethrower torrent · wind → a pressure blast (with a giant fist for punch moves) · sound → shock rings
+     blade → a storm of slashes · lightning → a fan of forked bolts · liquids (water, acid, blood) → a heavy spray
+     explosion → a chain of blasts · decay → the ground crumbles away · rock/metal/ice → spikes erupt across the area
+     anything else → a blinding energy fan */
+const PHYS_STYLES=['earth','metal','plant','ice','crystal'];
+function isPhys(A){return PHYS_STYLES.indexOf(A.style)>=0;}
+const MVFX=[];   // short-lived meshes animated here (big fists, etc.)
+function rockUp(A,x,z,h){if(A.style==='ice'||A.style==='crystal')crag(x,z,h,1.6,A.style==='ice'?0xcff4ff:A.c1);else spike(x,z,h);}
+// a wave travelling along the ground: a row of spikes tears up every ~0.9 m
+function physWaveStep(w,p){w.acc=(w.acc||0);if(w.d-w.acc<.9)return;w.acc=w.d;const A=w.A,sx=w.dir.z,sz=-w.dir.x,h=1.1*A.size+rand(0,.5);
+  for(let k=-1;k<=1;k++){const o=k*w.W*.55+rand(-.2,.2);rockUp(A,p.x+sx*o,p.z+sz*o,h*(k?0.75:1));}
+  dust(p,3,.8);if(Math.random()<.5)debris(TMP2.set(p.x,.4,p.z),2,0,6,.35);}
+// pillar eruption: a big spike cluster, rubble, dust and a crater
+function physPillar(A,p,big){const s=A.size*(big?1.3:1);rockUp(A,p.x,p.z,2.8*s);for(let k=0;k<4;k++){const a=k/4*6.28+rand(-.4,.4),r=rand(.7,1.2)*s;rockUp(A,p.x+Math.cos(a)*r,p.z+Math.sin(a)*r,rand(1,1.7)*s);}
+  dust(p,14,1.3*s);debris(TMP2.set(p.x,.6,p.z),8,0,10,.5*s);if(typeof crater==='function')crater(p.x,p.z,1.1*s,p.y);shake(.25,p);xSnd(p,()=>{AU.boom(false);});}
+// a crater ring of spikes around a landing / burst point
+function physRing(A,p,R,n){for(let k=0;k<n;k++){const a=k/n*6.28+rand(-.15,.15),r=R*rand(.75,1.05);rockUp(A,p.x+Math.cos(a)*r,p.z+Math.sin(a)*r,rand(.9,1.6)*A.size);}
+  dust(p,20,1.6);debris(TMP2.set(p.x,.6,p.z),10,0,11,.45*A.size);if(typeof crater==='function')crater(p.x,p.z,R*.55,p.y);}
+
+// ---------- cone moves ----------
+function coneKind(A){const s=A.style,sh=A.shape;
+  if(s==='poison'&&(sh==='hand'||sh==='skull'))return 'decay';
+  if(sh==='fist'&&s!=='wind')return 'fists';if(sh==='eye')return 'gaze';
+  if(s==='fire')return 'fire';if(s==='wind')return 'wind';if(s==='sound'||sh==='ring'||sh==='note')return 'sound';
+  if(s==='blade')return 'blade';if(s==='lightning')return 'bolt';if(s==='water'||s==='poison'||s==='blood')return 'spray';
+  if(s==='explosion')return 'boom';if(isPhys(A))return 'rock';return 'energy';}
+// flame palette: keep the move's own hue (blue fire stays blue) but never wash out to white
+function firePal(c1,c2){const sat=x=>{const C=new THREE.Color(x),h={};C.getHSL(h);return h;};const a=sat(c1),b=sat(c2),m=a.s*(1-Math.abs(a.l-.5))>=b.s*(1-Math.abs(b.l-.5))?a:b;
+  if(m.s<.35)return [0xff4a12,0xff9a2a,0xffd27a];const col=(h,s,l)=>new THREE.Color().setHSL(h,s,l).getHex();return [col(m.h,.95,.45),col(m.h+(m.h>.5?-.03:.05),.95,.55),col(m.h+(m.h>.5?-.05:.1),.9,.72)];}
+function conePt(c,fw,R,spread){const d=fw.clone().applyAxisAngle(UP,rand(-spread,spread));return c.clone().addScaledVector(d,rand(1.5,R));}
+function coneFX(f,A,c,fw,R,t,D,vf,first,dt){const k=coneKind(A),c1=A.c1,c2=A.c2;vf.ft=vf.ft||0;const every=s=>{if(t-vf.ft>=s){vf.ft=t;return true;}return false;};
+  if(!nearCam(c,90))return;
+  if(first){shake(.2,f.pos);if(A.shape==='fist'&&A.style==='wind'){bigFist(f,A,c,fw);}}
+  switch(k){
+  case 'fire':{const P=vf.fp||(vf.fp=firePal(c1,c2));for(let q=0;q<12;q++){const a=rand(-.3,.3),d=fw.clone().applyAxisAngle(UP,a),sp=rand(R*1.5,R*2.1),hot=Math.random()<.12;
+      ADD.spawn(c.x+d.x*.4,c.y,c.z+d.z*.4,d.x*sp,rand(-.4,1.6),d.z*sp,..._rgb(hot?P[2]:pick([P[0],P[1]]),hot?1.6:1.35),rand(.38,.5),.32*A.size,2.2*A.size,-1.5,1.2);}
+    if(Math.random()<.5)burst(SMK,c.clone().addScaledVector(fw,R*.85),1,{colors:[0x2a2422,0x3a302a],speed:2,up:2.5,life:.9,size:.9,size1:2.8,drag:2,grav:-1});
+    if(every(.14))flashLight(c.clone().addScaledVector(fw,3),c1,7);break;}
+  case 'wind':{for(let q=0;q<6;q++){const p=conePt(c,fw,R,.4);ADD.spawn(p.x,p.y+rand(-.6,.6),p.z,fw.x*R*2,0,fw.z*R*2,..._rgb(0xffffff,1.2),.22,.25,.05,0,0);}
+    if(every(.05)){const p=conePt(c,fw,R*.8,.35),q2=p.clone().addScaledVector(fw,rand(2,3.5));trailSeg(p,q2,c1,.06,.16);}
+    if(Math.random()<.6){const g=conePt(f.pos,fw,R,.4);dust(g,1,.8);}break;}
+  case 'sound':{if(every(.07)){const d=1+((t*22)%R);ring(c.clone().addScaledVector(fw,d),pick([c1,c2]),1+d*.45,.3,false,2.4);}
+    for(let q=0;q<3;q++){const p=conePt(c,fw,R,.45);ADD.spawn(p.x,p.y,p.z,fw.x*8,rand(-.5,.5),fw.z*8,..._rgb(c2,1.6),.25,.3,.0,0,0);}break;}
+  case 'blade':{if(every(.045)){for(let q=0;q<2;q++){const p=conePt(c,fw,R,.45),side=new V3(fw.z,0,-fw.x),h=rand(-.9,.9),L=rand(1,1.8);
+      const a=p.clone().addScaledVector(side,-L).add(TMP2.set(0,h,0)),b=p.clone().addScaledVector(side,L).add(TMP2.set(0,-h,0));trailSeg(a,b,Math.random()<.4?0xffffff:c1,.07,.18);
+      burst(ADD,p,3,{colors:[c2,0xffffff],speed:5,life:.2,size:.18,size1:0,bright:2.6});}}break;}
+  case 'bolt':{if(every(.07)){for(let q=0;q<3;q++){const p=conePt(c,fw,R,.42);bolt(c,p,pick([c1,c2,0xffffff]),.09,.12);burst(ADD,p,4,{colors:[c1,0xffffff],speed:5,life:.2,size:.25,size1:0,bright:2.8});}if(Math.random()<.4)flashLight(c,c1,6);}break;}
+  case 'spray':{for(let q=0;q<9;q++){const a=rand(-.35,.35),d=fw.clone().applyAxisAngle(UP,a),sp=rand(R*1.1,R*1.6);
+      ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(1,3.5),d.z*sp,..._rgb(pick([c1,c2]),1.4),rand(.45,.65),.3*A.size,.55*A.size,-9,.4);}
+    if(Math.random()<.35){const g=conePt(f.pos,fw,R,.35);g.y=.08;ring(g,c1,1.6,.35,true,1.5);burst(SMK,g,2,{colors:[c1,c2],speed:1,up:1,life:.6,size:.4,size1:1.2});}break;}
+  case 'boom':{if(every(.11)){const d=2+((t/.11)%5)*(R/5);const p=c.clone().addScaledVector(fw,d).add(TMP2.set(rand(-.8,.8),0,rand(-.8,.8)));explosion(p,1.4*A.size+d*.06,[c1,c2,0xffffff]);xSnd(p,()=>{AU.boom(false);});}break;}
+  case 'decay':{// the ground crumbles away in a spreading fan
+    if(every(.06)){for(let q=0;q<2;q++){const g=conePt(f.pos,fw,Math.min(R,2+t*R*1.4),.5);g.y=.06;const a=Math.random()*6.28,L=rand(.6,1.4);
+      trailSeg(TMP.set(g.x-Math.cos(a)*L,.05,g.z-Math.sin(a)*L).clone(),TMP2.set(g.x+Math.cos(a)*L,.05,g.z+Math.sin(a)*L).clone(),0x2a0a0a,.09,.9);
+      dust(g,2,.7);if(Math.random()<.5)debris(TMP2.set(g.x,.3,g.z),2,0,4,.3);burst(ADD,g,3,{colors:[c2,0x8a7a7a],speed:1.2,up:2,life:.6,size:.22,size1:0,bright:1.4});}}break;}
+  case 'rock':{if(every(.06)){const g=conePt(f.pos,fw,Math.min(R,2+t*R*1.5),.42);rockUp(A,g.x,g.z,rand(.9,1.5)*A.size);if(Math.random()<.5)debris(TMP2.set(g.x,.5,g.z),2,0,7,.35);}break;}
+  case 'fists':{// a flurry of punches thrown out across the area
+    if(every(.06)){const p=c.clone().addScaledVector(fw,.9).add(TMP2.set(rand(-.7,.7),rand(-.4,.5),rand(-.7,.7)));flyFist(f,A,p,fw.clone().applyAxisAngle(UP,rand(-.3,.3)),R);
+      const h=conePt(c,fw,R*.8,.35);burst(ADD,h,5,{colors:[0xffffff,c2],speed:6,life:.2,size:.25,size1:0,bright:2.6});if(Math.random()<.5)ring(h,0xffffff,1.2,.18,false,2);}break;}
+  case 'gaze':{// a glaring stare: burning eyes and rays sweeping the area
+    const e=f.chest(new V3()).add(TMP2.set(0,.55,0));if(every(.05)){for(let q=0;q<2;q++){const p=conePt(e,fw,R,.38);bolt(e,p,c1,.04,.09);}burst(ADD,e,3,{colors:[c1,0xffffff],speed:.5,life:.15,size:.35,size1:0,bright:3});}
+    if(Math.random()<.3)flashLight(e,c1,5);break;}
+  default:{for(let q=0;q<7;q++){const a=rand(-.4,.4),d=fw.clone().applyAxisAngle(UP,a),sp=rand(R*1.4,R*2);ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(-.3,.6),d.z*sp,..._rgb(pick([c1,c2,c2]),1.4),.4,.35*A.size,1.4*A.size,0,1);}
+    if(every(.09)){const p=conePt(c,fw,R,.4);bolt(c,p,c1,.05,.1);}}}}
+function flyFist(f,A,p,d,R){try{const m=cabMesh(A,.9*A.size,f);m.position.copy(p);m.rotation.y=Math.atan2(d.x,d.z);scene.add(m);m.traverse(o=>{if(o.material){o.material=o.material.clone();o.material.transparent=true;}});
+  MVFX.push({m,v:d.clone().multiplyScalar(R*3.2),t:0,life:.3,grow:.4});}catch(e){}}
+// wind-pressure punches throw a giant translucent fist forward
+function bigFist(f,A,c,fw){try{const m=cabMesh(A,2.4*A.size,f);m.position.copy(c).addScaledVector(fw,1.2);m.rotation.y=Math.atan2(fw.x,fw.z);scene.add(m);
+  m.traverse(o=>{if(o.material){o.material=o.material.clone();o.material.transparent=true;}});MVFX.push({m,v:fw.clone().multiplyScalar(34),t:0,life:.45});
+  ring(c.clone().addScaledVector(fw,1.5),0xffffff,3.4,.3,false,2.2);}catch(e){}}
+onEv('tick',dt=>{for(let i=MVFX.length-1;i>=0;i--){const e=MVFX[i];e.t+=dt;e.m.position.addScaledVector(e.v,dt);const k=1-e.t/e.life;e.m.scale.multiplyScalar(1+dt*(e.grow||1.5));
+  e.m.traverse(o=>{if(o.material)o.material.opacity=Math.max(0,k*.85);});if(e.t>=e.life){scene.remove(e.m);e.m.traverse(o=>{if(o.material)o.material.dispose();});MVFX.splice(i,1);}}});
 /* Weapons and gear */
 /* ================= CUSTOM WEAPONS & ABILITY MODELS =================
    Created fighters carry the weapon they were described with (built from shapes, in their colors),
@@ -10063,7 +10139,7 @@ const FORMS={
  nitro:{n:'OVERDRIVE',d:'sweat pushed to the limit',c:0xffb020,a:0xff2a00,s:[1.25,1.05,1.15],k:'pa jR jL sm|ds|blast',
    sp:FA('AP CANNON','bolt','explosion','bomb',['explode']),alt:FA('CRATER DIVE','slam','explosion','bomb',['explode','launch']),x:[FA('FLASH BANG','burst','explosion','star',['stun']),FA('ROCKET STEP','dash','explosion','bomb',['explode'])],u:FA('HOWITZER LINE','beam','explosion','bomb',['explode','launch'],{power:1.35})},
  titan:{n:'PEAK FORM',d:'one last blaze of power',c:0xfff2a0,a:0x3a8aff,s:[1.3,1,1.1],k:'jR jL jR jL sm|sm|impact',
-   sp:FA('TYPHOON PUNCH','cone','wind','fist',['push']),alt:FA('METEOR DROP','slam','earth','fist',['launch']),x:[FA('BREAKTHROUGH','dash','wind','fist',['push']),FA('PRESSURE WAVE','wave','wind','fist',['push'])],u:FA('FINAL SURGE','burst','wind','fist',['launch','push'],{power:1.5})},
+   sp:FA('TYPHOON PUNCH','cone','wind','fist',['push'],{range:15,size:1.5,power:1.2}),alt:FA('METEOR DROP','slam','earth','fist',['launch']),x:[FA('BREAKTHROUGH','dash','wind','fist',['push']),FA('PRESSURE WAVE','wave','wind','fist',['push'])],u:FA('FINAL SURGE','burst','wind','fist',['launch','push'],{power:1.5})},
  volta:{n:'OVERLOAD',d:'more voltage than she can hold',c:0xfff23a,a:0x6ad8ff,s:[1.15,1.1,1.1],k:'jR jL jR jL up|dk|spark',
    sp:FA('ARC LANCE','bolt','lightning','lightning',['chain']),alt:FA('STORM CAGE','zone','lightning','lightning',['stun']),x:[FA('FLASHSTEP','blink','lightning','lightning',[],{self:['haste']}),FA('THUNDERCLAP','rain','lightning','lightning',['stun'])],u:FA('GIGAVOLT','beam','lightning','lightning',['chain','stun'],{power:1.3})},
  umbra:{n:'FERAL ECLIPSE',d:'the beast takes the wheel',c:0x2a0a4a,a:0xff3a6a,s:[1.2,1.1,1.1],
@@ -10081,14 +10157,14 @@ const FORMS={
  quake:{n:'TECTONIC',d:'the ground itself fights',c:0xff7a2a,a:0x5a3a1a,s:[1.2,.92,.85],k:'el sm el ds|ds|earth',
    sp:FA('FAULT SPIRES','pillar','earth','spike',['launch']),alt:FA('LANDSLIDE','wave','earth','boulder',['push']),x:[FA('EPICENTER','slam','earth','boulder',['stun']),FA('ROCK BARRAGE','volley','earth','boulder',[])],u:FA('MAGNITUDE TEN','burst','earth','boulder',['launch','stun'],{power:1.4})},
  entropy:{n:'CATASTROPHE',d:'everything crumbles',c:0x5a5560,a:0xff2a3a,s:[1.2,1,1.1],k:'pa bk el cm|ds|decay',
-   sp:FA('CRUMBLE','cone','poison','hand',['drain']),alt:FA('RUIN SPIRES','pillar','poison','spike',['launch']),x:[FA('TOUCH OF RUIN','grab','poison','hand',['pull','drain']),FA('DUST FIELD','zone','poison','skull',['slow','drain'])],u:FA('ENDTIMES','burst','poison','skull',['drain','launch'],{power:1.4})},
+   sp:FA('CRUMBLE','cone','poison','hand',['drain'],{range:14}),alt:FA('RUIN SPIRES','pillar','poison','spike',['launch']),x:[FA('TOUCH OF RUIN','grab','poison','hand',['pull','drain']),FA('DUST FIELD','zone','poison','skull',['slow','drain'])],u:FA('ENDTIMES','burst','poison','skull',['drain','launch'],{power:1.4})},
  sovereign:{n:'ARSENAL',d:'every stolen power at once',c:0x1a1a2a,a:0xff3a3a,s:[1.25,.95,1],k:'pa pa bk up|sm|spirit',
    sp:FA('STOLEN CANNON','volley','void','orb',['explode']),alt:FA('RAPTURE GRIP','grab','spirit','hand',['pull','stun']),x:[FA('COMPOUND SHOCK','cone','lightning','lightning',['chain']),FA('IRON SPIRES','pillar','metal','spike',['launch'])],u:FA('APEX RAY','beam','void','eye',['explode','pierce'],{power:1.4})},
  strobe:{n:'ACCELERANT',d:'faster than the frame rate',c:0x3fe0c5,a:0xffffff,s:[.95,1.3,1],k:'jR jL jR jL jR jL|dk|time',
    sp:FA('AFTERIMAGE','dash','time','star',[]),alt:FA('REWIND','blink','time','star',[],{self:['heal']}),x:[FA('FRAME SHARDS','volley','time','shard',['slow']),FA('STOP FIELD','zone','time','star',['stun'])],u:FA('STOPPED SECOND','burst','time','star',['stun'],{power:1.3})},
  pyre:{n:'HELLBLOOM',d:'flames hot enough to burn himself',c:0x3a8aff,a:0xd8f0ff,s:[1.3,1,1.2],k:'jR el jR sk|cm|bluefire',
    sp:FA('AZURE LANCE','beam','fire','flame',['burn'],{colors:[0x3a8aff,0xd8f0ff]}),alt:FA('PYRE RING','zone','fire','flame',['burn'],{colors:[0x3a8aff,0xd8f0ff]}),
-   x:[FA('BLUE BREATH','cone','fire','flame',['burn'],{colors:[0x3a8aff,0xd8f0ff]}),FA('FLAME PILLARS','pillar','fire','flame',['burn','launch'],{colors:[0x3a8aff,0xd8f0ff]})],u:FA('SUPERNOVA','burst','fire','flame',['burn','launch'],{power:1.4,colors:[0x3a8aff,0xffffff]})},
+   x:[FA('BLUE BREATH','cone','fire','flame',['burn'],{colors:[0x3a8aff,0xd8f0ff],range:14,size:1.3,dur:1.2}),FA('FLAME PILLARS','pillar','fire','flame',['burn','launch'],{colors:[0x3a8aff,0xd8f0ff]})],u:FA('SUPERNOVA','burst','fire','flame',['burn','launch'],{power:1.4,colors:[0x3a8aff,0xffffff]})},
  warp:{n:'RIFTWALKER',d:'space folds around him',c:0x4a1a7a,a:0xffd23f,s:[1.05,1.1,1],k:'pa dk pa ax|ds|void',
    sp:FA('RIFT STEP','blink','void','ring',[]),alt:FA('PORTAL SNATCH','grab','void','ring',['pull']),x:[FA('GATE BARRAGE','volley','void','ring',[]),FA('MIST MAZE','zone','void','ring',['slow'])],u:FA('GATE TURRETS','summon','void','eye',['mark'],{power:1.3})},
  hex:{n:'BLACK SEAL',d:'every sigil at full strength',c:0x1a3a1a,a:0x5aff8a,s:[1.1,1,1.05],k:'pa bk pa bk ax|cm|curse',
@@ -10096,7 +10172,7 @@ const FORMS={
  scathe:{n:'WRAITH',d:'you never see the blade',c:0x2a0a0a,a:0xff3a2a,s:[1.15,1.15,1.1],
    sp:FA('GHOST CUT','dash','blade','blade',['pierce']),alt:FA('VANISH','blink','shadow','blade',[],{self:['haste']}),x:[FA('RIBBON CUTS','cone','blade','blade',['mark']),FA('KNIFE HALO','orbit','blade','knife',[])],u:FA('RED HARVEST','rain','blade','knife',['pierce'],{power:1.3})},
  solstice:{n:'EQUINOX',d:'ice and fire at full blast',c:0xffffff,a:0xff5a1f,s:[1.15,1,1.05],k:'jR el bk sk|up|icefire',
-   sp:FA('GLACIER LINE','wave','ice','snowflake',['freeze']),alt:FA('FURNACE BEAM','beam','fire','flame',['burn']),x:[FA('ICE SPIRES','pillar','ice','spike',['freeze','launch']),FA('FLASHFIRE','cone','fire','flame',['burn'])],u:FA('SOLSTICE BREAK','burst','ice','snowflake',['freeze','burn'],{power:1.4})},
+   sp:FA('GLACIER LINE','wave','ice','snowflake',['freeze']),alt:FA('FURNACE BEAM','beam','fire','flame',['burn']),x:[FA('ICE SPIRES','pillar','ice','spike',['freeze','launch']),FA('FLASHFIRE','cone','fire','flame',['burn'],{range:15,size:1.5,dur:1.2})],u:FA('SOLSTICE BREAK','burst','ice','snowflake',['freeze','burn'],{power:1.4})},
  piston:{n:'REDLINE',d:'engines past their limit',c:0xff3a1a,a:0xffd23f,s:[1.1,1.3,1.1],
    sp:FA('REDLINE KICK','dash','metal','star',['push']),alt:FA('PISTON DROP','slam','metal','star',['launch']),x:[FA('EXHAUST BLAST','cone','fire','flame',['push','burn']),FA('GEAR SHIFT','blink','wind','star',[],{self:['haste']})],u:FA('TOP GEAR','dash','metal','star',['launch'],{power:1.5})},
  snare:{n:'CAPTURE',d:'nobody gets away',c:0x2a2a2a,a:0xffd23f,s:[1.05,1.1,.95],k:'lk hk lk ax|dk|light',
@@ -10124,7 +10200,7 @@ const FORMS={
  skitter:{n:'STREET LEGEND',d:'the fastest thing on the street',c:0x2aff6a,a:0xffffff,s:[1.05,1.3,1],k:'lk lk lk hk sk|dk|wind',
    sp:FA('SKID BLITZ','dash','wind','star',['push']),alt:FA('FLICK SHOT','bolt','wind','star',['stun']),x:[FA('ROOF HOP','blink','wind','star',[],{self:['haste']}),FA('PEBBLE STORM','volley','earth','star',[])],u:FA('MIDNIGHT RUN','dash','wind','star',['launch'],{power:1.35})},
  oldguard:{n:'LAST STAND',d:'too stubborn to fall',c:0xd8b080,a:0xffffff,s:[1.25,.95,.85],k:'jR jL jR el up|sm|impact',
-   sp:FA('IRON KNUCKLE','dash','metal','fist',['push']),alt:FA('GUARD UP','shield','metal','fist',[]),x:[FA('HAYMAKER DROP','slam','earth','fist',['launch']),FA('KNUCKLE STORM','cone','metal','fist',['push'])],u:FA('ONE MORE ROUND','burst','metal','fist',['launch','stun'],{power:1.45})},
+   sp:FA('IRON KNUCKLE','dash','metal','fist',['push']),alt:FA('GUARD UP','shield','metal','fist',[]),x:[FA('HAYMAKER DROP','slam','earth','fist',['launch']),FA('KNUCKLE STORM','cone','metal','fist',['push'],{range:10,dur:1})],u:FA('ONE MORE ROUND','burst','metal','fist',['launch','stun'],{power:1.45})},
  hopstar:{n:'ENCORE STAGE',d:'the crowd is on its feet',c:0xff6ad8,a:0x6af0ff,s:[1.05,1.15,1],k:'hk lk hk ax|ds|sound',
    sp:FA('STAGE DIVE','slam','sound','note',['stun']),alt:FA('HIGH NOTE','cone','sound','note',['stun']),x:[FA('MELODY SHOTS','volley','sound','note',[]),FA('BACKFLIP','blink','sound','note',[],{self:['haste']})],u:FA('FINALE','zone','sound','note',['stun'],{power:1.3})},
  headliner:{n:'SHOWTIME',d:'cameras rolling, maximum might',c:0xffd23f,a:0xff3a6a,s:[1.15,1.1,1],k:'jR jL jR up|dk|gold',
