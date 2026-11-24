@@ -54,7 +54,7 @@ function chiRebuild(f){const S=chiS(f),R=f.rig;S.x.forEach(m=>{if(m.parent)m.par
 function chiPartsVis(f){const S=chiS(f),R=f.rig;if(R.lS)R.lS.visible=S.a>=1;if(R.rS)R.rS.visible=S.a>=2;if(R.lH)R.lH.visible=S.l>=1;if(R.rH)R.rH.visible=S.l>=2;if(R.head)R.head.visible=S.h>=1;}
 const _chiAP=Fighter.prototype.applyPose;Fighter.prototype.applyPose=function(dt){const r=_chiAP.apply(this,arguments);if(!isChi(this))return r;const f=this,S=chiS(f),R=f.rig;
   if(f.dead)return r;const sig=S.a+'|'+S.l+'|'+S.h+'|'+(S.amal?1:0);if(sig!==S.sig)chiRebuild(f);chiPartsVis(f);
-  const sc=f.hero.scale*(S.amal?1.4:1);if(!f._chSplit&&f.state!=='ult')R.root.scale.setScalar(sc);
+  const sc=f.hero.scale*(S.amal?1.4:1);if(!f._chSplit&&!f._chBloat&&f.state!=='ult')R.root.scale.setScalar(sc);
   let rolling=false;
   if(S.l===0&&R.hips&&!S.amal){const sp=Math.hypot(f.vel.x,f.vel.z),busy=f.state==='special'||f.state==='ult'||f.state==='attack';
     if(sp>.8&&!busy){rolling=true;S.roll+=sp*dt/.42;const q=new THREE.Quaternion().setFromAxisAngle(new V3(1,0,0),S.roll).multiply(new THREE.Quaternion().setFromAxisAngle(new V3(0,0,1),Math.PI/2));
@@ -370,3 +370,116 @@ onEv('matchEnd',()=>{CHI_STAINS.forEach(o=>{scene.remove(o.m);o.m.material.dispo
 // when the amalgamation dies it bursts
 onEv('kill',d=>{if(!isChi(d)||!d.chi||!d.chi.amal)return;const c=d.chest(new V3());if(typeof bloodBurst==='function')bloodBurst(c,160,14);if(typeof gibs==='function')gibs(c,new V3(rand(-1,1),0,rand(-1,1)).normalize(),30);
   for(let i=0;i<14;i++)chiStain(new V3(d.pos.x+rand(-3,3),d.pos.y,d.pos.z+rand(-3,3)),rand(.6,1.6));chiBlobKill(d);shake(.6,c);});
+
+/* ---------- FESTER mode (5): his own rot moves ----------
+     1       MAGGOT SWARM  he retches up a writhing swarm of maggots and flies that crawls onto the nearest enemy and eats
+                           at them for 4 s (damage over time, slowed). Hold 1: CORPSE GAS — a choking cloud of green rot.
+     2       RIB CAGE      his ribs burst out of his chest as bone spears that snap shut around the enemy in front,
+                           impaling and caging them for 1.6 s
+     3       GUT ROPE      he rips out his own intestines and lashes them in a wide arc — the first enemy hit is reeled in
+     4       PUTRID BLOAT  he swells up with rot gas and bursts: a ring of rotten gore and acid that burns and slows
+     Q       MASS GRAVE    the ground splits and dozens of corpse hands claw out of it, grabbing everyone in the area,
+                           holding them and dragging them under */
+const FEST_G=0x8ab02a,FEST_D=0x3a4a10;
+const GUT_MAT=new THREE.MeshStandardMaterial({color:0xb86a6a,roughness:.3,metalness:0}),GUT_G=new THREE.SphereGeometry(.09,10,8);
+SPECIALS.festswarm=function(f){once(f,.22,()=>{const T=tgtOf(f,24)||foes(f,24)[0];if(T)faceTo(f,T);const c=f.chest(new V3()).add(TMP2.set(0,.25,0));
+    if(typeof bloodBurst==='function')bloodBurst(c.clone().addScaledVector(f.fwd(),.4),18,4);burst(SMK,c.clone().addScaledVector(f.fwd(),.5),16,{colors:[0xe8e0c0,0xd8d0a8,FEST_D],speed:4,up:1,life:.6,size:.1,size1:.05,grav:9});
+    SWARMS.push({f,T,p:c.clone(),t:0,state:T?'fly':'fade',dmgT:0});xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(false));});
+  f.poseKey=f.stateT<.22?'burstIn':'roar';endAt(f,.6);return 10;};
+SPECVAR.festswarm={chg:['CORPSE GAS',(f,dt,k)=>{once(f,.25,()=>{GASES.push({f,p:f.pos.clone(),R:5.5+k*2.5,t:0,dur:4.5,tick:0});shake(.3,f.pos);xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));});
+    f.poseKey=f.stateT<.25?'burstIn':'burstOut';endAt(f,.75);return 10;}],
+  alt:['RIB CAGE',(f,dt)=>{once(f,.18,()=>{const T=tgtOf(f,9)||foes(f,8,null,.5)[0];const c=f.chest(new V3()),fw=f.fwd();if(T)faceTo(f,T);
+      if(typeof bloodBurst==='function')bloodBurst(c.clone().addScaledVector(fw,.3),40,7);
+      // ribs shoot out of his chest
+      for(let i=0;i<6;i++){const to=(T?T.chest(new V3()):c.clone().addScaledVector(fw,7)).add(TMP2.set(rand(-.6,.6),rand(-.4,.6),rand(-.6,.6)));trailSeg(c.clone().add(TMP2.set((i-2.5)*.08,rand(-.15,.2),0)),to,0xe8dcc0,.07,.3);}
+      if(T){ribCage(f,T);if(NET.role!=='client')hitO(f,T,{dmg:14,kb:0,up:0,stun:1.6,heavy:true,pt:T.chest(new V3())});netEvent({k:'chrib',a:f.id,d:T.id});}
+      shake(.35,c);xSnd(f.pos,()=>{AU.hit&&AU.hit(true);AU.boom&&AU.boom(false);});});
+    f.poseKey=f.stateT<.18?'burstIn':'burstOut';endAt(f,.65);return 10;}]};
+onEv('net:chrib',e=>{const f=FS.find(o=>o.id===e.a),T=FS.find(o=>o.id===e.d);if(f&&T)ribCage(f,T);});
+/* maggot swarms */
+const SWARMS=[],GASES=[],RIBS=[],GUTS=[],GRAVES=[];
+onEv('tick',dt=>{for(let i=SWARMS.length-1;i>=0;i--){const W=SWARMS[i];W.t+=dt;const T=W.T;if(!inMatch()||W.t>5.2||(T&&T.dead&&W.state!=='fade')){SWARMS.splice(i,1);continue;}
+  if(W.state==='fly'){const to=T.chest(new V3()),d=to.clone().sub(W.p),L=d.length();W.p.addScaledVector(d.normalize(),Math.min(L,16*dt));if(L<.6){W.state='eat';W.t0=W.t;if(typeof bloodBurst==='function')bloodBurst(to,14,3);}}
+  else if(W.state==='eat'){W.p.copy(T.chest(new V3()));if(W.t-W.t0>4){SWARMS.splice(i,1);continue;}
+    W.dmgT-=dt;if(W.dmgT<=0&&NET.role!=='client'){W.dmgT=.5;_chiAH(W.f,T,{dmg:2.6,kb:0,up:0,stun:0,pt:W.p});T.slowT=Math.max(T.slowT||0,.8);}}
+  if(!nearCam(W.p,60))continue;const n=W.state==='eat'?4:6;
+  for(let q=0;q<n;q++){const a=Math.random()*6.283,r=W.state==='eat'?rand(.15,.55):rand(0,.5);const p=TMP2.set(W.p.x+Math.cos(a)*r,W.p.y+rand(-.8,.6),W.p.z+Math.sin(a)*r);
+    burst(SMK,p,1,{colors:q%3?[0xe8e0c0,0xd8d0a8]:[0x0a0a08],speed:q%3?.3:2.2,up:0,life:q%3?.35:.25,size:q%3?.07:.04,size1:q%3?.05:.03,grav:q%3?2:0});}
+  if(W.state==='eat'&&Math.random()<.15&&typeof bloodBurst==='function')bloodBurst(W.p.clone().add(TMP2.set(rand(-.3,.3),rand(-.5,.4),rand(-.3,.3))),4,2);}});
+/* corpse gas */
+onEv('tick',dt=>{for(let i=GASES.length-1;i>=0;i--){const G=GASES[i];G.t+=dt;if(G.t>G.dur||!inMatch()){GASES.splice(i,1);continue;}
+  if(nearCam(G.p,80)&&Math.random()<.9){const a=Math.random()*6.283,r=Math.sqrt(Math.random())*G.R;burst(SMK,TMP2.set(G.p.x+Math.cos(a)*r,G.p.y+rand(.2,2.2),G.p.z+Math.sin(a)*r).clone(),2,{colors:[0x6a7a1a,0x4a5a10,0x8a9a3a],speed:.5,up:.3,life:1.8,size:1.2,size1:2.4,drag:1});}
+  G.tick-=dt;if(G.tick<=0&&NET.role!=='client'){G.tick=.5;for(const o of FS){if(o===G.f||ally(o,G.f)||o.dead||o.downed)continue;if(Math.hypot(o.pos.x-G.p.x,o.pos.z-G.p.z)<G.R&&Math.abs(o.pos.y-G.p.y)<3){_chiAH(G.f,o,{dmg:2.2,kb:0,up:0,stun:0,pt:o.chest(new V3())});o.slowT=Math.max(o.slowT||0,1);
+    if(Math.random()<.25&&o.state!=='hit'){o.set('hit');o.stunT=.35;}}}}}});   // choking: they double over now and then
+/* rib cage */
+function ribCage(f,T){const p=T.pos.clone(),g=new THREE.Group();g.position.copy(p);scene.add(g);const ribs=[];
+  for(let i=0;i<8;i++){const piv=new THREE.Group();piv.rotation.y=i/8*6.283;g.add(piv);const r=new THREE.Mesh(new THREE.TorusGeometry(.9,.05,6,14,Math.PI*.55),CHI_BONE);r.position.set(.9,0,0);r.rotation.z=Math.PI*.5;piv.add(r);
+    const tip=new THREE.Mesh(new THREE.ConeGeometry(.06,.35,6),CHI_BONE);tip.position.set(.05,1.55,0);tip.rotation.z=.6;piv.add(tip);ribs.push(piv);}
+  RIBS.push({f,T,p,g,ribs,t:0,dur:1.6});if(typeof bloodBurst==='function')bloodBurst(TMP2.set(p.x,p.y+1,p.z).clone(),50,7);}
+onEv('tick',dt=>{for(let i=RIBS.length-1;i>=0;i--){const C=RIBS[i];C.t+=dt;const T=C.T;
+  if(C.t>C.dur+.4||!inMatch()){C.g.traverse(o=>{if(o.geometry)o.geometry.dispose();});scene.remove(C.g);RIBS.splice(i,1);continue;}
+  const close=Math.min(1,C.t/.18),open=C.t>C.dur?(C.t-C.dur)/.4:0;C.g.scale.set(1,Math.max(.01,close*(1-open)),1);C.ribs.forEach((r,k)=>{r.rotation.z=(1-close)*.9+open*.9;});
+  if(T&&!T.dead&&C.t<C.dur){T.pos.copy(C.p);T.vel.set(0,0,0);if(NET.role!=='client'&&T.state!=='hit')T.set('hit');if(T.state==='hit')T.stunT=Math.max(T.stunT||0,C.dur-C.t+T.stateT);
+    if(Math.random()<.2&&nearCam(C.p,40))burst(SMK,T.chest(new V3()),2,{colors:[0x7a0010,0xa01a20],speed:1.5,up:.5,life:.5,size:.1,size1:.05,grav:12});}}});
+/* GUT ROPE */
+XCUSTOM.gutrope=function(f,dt){const V=f.vf,t=f.stateT;if(!V.g){V.g=1;V.hit={};const T=tgtOf(f,9);if(T)faceTo(f,T);const segs=[];for(let i=0;i<18;i++){const m=new THREE.Mesh(GUT_G,GUT_MAT);m.scale.set(1,1,1.4);scene.add(m);segs.push(m);}
+    V.G={f,segs};GUTS.push(V.G);const c=f.chest(new V3());if(typeof bloodBurst==='function')bloodBurst(c.clone().add(TMP2.set(0,-.35,0)).addScaledVector(f.fwd(),.3),40,6);xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  f.poseKey=t<.15?'specw':'slashWind';f.vel.x*=.8;f.vel.z*=.8;
+  const fw=f.fwd(),side=new V3(fw.z,0,-fw.x),belly=f.chest(new V3()).add(TMP2.set(0,-.35,0));
+  // the lash sweeps from his right to his left
+  const k=clamp((t-.12)/.35,0,1),ext=Math.sin(Math.min(1,t/.5)*Math.PI*.5)*(t>.7?Math.max(0,1-(t-.7)/.25):1),ang=(k-.5)*2.2,R=7.5*ext;
+  const tip=belly.clone().addScaledVector(fw,Math.cos(ang)*R).addScaledVector(side,-Math.sin(ang)*R);tip.y=belly.y+Math.sin(t*14)*.3;
+  V.G.segs.forEach((m,i)=>{const u=i/(V.G.segs.length-1),p=belly.clone().lerp(tip,u);const sag=Math.sin(u*Math.PI)*(.6-ext*.4);p.y-=sag;p.addScaledVector(side,Math.sin(u*Math.PI*2+t*12)*.25*u);m.position.copy(p);m.rotation.set(u*9+t*6,u*4,0);});
+  if(Math.random()<.4&&nearCam(tip,40))burst(SMK,tip,1,{colors:[0x7a0010,0xa04a4a],speed:1,life:.4,size:.1,size1:.04,grav:12});
+  if(t>.12&&t<.5){for(const o of foes(f,R+.6)){if(V.hit[o.id])continue;const d=o.pos.clone().sub(f.pos).setY(0),L=d.length();if(L<.5)continue;const a=Math.atan2(d.dot(side)*-1,d.dot(fw));if(Math.abs(a-ang)>.45)continue;
+      V.hit[o.id]=1;if(NET.role!=='client'){hitO(f,o,{dmg:9,kb:0,up:0,stun:.8,pt:o.chest(new V3())});if(!V.reel){V.reel=o;yankTo(f,o,.35);}}if(typeof bloodBurst==='function')bloodBurst(o.chest(new V3()),16,4);}}
+  if(t>.95){f.set(f.onGround?'idle':'air');}return 10;};
+function yankTo(f,T,dur){const from=T.pos.clone(),t0=game.time;T.set('hit');const step=()=>{if(!inMatch()||T.dead||f.dead)return;const k=Math.min(1,(game.time-t0)/dur),fw=f.fwd(),to=new V3(f.pos.x+fw.x*1.5,f.pos.y,f.pos.z+fw.z*1.5);
+  T.pos.lerpVectors(from,to,k*k*(3-2*k));T.vel.set(0,0,0);if(k<1)requestAnimationFrame(step);};step();}
+onEv('tick',()=>{for(let i=GUTS.length-1;i>=0;i--){const G=GUTS[i];if(!inMatch()||G.f.dead||G.f.state!=='special'||!G.f.vf||G.f.vf.G!==G){G.segs.forEach(m=>scene.remove(m));GUTS.splice(i,1);}}});
+/* PUTRID BLOAT */
+XCUSTOM.bloat=function(f,dt){const V=f.vf,t=f.stateT,c=f.chest(new V3());f.vel.x*=.7;f.vel.z*=.7;
+  if(t<.8){f._chBloat=true;const s=1+t*.55+Math.sin(t*40)*.03*t;f.rig.root.scale.set(f.hero.scale*s,f.hero.scale*(1+t*.3),f.hero.scale*s);f.poseKey='burstIn';
+    if(Math.random()<.5&&nearCam(c,50))burst(SMK,c.clone().add(TMP2.set(rand(-.5,.5),rand(-.5,.6),rand(-.5,.5))),1,{colors:[0x6a7a1a,0x8a9a3a],speed:.6,up:.5,life:.6,size:.25,size1:.5});
+    atT(f,'b0',.05,()=>xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(false)));return 10;}
+  if(!V.pop){V.pop=1;f._chBloat=false;f.poseKey='burstOut';const R=6.5;
+    if(NET.role!=='client')for(const o of foes(f,R)){hitO(f,o,{dmg:16,kb:12,up:5,stun:.6,heavy:true,pt:o.chest(new V3())});o.slowT=Math.max(o.slowT||0,3);}
+    if(typeof bloodBurst==='function'){bloodBurst(c,130,13);}burst(SMK,c,40,{colors:[FEST_G,0x6a7a1a,0x5a0008],speed:12,up:3,life:.9,size:.3,size1:.6,grav:6});
+    if(typeof gibs==='function')gibs(c,f.fwd(),16);for(let i=0;i<8;i++){const a=i/8*6.283;chiPuddle(f,f.pos.clone().add(TMP2.set(Math.cos(a)*rand(2,5),0,Math.sin(a)*rand(2,5))),rand(1,1.6));}
+    for(let i=0;i<10;i++)chiStain(new V3(f.pos.x+rand(-4,4),f.pos.y,f.pos.z+rand(-4,4)),rand(.5,1.2));
+    ring(TMP2.set(f.pos.x,f.pos.y+.3,f.pos.z).clone(),FEST_G,R,.4,true,1.4);shake(.6,c);hitStop(.08);xSnd(f.pos,()=>{AU.boom&&AU.boom(true);AU.hit&&AU.hit(true);});}
+  endAt(f,1.15);return 10;};
+onEv('tick',()=>{for(const f of FS)if(f._chBloat&&(f.state!=='special'||f.dead)){f._chBloat=false;}});
+/* MASS GRAVE (FESTER ultimate) */
+ULTX.massgrave={r:14,s(f){f.uEnd=99;f.vf.t0=null;f.invuln=Math.max(f.invuln,1);f.poseKey='kneelPalm';},
+  u(f,t){const V=f.vf;if(V.t0==null){V.t0=t;f.uEnd=t+2.8;const T=tgtOf(f,26);if(T)faceTo(f,T);V.c=T?T.pos.clone():f.pos.clone().addScaledVector(f.fwd(),8);V.c.y=floorAt(V.c.x,V.c.z,f.pos.y+2);
+      if(typeof duckMusic==='function')duckMusic(2.6);xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+    const r=t-V.t0,C=V.c;f.vel.set(0,f.vel.y,0);f.poseKey=r<.4?'kneelPalm':r<1.9?'armsUp':'slamLand';
+    atT(f,'m0',V.t0+.25,()=>{ring(TMP2.set(C.x,C.y+.2,C.z).clone(),0x5a0008,7,.6,true,1.2);dust(C,14,2);if(typeof crater==='function')crater(C.x,C.z,5,C.y);shake(.6,C);
+      for(let i=0;i<10;i++)chiStain(new V3(C.x+rand(-5,5),C.y,C.z+rand(-5,5)),rand(.8,1.8));
+      const G={f,C,t:0,hands:[],held:[]};GRAVES.push(G);V.G=G;
+      for(let i=0;i<20;i++){const a=rand(0,6.283),rr=Math.sqrt(Math.random())*6.5,p=new V3(C.x+Math.cos(a)*rr,0,C.z+Math.sin(a)*rr);p.y=floorAt(p.x,p.z,C.y+2);const m=chiArmMesh(f);m.position.set(p.x,p.y-1.1,p.z);
+        chiAim(m,new V3(rand(-.3,.3),1,rand(-.3,.3)));G.hands.push({m,base:p,d:rand(0,.35)});}
+      if(NET.role!=='client')for(const o of FS){if(o===f||ally(o,f)||o.dead||o.downed)continue;if(Math.hypot(o.pos.x-C.x,o.pos.z-C.z)>7||Math.abs(o.pos.y-C.y)>4)continue;
+        hitO(f,o,{dmg:10,kb:0,up:0,stun:2,ult:true,pt:o.chest(new V3())});G.held.push({o,p:o.pos.clone()});}
+      netEvent({k:'chgrave',a:f.id,x:C.x,y:C.y,z:C.z});xSnd(C,()=>{AU.boom&&AU.boom(true);AU.crash&&AU.crash();});});
+    atT(f,'m1',V.t0+1.9,()=>{const G=V.G;if(!G)return;// dragged under
+      if(NET.role!=='client')for(const H of G.held){const o=H.o;if(o.dead)continue;hitO(f,o,{dmg:30,kb:4,up:9,launch:true,heavy:true,ult:true,pt:o.chest(new V3())});}
+      for(const H of G.held)if(typeof bloodBurst==='function')bloodBurst(H.o.chest(new V3()),70,9);G.crush=true;shake(.9,C);hitStop(.1);flashLight(TMP2.set(C.x,C.y+1,C.z).clone(),0xa01020,12);xSnd(C,()=>{AU.boom&&AU.boom(true);AU.hit&&AU.hit(true);});});
+    return 10;}};
+onEv('net:chgrave',e=>{const f=FS.find(o=>o.id===e.a);if(!f)return;const C=new V3(e.x,e.y,e.z);const G={f,C,t:0,hands:[],held:[]};GRAVES.push(G);
+  for(let i=0;i<20;i++){const a=rand(0,6.283),rr=Math.sqrt(Math.random())*6.5,p=new V3(C.x+Math.cos(a)*rr,0,C.z+Math.sin(a)*rr);p.y=floorAt(p.x,p.z,C.y+2);const m=chiArmMesh(f);m.position.set(p.x,p.y-1.1,p.z);chiAim(m,new V3(0,1,0));G.hands.push({m,base:p,d:rand(0,.35)});}});
+onEv('tick',dt=>{for(let i=GRAVES.length-1;i>=0;i--){const G=GRAVES[i];G.t+=dt;if(G.t>2.8||!inMatch()){G.hands.forEach(h=>scene.remove(h.m));GRAVES.splice(i,1);continue;}
+  for(const h of G.hands){const k=clamp((G.t-h.d)/.35,0,1),sink=G.t>2.1?(G.t-2.1)/.7:0;h.m.position.y=h.base.y-1.1+k*1.3-sink*1.5;h.m.rotation.y+=Math.sin(G.t*12+h.d*20)*dt*2;
+    if(k>0&&k<1&&Math.random()<.3&&nearCam(h.base,60))burst(SMK,TMP2.set(h.base.x,h.base.y+.1,h.base.z).clone(),2,{colors:[0x3a2a1a,0x5a0008],speed:2,up:3,life:.5,size:.15,size1:.05,grav:10});}
+  for(const H of G.held){const o=H.o;if(o.dead||G.t>2.1)continue;o.pos.copy(H.p);o.pos.y=H.p.y-Math.min(.6,G.t*.25);o.vel.set(0,0,0);if(NET.role!=='client'&&o.state!=='hit')o.set('hit');if(o.state==='hit')o.stunT=Math.max(o.stunT||0,o.stateT+.3);
+    if(Math.random()<.15&&typeof bloodBurst==='function')bloodBurst(o.chest(new V3()).add(TMP2.set(0,-.6,0)),5,3);}}});
+onEv('matchEnd',()=>{SWARMS.length=0;GASES.length=0;RIBS.forEach(C=>scene.remove(C.g));RIBS.length=0;GUTS.forEach(G=>G.segs.forEach(m=>scene.remove(m)));GUTS.length=0;GRAVES.forEach(G=>G.hands.forEach(h=>scene.remove(h.m)));GRAVES.length=0;});
+Object.assign(SPNAME,{festswarm:'MAGGOT SWARM'});Object.assign(SPECIAL_AI,{festswarm:[3,20,.6]});Object.assign(XSPK,{festswarm:1});Object.assign(ULT_RANGE,{massgrave:14});
+// plug them into his FESTER mode
+const _chiMHIv=setInterval(()=>{if(typeof modeHero!=='function')return;clearInterval(_chiMHIv);const _mh=modeHero;modeHero=function(base){const had=!!(base&&base._mode);const H=_mh.apply(this,arguments);
+  if(H&&!had&&base.id==='chimera'){const ab=o=>sanitizeAbil(Object.assign({colors:[FEST_G,CHI_R]},o));
+    Object.assign(H,{special:'festswarm',spName:'MAGGOT SWARM',specCD:2.8,ult:'massgrave',ultName:'MASS GRAVE',
+      _xm:[Object.assign(ab({name:'GUT ROPE',form:'grab',style:'blood',shape:'ring',fx:[]}),{custom:'gutrope'}),Object.assign(ab({name:'PUTRID BLOAT',form:'burst',style:'poison',shape:'orb',fx:[]}),{custom:'bloat'})]});
+    if(H.cab)H.cab=Object.assign({},H.cab);}
+  return H;};},5);

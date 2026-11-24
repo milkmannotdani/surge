@@ -87,8 +87,9 @@ const FORMS={
    sp:FA('FLICK CANNON','bolt','wind','ring',['push'],{size:1.6,speed:40}),alt:FA('SHOOT DIVE','slam','wind','ring',['launch']),
    x:[FA('WHIP NET','grab','shadow','hand',['pull','stun']),FA('GEARSHIFT RUSH','dash','lightning','lightning',['launch'])],u:FA('HUNDRED PERCENT','burst','wind','fist',['launch','push'],{power:1.5,size:1.6})},
  chimera:{n:'FESTER',d:'the rot spreads',c:0x4a5a1a,a:0xd8f03a,s:[1.15,1,1.05],k:'el bk el bk sm|sm|acid',
-   sp:FA('BONE HARPOON','bolt','metal','spike',['pierce'],{speed:34}),alt:FA('CARRION BURST','burst','poison','orb',['push','slow']),
-   x:[FA('ROT POOL','zone','poison','orb',['slow']),FA('GRAVE CRAWL','dash','blood','spike',['launch'])],u:FA('MASS GRAVE','pillar','blood','spike',['launch'],{count:6,power:1.4})},
+   // FESTER's real moves are custom (MAGGOT SWARM, RIB CAGE, GUT ROPE, PUTRID BLOAT, MASS GRAVE) — see the end of chimera.js
+   sp:FA('MAGGOT SWARM','bolt','poison','orb',['slow']),alt:FA('RIB CAGE','burst','metal','spike',['stun']),
+   x:[FA('GUT ROPE','grab','blood','ring',['pull']),FA('PUTRID BLOAT','burst','poison','orb',['push','slow'])],u:FA('MASS GRAVE','pillar','blood','spike',['launch'],{count:6,power:1.4})},
  torrent:{n:'FULL THROTTLE',d:'no holding back',c:0xffffff,a:0x2a8aff,s:[1.2,.95,1.1],k:'pa jR jR jL cm|cm|spirit',
    sp:FA('TORRENT BEAM','beam','spirit','orb',['push','launch'],{size:2.1,range:34,dur:1.5,power:1.25}),alt:FA('GATLING FINGERS','volley','spirit','bullet',['pierce'],{count:12,speed:56,power:1}),
    x:[FA('SHOCK OUTPUT','burst','lightning','ring',['stun']),FA('GROUND BLAST','pillar','spirit','orb',['launch'],{count:4})],u:FA('OVERLOAD CANNON','beam','spirit','orb',['launch','explode'],{size:2.6,range:40,dur:3.4,power:1.6})},
