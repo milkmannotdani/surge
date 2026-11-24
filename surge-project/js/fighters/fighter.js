@@ -621,8 +621,10 @@ class Fighter{
   applyPose(dt){
     const R=this.rig;
     if(this.state!=='framed'){const T=this.targetPose(dt),P=this.P;
-      const rate=(this.state==='attack'||this.state==='ult'||this.state==='hit'||this.state==='dash')?28:(this.state==='fly'||this.state==='down')?10:(this.state==='run'||this.state==='idle')?11:14;
-      const k=Math.min(1,rate*dt);for(const key in T)P[key]+=(T[key]-P[key])*k;}
+      // critically-damped spring per joint: limbs accelerate and settle smoothly, frame-rate independent
+      const st=this.state,w=st==='hit'?34:(st==='attack'||st==='ult'||st==='dash')?30:(st==='fly'||st==='down')?12:(st==='run'||st==='idle')?14:18;
+      const PV=this.PV||(this.PV={}),n=Math.max(1,Math.ceil(dt/.011)),h=dt/n,w2=w*w,w22=2*w;
+      for(let q=0;q<n;q++)for(const key in T){const v=PV[key]||0,a=w2*(T[key]-P[key])-w22*v,nv=v+a*h;PV[key]=nv;P[key]+=nv*h;}}
     const P=this.P;
     R.root.position.copy(this.pos);R.root.rotation.y=this.face;
     let flip=0;if(this.flipT>0){this.flipT=Math.max(0,this.flipT-dt);flip=(1-this.flipT/.42)*Math.PI*2;}

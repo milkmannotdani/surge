@@ -38,6 +38,7 @@ js/
     motion.js         fluid movement: lean into speed, bank into turns, smoother pose blending and camera
     cinema.js         CINEMATIC MOVES: no move text pop-ups in fights; freeze-frames, camera punch-in, impact flash, ult letterbox, slow-mo
     sigs.js           SIGNATURES: each inspired fighter's constant signature look, inspiration-matched extra moves (Glacier Wall, Unpack, Curved Shot, Acid Shot), directed ult cinematics
+    anim.js           spring-smoothed joint blending (fighter.js applyPose) + ultimate animations by what each ult does (punch, beam, slam, barrage, aoe, sky, ground, slash, rush, shot, roar, command)
     dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
     hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)
