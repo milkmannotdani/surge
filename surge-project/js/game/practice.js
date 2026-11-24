@@ -104,4 +104,3 @@ $('prFighter').onclick=()=>{AU.ui();endMatchCleanup();openSetup('prac');};
 $('prExit').onclick=()=>{AU.ui();leaveMatch();};
 $('prHide').onclick=()=>{PR.panel=!PR.panel;$('prac').classList.toggle('min',!PR.panel);AU.ui();};
 $('bPractice').onclick=()=>{AU.init();AU.ui();openSetup('prac');};
-$('bCreate').onclick=()=>{AU.init();AU.ui();setupMode='off';openCreator();};

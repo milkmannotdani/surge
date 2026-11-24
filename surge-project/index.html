@@ -50,7 +50,6 @@
   <div class="rowb" style="margin-top:16px"><button class="btn" id="misBack">BACK</button></div></div>
 <div id="hint" style="display:none">WASD MOVE · CLICK TO LOCK CURSOR · MOUSE LOOK · C SHIFT LOCK · TAB LOCK-ON · SPACE JUMP ×2 · JUMP INTO A WALL + HOLD = CLIMB · SPACE ON A WALL = WALL JUMP · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · 1–4 MOVES · Q ULT (BACK/AIR = ALT ULT) · HOLD = CHARGE · 5 SWITCH MODE · HOLD R RESCUE · M MUSIC · ESC MENU</div>
 
-<div id="story" class="screen"><div class="rowb" id="storyTabs" style="margin-bottom:10px"></div><h1 style="font-size:52px" id="storyH">SURGE: ORIGIN</h1><p id="storySub">STORY MODE · THE TALE OF THE HERO TITAN</p><div id="storyList"></div><div class="rowb" style="margin-top:16px"><button class="btn" id="bStoryBack">BACK</button></div></div>
 <div id="cut"><canvas id="cutFx"></canvas><div id="cutSfx"></div><div id="cutCard"><b></b><span></span></div><div id="cutEp"><small></small><b></b></div><div id="cutBox"><div id="cutImg"></div><div class="cutr"><div id="cutName"></div><div id="cutTxt"></div><div class="cuth">CLICK / SPACE ▶ · ESC SKIP</div></div><button id="cutSkip">SKIP ▶▶</button></div></div>
 <div id="bossBar"><div id="bossName"></div><div class="bbar"><div id="bossFill"></div></div></div>
 <div id="title" class="screen">
@@ -58,7 +57,7 @@
   <h2>BATTLE ROYALE</h2>
   <p>SECTOR 7 · HEROES VS VILLAINS · LAST ONE STANDING</p>
   <div class="rowb" style="margin-top:30px"><button class="btn pulse big" id="bPlay">PLAY</button></div>
-  <div class="rowb" style="margin-top:14px"><button class="chip tb2" id="bCreate">CREATE A FIGHTER</button><button class="chip tb2 shopb" id="bShop">★ SHOP</button><button class="chip tb2" id="bProgress">📈 PROGRESS</button><button class="chip tb2" id="bSettings">⚙ SETTINGS</button><button class="chip tb2" id="bCredits">CREDITS</button></div>
+  <div class="rowb" style="margin-top:14px"><button class="chip tb2 shopb" id="bShop">★ SHOP</button><button class="chip tb2" id="bProgress">📈 PROGRESS</button><button class="chip tb2" id="bSettings">⚙ SETTINGS</button><button class="chip tb2" id="bCredits">CREDITS</button></div>
   <div class="ptst" id="ptsTitle"></div>
   <div id="nodTip"></div>
 </div>
@@ -66,7 +65,6 @@
   <div class="gmgrid">
     <div class="gm" id="bOnline"><div class="gmt">PLAY ONLINE</div><div class="gmd">Host or join a room with a code. Battle royale, arena or co-op BOSS RAID. Voice chat included.</div></div>
     <div class="gm cy" id="bOffline"><div class="gmt">PLAY VS BOTS</div><div class="gmd">Battle royale, arena or BOSS RAID against bots. Solo or duos with a bot partner.</div></div>
-    <div class="gm st" id="bStory"><div class="gmt">STORY MODE</div><div class="gmd">Training Arc, the hero story SURGE: ORIGIN and the villain story THE SEVERANCE.</div></div>
     <div class="gm ms" id="bMissions"><div class="gmt">MISSIONS</div><div class="gmd">Rescue civilians during a villain attack, or take the Hero License Exam.</div></div>
     <div class="gm pr" id="bPractice"><div class="gmt">PRACTICE</div><div class="gmd">Training dummies, free meter and no damage. Try out any fighter.</div></div>
   </div>
@@ -131,37 +129,6 @@
     </div>
   </div>
 </div>
-<div id="creator" class="screen">
-  <div class="topbar"><div class="tabs"><span class="tb sel">CREATE A FIGHTER</span></div><div class="tbr">DESCRIBE IT · IT GETS BUILT</div></div>
-  <div class="crwrap">
-    <div class="crL">
-      <span class="lbl">NAME</span><input id="crName" maxlength="14" placeholder="Fighter name">
-      <span class="lbl">POWERS, MOVES AND LOOK</span>
-      <textarea id="crText" maxlength="1200" spellcheck="false" placeholder="Example: A lava giant who punches with fists of fire. Special: throws a &quot;Magma Ball&quot;. Ultimate: a huge explosion called &quot;Core Meltdown&quot;. Alt ultimate: meteors. Red and orange, big and strong."></textarea>
-      <div class="craib" id="crAI">BUILT-IN DESIGNER</div>
-      <div class="crtips">Describe new abilities in your own words (what they look like, how they hit, what they do to enemies), or write a power (fire, ice, shadow, time, blood, gravity, lightning…), a weapon (sword, katana, axe, hammer, scythe, spear, staff, gun, bow, guitar, claws, whip, chain, dual daggers… even what it's made of, like a golden axe), what the <b>special</b>, <b>second special</b>, <b>ultimate</b> and <b>alt ultimate</b> do, colors, and if they're fast, big, strong or a villain. Put move names in "quotes". You can change anything on the right.</div>
-      <div class="rowb"><button class="btn cy" id="crBuild">BUILD IT</button><button class="chip" id="crIdea">RANDOM IDEA</button></div>
-      <div class="crstat" id="crStat"></div>
-      <div class="rowb"><button class="chip" id="crBack">BACK</button><button class="btn pulse" id="crSave" style="display:none">SAVE FIGHTER</button></div>
-    </div>
-    <div class="crR">
-      <div class="crimgw"><img id="crImg" alt=""><button class="chip mdbtn" id="crMold">✎ MOLD CHARACTER</button><div class="mdhint">Sculpt the body and build armor piece by piece</div></div>
-      <div class="crres" id="crRes"><div class="crhead">WRITE A DESCRIPTION, THEN BUILD IT</div></div>
-    </div>
-  </div>
-</div>
-
-<div id="mold" class="screen">
-  <div class="topbar"><div class="tabs"><span class="tb sel">MOLD</span></div><div class="tbr" id="mdCount"></div></div>
-  <div class="mdwrap">
-    <div class="mdL"><div id="mdTabs" class="mdtabs"><span data-t="body">BODY</span><span data-t="armor">ARMOR</span><span data-t="colors">COLORS</span></div><div id="mdPanel" class="mdpanel"></div></div>
-    <div class="mdR"><div id="mdView"></div>
-      <div class="mdbar"><div id="mdFocus" class="mdrow"><span class="lblx">VIEW</span><span class="chip sm" data-f="full">FULL</span><span class="chip sm" data-f="head">HEAD</span><span class="chip sm" data-f="chest">CHEST</span><span class="chip sm" data-f="arms">ARMS</span><span class="chip sm" data-f="legs">LEGS</span></div>
-        <div id="mdPose" class="mdrow"><span class="lblx">POSE</span><span class="chip sm sel" data-p="idle">IDLE</span><span class="chip sm" data-p="t">T-POSE</span><span class="chip sm" data-p="act">ACTION</span></div>
-        <div class="mdrow mdbtns"><span class="chip" id="mdUndo">UNDO</span><span class="chip" id="mdReset">RESET ALL</span><span class="chip" id="mdCancel">CANCEL</span><button class="btn" id="mdDone">DONE</button></div></div>
-      <div class="mdtip">Drag to turn · scroll to zoom · click a piece to select it · Del removes it · Ctrl+Z undo</div></div></div>
-</div>
-
 <div id="shop" class="screen">
   <div class="topbar"><div class="tabs" id="shTabs"><span class="tb" data-t="cards">CALLING CARDS</span><span class="tb" data-t="skins">SKINS</span><span class="tb" data-t="pets">PETS</span><span class="tb" data-t="tags">NAME TAGS</span><span class="tb" data-t="emotes">EMOTES</span><span class="tb" data-t="poses">VICTORY POSES</span></div><div class="tbr shpts" id="shPts"></div></div>
   <div class="shwrap">
@@ -222,9 +189,7 @@
 <script src="js/fighters/abilities.js"></script>
 <script src="js/fighters/movefx.js"></script>
 <script src="js/fighters/gear.js"></script>
-<script src="js/creator/mold.js"></script>
 <script src="js/creator/custom.js"></script>
-<script src="js/creator/design.js"></script>
 <script src="js/game/shop.js"></script>
 <script src="js/game/ai.js"></script>
 <script src="js/fighters/mha.js"></script>
@@ -248,11 +213,7 @@
 <script src="js/game/rules.js"></script>
 <script src="js/game/net.js"></script>
 <script src="js/game/ui.js"></script>
-<script src="js/creator/creator.js"></script>
 <script src="js/game/practice.js"></script>
-<script src="js/story/chapters.js"></script>
-<script src="js/story/training.js"></script>
-<script src="js/story/villain.js"></script>
 <script src="js/story/story.js"></script>
 <!-- add-on features (they hook in with onEv) -->
 <script src="js/features/music.js"></script>
@@ -290,6 +251,8 @@
 <script src="js/features/cinema.js"></script>
 <script src="js/features/sigs.js"></script>
 <script src="js/features/anim.js"></script>
+<script src="js/features/arenaping.js"></script>
+<script src="js/features/gore.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

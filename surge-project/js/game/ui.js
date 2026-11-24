@@ -5,7 +5,7 @@ let mySel=(()=>{const v=+(store.get('surge.hero')||0)||0;return v>=CUST0&&CSPECS
 const BOTN=['Vex','Kairo','Nyx','Brakk','Sola','Juno','Ryze','Mako','Tess','Orin','Pike','Zara','Dax','Lumen'];
 function botName(){return pick(BOTN)+' (BOT)';}
 function myName(){return cleanName($('nameIn').value||store.get('surge.name')||'Player');}
-function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop','story','missions','gmodes','settings','prog','credits'].forEach(s=>$(s).classList.toggle('on',s===id));}
+function showScreen(id){['title','setup','lobby','pause','result','msg','shop','missions','gmodes','settings','prog','credits'].forEach(s=>$(s).classList.toggle('on',s===id));}
 function showMsg(t){$('msgT').textContent=t;showScreen('msg');}
 /* ---- fighter select: rendered portraits + 3D pedestal ---- */
 const PV={r:null,scene:null,cam:null,rigs:{},idx:0,ped:null,beams:[],portraits:{},filter:'all'};
@@ -42,12 +42,12 @@ function poseRig(R,P,t){
   if(R.beast){R.beast.group.position.set(0,.95+Math.sin(t*2)*.05,-.42);R.beast.head.rotation.y=Math.sin(t*1.2)*.3;R.beast.jaw.rotation.x=.15+Math.sin(t*1.7)*.1;}
   if(R.spikes)R.spikes.forEach(c=>c.visible=true);
 }
-function renderPortrait(i){if(!PV.r)return;const cvs=$('pv');const mdv=MD.R?MD.R.root:null;if(mdv)mdv.visible=false;const h=heroAt(i),R=pvRig(i);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;PV.ped.visible=false;
+function renderPortrait(i){if(!PV.r)return;const cvs=$('pv');const h=heroAt(i),R=pvRig(i);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;PV.ped.visible=false;
   poseRig(R,POSES.showcase,0);R.root.rotation.y=.35;R.root.position.set(0,0,0);
   const sc=h.scale,hy=1.8*sc;PV.cam.aspect=.82;PV.cam.fov=26;PV.cam.updateProjectionMatrix();PV.cam.position.set(.22*sc,hy+.06,1.35*sc);PV.cam.lookAt(0,hy-.1,0);
   PV.r.setSize(205,250,false);PV.r.render(PV.scene,PV.cam);try{PV.portraits[i]=cvs.toDataURL('image/png');}catch(e){}
   Object.values(PV.rigs).forEach(r=>r.root.visible=false);const cur=PV.rigs[pvKey(PV.idx)];if(cur)cur.root.visible=true;R.root.rotation.y=-.5;
-  PV.r.setSize(cvs.clientWidth||400,cvs.clientHeight||400,false);if(mdv)mdv.visible=true;PV.ped.visible=true;}
+  PV.r.setSize(cvs.clientWidth||400,cvs.clientHeight||400,false);PV.ped.visible=true;}
 function makePortraits(){
   if(!PV.r)return;let i=0;const ids=HEROES.map((h,k)=>k).concat(CSPECS.map((s,k)=>CUST0+k));
   const next=()=>{if(i>=ids.length){buildCards();return;}renderPortrait(ids[i]);
@@ -58,7 +58,7 @@ function previewHero(i){PV.idx=i;const h=heroAt(i);
   $('pvDiff').textContent=h.diff;$('pvName').textContent=h.name;
   $('pvTags').innerHTML=`<span class="tag ${h.faction==='hero'?'h':'v'}">${h.faction==='hero'?'HERO':'VILLAIN'}</span><span class="tag">${h.cls}</span><span class="tag">${h.power}</span>`;
   $('pvTags2').innerHTML=h.tags.map(t=>`<span class="tag o">${t}</span>`).join('')+`<span class="tag o">Ult: ${h.ultName}</span>`;
-  $('pvDesc').textContent=h.desc;$('pvDesc').style.setProperty('--c',h.css);$('pvMoves').innerHTML=movesHTML(h);$('pvEdit').style.display=i>=CUST0?'inline-block':'none';$('pvEdit').onclick=()=>{AU.ui();openCreator(i-CUST0);};if(!PV.mvb){PV.mvb=1;$('pvMvBtn').onclick=()=>{const pi=document.querySelector('.pvinfo');pi.classList.toggle('mv');$('pvMvBtn').textContent=pi.classList.contains('mv')?'ABOUT':'MOVE LIST';AU.ui();};}$('pvMoves').style.setProperty('--c',h.css);
+  $('pvDesc').textContent=h.desc;$('pvDesc').style.setProperty('--c',h.css);$('pvMoves').innerHTML=movesHTML(h);$('pvEdit').style.display='none';if(!PV.mvb){PV.mvb=1;$('pvMvBtn').onclick=()=>{const pi=document.querySelector('.pvinfo');pi.classList.toggle('mv');$('pvMvBtn').textContent=pi.classList.contains('mv')?'ABOUT':'MOVE LIST';AU.ui();};}$('pvMoves').style.setProperty('--c',h.css);
   if(PV.r){const R=pvRig(i,ARMOR_OFF);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;R.root.rotation.y=-.5;}
   const ab=$('armorBtn');if(ab){ab.textContent=ARMOR_OFF?'🧍 ARMOR: OFF':'🛡 ARMOR: ON';ab.classList.toggle('on',!ARMOR_OFF);ab.style.display=i<CUST0?'':'none';}
 }
@@ -71,7 +71,7 @@ function renderPreview(dt){
   PV.cam.position.set(off,1.35*sc,6.8);PV.cam.lookAt(off,1.0*sc,0);PV.r.render(PV.scene,PV.cam);
 }
 function buildCards(){
-  const f=$('filters');f.innerHTML='';[['all','ALL'],['hero','HEROES'],['villain','VILLAINS'],['vigilante','VIGILANTES'],['custom','CREATED']].forEach(([k,n])=>{const b=document.createElement('span');b.textContent=n;b.className=PV.filter===k?'sel':'';b.onclick=()=>{PV.filter=k;AU.ui();buildCards();};f.appendChild(b);});
+  const f=$('filters');f.innerHTML='';[['all','ALL'],['hero','HEROES'],['villain','VILLAINS'],['vigilante','VIGILANTES']].forEach(([k,n])=>{const b=document.createElement('span');b.textContent=n;b.className=PV.filter===k?'sel':'';b.onclick=()=>{PV.filter=k;AU.ui();buildCards();};f.appendChild(b);});
   const g=$('grid');g.innerHTML='';
   const ids=HEROES.map((h,k)=>k).concat(CSPECS.map((s,k)=>CUST0+k));
   ids.forEach(i=>{const h=heroAt(i),cu=i>=CUST0;if(PV.filter==='custom'?!cu:PV.filter==='vigilante'?!h.vig:(PV.filter!=='all'&&h.faction!==PV.filter))return;const t=document.createElement('div');t.className='tile'+(h.faction==='villain'?' vil':'')+(mySel===i?' sel':'');t.style.setProperty('--c',h.css);
@@ -79,7 +79,6 @@ function buildCards(){
     if(cu){const d=t.querySelector('.del');d.onclick=e=>{e.stopPropagation();AU.ui();if(d.dataset.arm){deleteCustom(i);}else{d.dataset.arm=1;d.textContent='DEL?';d.style.width='44px';d.style.background='#c4102a';setTimeout(()=>{d.dataset.arm='';d.textContent='✕';d.style.width='';d.style.background='';},2500);}};}
     t.onmouseenter=()=>previewHero(i);t.onmouseleave=()=>previewHero(mySel);
     t.onclick=()=>{mySel=i;store.set('surge.hero',i);AU.init();AU.ui();buildCards();previewHero(i);};g.appendChild(t);});
-  if(PV.filter==='all'||PV.filter==='custom'){const a=document.createElement('div');a.className='tile add';a.innerHTML='<b>+</b>CREATE';a.onclick=()=>{AU.ui();openCreator();};g.appendChild(a);}
   const dd=$('diffs');dd.innerHTML='';['ROOKIE','PRO','LEGEND'].forEach((n,i)=>{const b=document.createElement('div');b.className='chip'+(game.diff===i?' sel':'');b.textContent=n;b.onclick=()=>{game.diff=i;AU.ui();buildCards();};dd.appendChild(b);});
   const md=$('modes');md.innerHTML='';[['solo','SOLO'],['duos','DUOS']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(game.mode===k?' sel':'');b.textContent=n;b.onclick=()=>{game.mode=k;store.set('surge.mode',k);AU.ui();buildCards();};md.appendChild(b);});
   rulesChips('rules',game.rules,k=>{game.rules=k;store.set('surge.rules',k);buildCards();});$('modeTab').textContent=game.rules==='arena'?'ARENA':game.rules==='raid'?'BOSS RAID':'BATTLE ROYALE';

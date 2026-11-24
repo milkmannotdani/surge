@@ -526,6 +526,14 @@ body.calm #flash{display:none!important}
 #cineBars{position:fixed;inset:0;z-index:15;pointer-events:none}#cineBars i{position:absolute;left:0;right:0;height:0;background:#000;transition:height .35s cubic-bezier(.2,.8,.2,1)}
 #cineBars i:first-child{top:0}#cineBars i:last-child{bottom:0}#cineBars.on i{height:9vh}
 body.cineM #clashP b{display:none}body.cineM #clashP span{font-size:11px;opacity:.75}
+/* arena ping */
+#apMarks{position:fixed;inset:0;pointer-events:none;z-index:18}
+.apm{position:absolute;left:0;top:0;margin:-14px 0 0 -14px;display:flex;flex-direction:column;align-items:center;transition:opacity .3s}
+.apm i{width:16px;height:16px;transform:rotate(45deg);background:var(--c,#ff3a4a);border:2px solid #fff;box-shadow:0 0 12px #ff3a4a}
+.apm span{font:14px 'Bebas Neue',sans-serif;letter-spacing:.1em;color:#fff;text-shadow:0 1px 3px #000;margin-top:2px}
+.apm.off i{transform:rotate(var(--r,0)) ;width:0;height:0;background:none;border:none;border-left:16px solid var(--c,#ff3a4a);border-top:10px solid transparent;border-bottom:10px solid transparent;box-shadow:none;filter:drop-shadow(0 0 4px #000)}
+#apHint{position:fixed;left:50%;bottom:146px;transform:translateX(-50%);z-index:19;display:none;padding:2px 10px;background:rgba(8,10,20,.6);color:#bbb;font:14px 'Bebas Neue',sans-serif;letter-spacing:.14em;pointer-events:none}
+#apHint.ready{color:#ff6a7a}#apHint kbd{background:#1b1d2b;border:1px solid #555b7a;border-radius:3px;padding:0 5px;color:#ffd23f;font:inherit}
 </style>
 </head>
 <body>
@@ -570,7 +578,6 @@ body.cineM #clashP b{display:none}body.cineM #clashP span{font-size:11px;opacity
   <div class="rowb" style="margin-top:16px"><button class="btn" id="misBack">BACK</button></div></div>
 <div id="hint" style="display:none">WASD MOVE · CLICK TO LOCK CURSOR · MOUSE LOOK · C SHIFT LOCK · TAB LOCK-ON · SPACE JUMP ×2 · JUMP INTO A WALL + HOLD = CLIMB · SPACE ON A WALL = WALL JUMP · SHIFT DASH/SPRINT · R REVIVE · LMB/J LIGHT · RMB/K HEAVY · F/L BLOCK · 1–4 MOVES · Q ULT (BACK/AIR = ALT ULT) · HOLD = CHARGE · 5 SWITCH MODE · HOLD R RESCUE · M MUSIC · ESC MENU</div>
 
-<div id="story" class="screen"><div class="rowb" id="storyTabs" style="margin-bottom:10px"></div><h1 style="font-size:52px" id="storyH">SURGE: ORIGIN</h1><p id="storySub">STORY MODE · THE TALE OF THE HERO TITAN</p><div id="storyList"></div><div class="rowb" style="margin-top:16px"><button class="btn" id="bStoryBack">BACK</button></div></div>
 <div id="cut"><canvas id="cutFx"></canvas><div id="cutSfx"></div><div id="cutCard"><b></b><span></span></div><div id="cutEp"><small></small><b></b></div><div id="cutBox"><div id="cutImg"></div><div class="cutr"><div id="cutName"></div><div id="cutTxt"></div><div class="cuth">CLICK / SPACE ▶ · ESC SKIP</div></div><button id="cutSkip">SKIP ▶▶</button></div></div>
 <div id="bossBar"><div id="bossName"></div><div class="bbar"><div id="bossFill"></div></div></div>
 <div id="title" class="screen">
@@ -578,7 +585,7 @@ body.cineM #clashP b{display:none}body.cineM #clashP span{font-size:11px;opacity
   <h2>BATTLE ROYALE</h2>
   <p>SECTOR 7 · HEROES VS VILLAINS · LAST ONE STANDING</p>
   <div class="rowb" style="margin-top:30px"><button class="btn pulse big" id="bPlay">PLAY</button></div>
-  <div class="rowb" style="margin-top:14px"><button class="chip tb2" id="bCreate">CREATE A FIGHTER</button><button class="chip tb2 shopb" id="bShop">★ SHOP</button><button class="chip tb2" id="bProgress">📈 PROGRESS</button><button class="chip tb2" id="bSettings">⚙ SETTINGS</button><button class="chip tb2" id="bCredits">CREDITS</button></div>
+  <div class="rowb" style="margin-top:14px"><button class="chip tb2 shopb" id="bShop">★ SHOP</button><button class="chip tb2" id="bProgress">📈 PROGRESS</button><button class="chip tb2" id="bSettings">⚙ SETTINGS</button><button class="chip tb2" id="bCredits">CREDITS</button></div>
   <div class="ptst" id="ptsTitle"></div>
   <div id="nodTip"></div>
 </div>
@@ -586,7 +593,6 @@ body.cineM #clashP b{display:none}body.cineM #clashP span{font-size:11px;opacity
   <div class="gmgrid">
     <div class="gm" id="bOnline"><div class="gmt">PLAY ONLINE</div><div class="gmd">Host or join a room with a code. Battle royale, arena or co-op BOSS RAID. Voice chat included.</div></div>
     <div class="gm cy" id="bOffline"><div class="gmt">PLAY VS BOTS</div><div class="gmd">Battle royale, arena or BOSS RAID against bots. Solo or duos with a bot partner.</div></div>
-    <div class="gm st" id="bStory"><div class="gmt">STORY MODE</div><div class="gmd">Training Arc, the hero story SURGE: ORIGIN and the villain story THE SEVERANCE.</div></div>
     <div class="gm ms" id="bMissions"><div class="gmt">MISSIONS</div><div class="gmd">Rescue civilians during a villain attack, or take the Hero License Exam.</div></div>
     <div class="gm pr" id="bPractice"><div class="gmt">PRACTICE</div><div class="gmd">Training dummies, free meter and no damage. Try out any fighter.</div></div>
   </div>
@@ -651,37 +657,6 @@ body.cineM #clashP b{display:none}body.cineM #clashP span{font-size:11px;opacity
     </div>
   </div>
 </div>
-<div id="creator" class="screen">
-  <div class="topbar"><div class="tabs"><span class="tb sel">CREATE A FIGHTER</span></div><div class="tbr">DESCRIBE IT · IT GETS BUILT</div></div>
-  <div class="crwrap">
-    <div class="crL">
-      <span class="lbl">NAME</span><input id="crName" maxlength="14" placeholder="Fighter name">
-      <span class="lbl">POWERS, MOVES AND LOOK</span>
-      <textarea id="crText" maxlength="1200" spellcheck="false" placeholder="Example: A lava giant who punches with fists of fire. Special: throws a &quot;Magma Ball&quot;. Ultimate: a huge explosion called &quot;Core Meltdown&quot;. Alt ultimate: meteors. Red and orange, big and strong."></textarea>
-      <div class="craib" id="crAI">BUILT-IN DESIGNER</div>
-      <div class="crtips">Describe new abilities in your own words (what they look like, how they hit, what they do to enemies), or write a power (fire, ice, shadow, time, blood, gravity, lightning…), a weapon (sword, katana, axe, hammer, scythe, spear, staff, gun, bow, guitar, claws, whip, chain, dual daggers… even what it's made of, like a golden axe), what the <b>special</b>, <b>second special</b>, <b>ultimate</b> and <b>alt ultimate</b> do, colors, and if they're fast, big, strong or a villain. Put move names in "quotes". You can change anything on the right.</div>
-      <div class="rowb"><button class="btn cy" id="crBuild">BUILD IT</button><button class="chip" id="crIdea">RANDOM IDEA</button></div>
-      <div class="crstat" id="crStat"></div>
-      <div class="rowb"><button class="chip" id="crBack">BACK</button><button class="btn pulse" id="crSave" style="display:none">SAVE FIGHTER</button></div>
-    </div>
-    <div class="crR">
-      <div class="crimgw"><img id="crImg" alt=""><button class="chip mdbtn" id="crMold">✎ MOLD CHARACTER</button><div class="mdhint">Sculpt the body and build armor piece by piece</div></div>
-      <div class="crres" id="crRes"><div class="crhead">WRITE A DESCRIPTION, THEN BUILD IT</div></div>
-    </div>
-  </div>
-</div>
-
-<div id="mold" class="screen">
-  <div class="topbar"><div class="tabs"><span class="tb sel">MOLD</span></div><div class="tbr" id="mdCount"></div></div>
-  <div class="mdwrap">
-    <div class="mdL"><div id="mdTabs" class="mdtabs"><span data-t="body">BODY</span><span data-t="armor">ARMOR</span><span data-t="colors">COLORS</span></div><div id="mdPanel" class="mdpanel"></div></div>
-    <div class="mdR"><div id="mdView"></div>
-      <div class="mdbar"><div id="mdFocus" class="mdrow"><span class="lblx">VIEW</span><span class="chip sm" data-f="full">FULL</span><span class="chip sm" data-f="head">HEAD</span><span class="chip sm" data-f="chest">CHEST</span><span class="chip sm" data-f="arms">ARMS</span><span class="chip sm" data-f="legs">LEGS</span></div>
-        <div id="mdPose" class="mdrow"><span class="lblx">POSE</span><span class="chip sm sel" data-p="idle">IDLE</span><span class="chip sm" data-p="t">T-POSE</span><span class="chip sm" data-p="act">ACTION</span></div>
-        <div class="mdrow mdbtns"><span class="chip" id="mdUndo">UNDO</span><span class="chip" id="mdReset">RESET ALL</span><span class="chip" id="mdCancel">CANCEL</span><button class="btn" id="mdDone">DONE</button></div></div>
-      <div class="mdtip">Drag to turn · scroll to zoom · click a piece to select it · Del removes it · Ctrl+Z undo</div></div></div>
-</div>
-
 <div id="shop" class="screen">
   <div class="topbar"><div class="tabs" id="shTabs"><span class="tb" data-t="cards">CALLING CARDS</span><span class="tb" data-t="skins">SKINS</span><span class="tb" data-t="pets">PETS</span><span class="tb" data-t="tags">NAME TAGS</span><span class="tb" data-t="emotes">EMOTES</span><span class="tb" data-t="poses">VICTORY POSES</span></div><div class="tbr shpts" id="shPts"></div></div>
   <div class="shwrap">
@@ -2196,7 +2171,7 @@ function buildRig(h,sc){
   root.scale.setScalar(h.scale);
   root.traverse(o=>{if(o.isMesh&&o!==fbox){o.castShadow=true;o.receiveShadow=true;}});
   let swordTip=null,hipY=null,moldPieces=null;if(h.gear&&h.gear.type!=='none'){const GR=attachGear(h,{rF,lF,sc});if(GR.sword!==undefined)sword=GR.sword;if(GR.whip)whip=GR.whip;if(GR.tip)swordTip=GR.tip;}
-  if(h.mold){const X={root,hips,spine,neck,head,lS,lE,lF,rS,rE,rF,lH,lK,rH,rK,suit,main,trim,glow,dark,visor,envT,envI:sc&&sc!==scene?.55:1,accent:h.accent};moldPieces=applyMold(h.mold,X);hipY=X.hipY;}
+  if(h.mold&&typeof applyMold==='function'){const X={root,hips,spine,neck,head,lS,lE,lF,rS,rE,rF,lH,lK,rH,rK,suit,main,trim,glow,dark,visor,envT,envI:sc&&sc!==scene?.55:1,accent:h.accent};moldPieces=applyMold(h.mold,X);hipY=X.hipY;}
   return {root,hips,spine,head,neck,lS,lE,rS,rE,lH,lK,rH,rK,lF,rF,cloth,mats:[suit,main,trim],glow,whip,blades,beam,beast,spikes,wings,orbiters,frame,main,field,sword,flames,swordTip,hipY,moldPieces,ext:XR.ext||null};
 }
 
@@ -3912,7 +3887,7 @@ function coneFX(f,A,c,fw,R,t,D,vf,first,dt){const k=coneKind(A),c1=A.c1,c2=A.c2;
       burst(ADD,p,3,{colors:[c2,0xffffff],speed:5,life:.2,size:.18,size1:0,bright:2.6});}}break;}
   case 'bolt':{if(every(.07)){for(let q=0;q<3;q++){const p=conePt(c,fw,R,.42);bolt(c,p,pick([c1,c2,0xffffff]),.09,.12);burst(ADD,p,4,{colors:[c1,0xffffff],speed:5,life:.2,size:.25,size1:0,bright:2.8});}if(Math.random()<.4)flashLight(c,c1,6);}break;}
   case 'spray':{for(let q=0;q<9;q++){const a=rand(-.35,.35),d=fw.clone().applyAxisAngle(UP,a),sp=rand(R*1.1,R*1.6);
-      ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(1,3.5),d.z*sp,..._rgb(pick([c1,c2]),1.4),rand(.45,.65),.3*A.size,.55*A.size,-9,.4);}
+      ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(1,3.5),d.z*sp,..._rgb(pick([c1,c2]),1.4),rand(.45,.65),.3*A.size,.55*A.size,9,.4);}
     if(Math.random()<.35){const g=conePt(f.pos,fw,R,.35);g.y=.08;ring(g,c1,1.6,.35,true,1.5);burst(SMK,g,2,{colors:[c1,c2],speed:1,up:1,life:.6,size:.4,size1:1.2});}break;}
   case 'boom':{if(every(.11)){const d=2+((t/.11)%5)*(R/5);const p=c.clone().addScaledVector(fw,d).add(TMP2.set(rand(-.8,.8),0,rand(-.8,.8)));explosion(p,1.4*A.size+d*.06,[c1,c2,0xffffff]);xSnd(p,()=>{AU.boom(false);});}break;}
   case 'decay':{// the ground crumbles away in a spreading fan
@@ -4070,173 +4045,6 @@ function cabModel(shape,A,f){const g=new THREE.Group(),m1=addMat(A.c1,2.2,.9),m2
     case 'coin':{const c=M(G('co',()=>new THREE.CylinderGeometry(.22,.22,.04,24)),m1);c.rotation.x=Math.PI/2;M(G('co2',()=>new THREE.TorusGeometry(.18,.015,6,24)),m2);g.userData.spinY=1;return g;}
   }
   return null;}
-/* Mold editor */
-/* ================= MOLD: sculpt a created fighter's body and armor =================
-   Body proportions, base (armored or bare body), layer colors, and any number of armor pieces:
-   each piece is a shape attached to a body part with its own position, rotation, size, material and color. */
-const MOLD_BONES={head:'Head',chest:'Chest / back',hips:'Hips',uarmL:'Upper arm L',uarmR:'Upper arm R',farmL:'Forearm L',farmR:'Forearm R',handL:'Hand L',handR:'Hand R',thighL:'Thigh L',thighR:'Thigh R',shinL:'Shin L',shinR:'Shin R'};
-const MOLD_BONEMAP={head:'head',chest:'spine',hips:'hips',uarmL:'lS',uarmR:'rS',farmL:'lE',farmR:'rE',handL:'lF',handR:'rF',thighL:'lH',thighR:'rH',shinL:'lK',shinR:'rK'};
-const MOLD_MIRROR={uarmL:'uarmR',uarmR:'uarmL',farmL:'farmR',farmR:'farmL',handL:'handR',handR:'handL',thighL:'thighR',thighR:'thighL',shinL:'shinR',shinR:'shinL'};
-const MOLD_SHAPES={plate:'Plate',box:'Block',sphere:'Ball',dome:'Dome',cyl:'Tube',cone:'Cone',spike:'Spike',horn:'Horn',ring:'Ring',halo:'Halo',crystal:'Crystal',wedge:'Wedge',wing:'Wing',fin:'Fin',blade:'Blade',disc:'Disc',visor:'Visor band',star:'Star'};
-const MOLD_MATS={metal:'Metal',gloss:'Glossy',matte:'Matte',suit:'Fabric',glow:'Glow',glass:'Glass',dark:'Dark metal'};
-const MOLD_BODY={hgt:['Height',.8,1.25],head:['Head',.7,1.5],neck:['Neck',.6,1.8],shw:['Shoulder width',.75,1.45],chw:['Chest width',.7,1.5],chd:['Chest depth',.7,1.6],tor:['Torso length',.8,1.3],
-  wai:['Waist / hips',.7,1.5],arl:['Arm length',.75,1.35],art:['Arm thickness',.6,1.9],hnd:['Hands',.6,1.8],lgl:['Leg length',.75,1.3],lgt:['Leg thickness',.6,1.9],ft:['Feet',.6,1.7]};
-function moldDefault(){const b={};for(const k in MOLD_BODY)b[k]=1;return {v:1,plain:false,visor:true,body:b,cols:{},parts:[]};}
-function sanitizeMold(m){if(!m||typeof m!=='object')return null;const o=moldDefault();o.plain=!!m.plain;o.visor=m.visor!==false;
-  for(const k in MOLD_BODY){const n=+((m.body||{})[k]);if(isFinite(n))o.body[k]=clamp(n,MOLD_BODY[k][1],MOLD_BODY[k][2]);}
-  ['suit','main','trim','glow'].forEach(k=>{const c=(m.cols||{})[k];if(c!=null&&isFinite(+c))o.cols[k]=(+c>>>0)&0xffffff;});
-  const num=(v,lo,hi,d)=>{const n=+v;return isFinite(n)?clamp(n,lo,hi):d;};
-  o.parts=(Array.isArray(m.parts)?m.parts:[]).slice(0,80).map(p=>p&&typeof p==='object'?{b:MOLD_BONES[p.b]?p.b:'chest',s:MOLD_SHAPES[p.s]?p.s:'plate',m:MOLD_MATS[p.m]?p.m:'metal',c:isFinite(+p.c)?(+p.c>>>0)&0xffffff:0xc8ccd8,
-    p:[0,1,2].map(i=>num((p.p||[])[i],-.8,.8,0)),r:[0,1,2].map(i=>num((p.r||[])[i],-180,180,0)),k:[0,1,2].map(i=>num((p.k||[])[i],.01,1.6,.2)),mi:!!p.mi}:null).filter(Boolean);
-  return o;}
-/* unit-sized shapes, centered */
-function moldGeo(s){return cg('mold_'+s,()=>{switch(s){
-  case 'plate':return THREE.RoundedBoxGeometry?new THREE.RoundedBoxGeometry(1,1,1,4,.18):new THREE.BoxGeometry(1,1,1);
-  case 'box':return new THREE.BoxGeometry(1,1,1);case 'sphere':return new THREE.SphereGeometry(.5,32,24);
-  case 'dome':return new THREE.SphereGeometry(.5,32,16,0,Math.PI*2,0,Math.PI/2);case 'cyl':return new THREE.CylinderGeometry(.5,.5,1,32);
-  case 'cone':return new THREE.ConeGeometry(.5,1,32);case 'spike':{const q=new THREE.ConeGeometry(.22,1,16);q.translate(0,.5,0);return q;}
-  case 'horn':{const q=new THREE.ConeGeometry(.22,1,16,16);q.translate(0,.5,0);const a=q.attributes.position;for(let i=0;i<a.count;i++){const y=a.getY(i);a.setZ(i,a.getZ(i)-y*y*.55);}q.computeVertexNormals();return q;}
-  case 'ring':{const q=new THREE.TorusGeometry(.42,.08,14,48);q.rotateX(Math.PI/2);return q;}case 'halo':{const q=new THREE.TorusGeometry(.45,.03,10,64);q.rotateX(Math.PI/2);return q;}
-  case 'crystal':{const q=new THREE.OctahedronGeometry(.5,0);q.scale(.7,1,.7);return q;}case 'wedge':{const q=new THREE.CylinderGeometry(.5,.5,1,3);q.rotateZ(Math.PI/2);return q;}
-  case 'wing':{const sh=new THREE.Shape();sh.moveTo(0,0);sh.bezierCurveTo(.3,.5,.75,.6,1,.55);sh.lineTo(.85,.35);sh.lineTo(.92,.22);sh.lineTo(.7,.12);sh.lineTo(.75,0);sh.lineTo(.5,-.06);sh.bezierCurveTo(.3,-.1,.1,-.08,0,0);
-    const q=new THREE.ExtrudeGeometry(sh,{depth:.04,bevelEnabled:true,bevelThickness:.015,bevelSize:.015,bevelSegments:2,curveSegments:16});q.translate(0,0,-.02);return q;}
-  case 'fin':{const sh=new THREE.Shape();sh.moveTo(-.5,0);sh.lineTo(.5,0);sh.quadraticCurveTo(.1,.4,-.2,1);sh.lineTo(-.5,0);const q=new THREE.ExtrudeGeometry(sh,{depth:.05,bevelEnabled:true,bevelThickness:.015,bevelSize:.015,bevelSegments:1});q.translate(0,0,-.025);return q;}
-  case 'blade':{const sh=new THREE.Shape();sh.moveTo(0,0);sh.lineTo(.12,.15);sh.lineTo(0,1);sh.lineTo(-.12,.15);sh.lineTo(0,0);const q=new THREE.ExtrudeGeometry(sh,{depth:.03,bevelEnabled:true,bevelThickness:.01,bevelSize:.01,bevelSegments:1});q.translate(0,0,-.015);return q;}
-  case 'disc':return new THREE.CylinderGeometry(.5,.5,.08,40);
-  case 'visor':return new THREE.SphereGeometry(.5,40,12,Math.PI*.1,Math.PI*.8,Math.PI*.4,Math.PI*.2);
-  case 'star':{const sh=new THREE.Shape();for(let i=0;i<10;i++){const a=i/10*Math.PI*2+Math.PI/2,r=i%2?.22:.5;i?sh.lineTo(Math.cos(a)*r,Math.sin(a)*r):sh.moveTo(Math.cos(a)*r,Math.sin(a)*r);}
-    const q=new THREE.ExtrudeGeometry(sh,{depth:.12,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:2});q.translate(0,0,-.06);return q;}}
-  return new THREE.BoxGeometry(1,1,1);});}
-function moldMat(kind,col,X,cache){const key=kind+'_'+col;if(cache[key])return cache[key];let m;
-  if(kind==='metal')m=new THREE.MeshPhysicalMaterial({color:col,metalness:.92,roughness:.22,clearcoat:1,clearcoatRoughness:.15});
-  else if(kind==='gloss')m=new THREE.MeshPhysicalMaterial({color:col,metalness:.2,roughness:.18,clearcoat:1});
-  else if(kind==='matte')m=new THREE.MeshStandardMaterial({color:col,roughness:.85,metalness:.05});
-  else if(kind==='suit'){m=new THREE.MeshPhysicalMaterial({color:col,roughness:.62,metalness:.2});if(X.suit.normalMap){m.normalMap=X.suit.normalMap;m.normalScale=X.suit.normalScale;}}
-  else if(kind==='glow')m=new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:2.4,roughness:.3});
-  else if(kind==='glass')m=new THREE.MeshPhysicalMaterial({color:col,metalness:.1,roughness:.05,clearcoat:1,transparent:true,opacity:.5,emissive:col,emissiveIntensity:.25});
-  else m=new THREE.MeshPhysicalMaterial({color:col,metalness:.6,roughness:.4,clearcoat:.4});
-  if(X.envT&&kind!=='glow'){m.envMap=X.envT;m.envMapIntensity=X.envI;}if(kind!=='glow'&&kind!=='glass')enhanceMat(m,X.accent,.45);cache[key]=m;return m;}
-function scaleKids(node,sx,sy,sz){node.children.forEach(c=>{c.position.x*=sx;c.position.y*=sy;c.position.z*=sz;if(c.isMesh){c.scale.x*=sx;c.scale.y*=sy;c.scale.z*=sz;}});}
-function moldPiece(p,bone,X,cache,mirror){const mesh=new THREE.Mesh(moldGeo(p.s),moldMat(p.m,p.c,X,cache));const sx=mirror?-1:1;
-  mesh.position.set(p.p[0]*sx,p.p[1],p.p[2]);mesh.rotation.set(p.r[0]*Math.PI/180,p.r[1]*Math.PI/180*sx,p.r[2]*Math.PI/180*sx);mesh.scale.set(p.k[0]*sx,p.k[1],p.k[2]);
-  mesh.castShadow=true;bone.add(mesh);return mesh;}
-/* called at the end of buildRig for created fighters */
-function applyMold(m,X){const B=m.body,R=X;
-  // proportions: scale the meshes and joint offsets under each joint (never the joints themselves, so bending stays clean)
-  scaleKids(R.spine,B.chw,B.tor,B.chd);R.lS.position.x*=B.shw;R.rS.position.x*=B.shw;
-  scaleKids(R.neck,1,B.neck,1);R.head.scale.setScalar(B.head);
-  scaleKids(R.hips,B.wai,1,B.wai);R.spine.position.x=0;
-  [R.lS,R.rS].forEach(s=>scaleKids(s,B.art,B.arl,B.art));[R.lE,R.rE].forEach(e=>scaleKids(e,B.art,B.arl,B.art));[R.lF,R.rF].forEach(f=>f.scale.setScalar(B.hnd));
-  [R.lH,R.rH].forEach(h=>scaleKids(h,B.lgt,B.lgl,B.lgt));
-  const feet=[GC.boot,GC.toe,GC.sole];[R.lK,R.rK].forEach(k=>{scaleKids(k,B.lgt,B.lgl,B.lgt);k.children.forEach(c=>{if(c.isMesh&&feet.indexOf(c.geometry)>=0){c.scale.x*=B.ft/B.lgt;c.scale.z*=B.ft/B.lgt;c.scale.y*=1/B.lgl;}});});
-  R.hipY=.95*B.lgl;R.hips.position.y=R.hipY;R.root.scale.multiplyScalar(B.hgt);
-  // layer colors
-  if(m.cols.suit!=null)X.suit.color.setHex(m.cols.suit);if(m.cols.main!=null)X.main.color.setHex(m.cols.main);if(m.cols.trim!=null)X.trim.color.setHex(m.cols.trim);
-  if(m.cols.glow!=null){X.glow.color.setHex(m.cols.glow);X.glow.emissive.setHex(m.cols.glow);if(X.visor){X.visor.material.color.setHex(m.cols.glow);X.visor.material.emissive.setHex(m.cols.glow);}}
-  // bare body: strip the built-in armor and trim
-  if(m.plain){const hide=[GC.pad,GC.padR,GC.gaunt,GC.ring,GC.kp,GC.cuff,GC.belt,GC.buck,GC.emb,GC.embR,GC.strip,GC.earR,GC.ear,GC.plate];
-    R.root.traverse(o=>{if(!o.isMesh||o.userData.moldPiece)return;if(hide.indexOf(o.geometry)>=0||o.material===X.trim||(o.material===X.glow&&o!==X.visor))o.visible=false;
-      if(o.parent===R.spine&&o.material===X.main)o.visible=false;});
-    if(m.cols.main==null){X.main.color.copy(X.suit.color);}X.main.emissiveMap=null;X.main.emissiveIntensity=0;X.main.normalMap=X.suit.normalMap;X.main.needsUpdate=true;}
-  if(X.visor)X.visor.visible=m.visor!==false;
-  // armor pieces
-  const cache={},pieces=[];m.parts.forEach((p,i)=>{const bone=R[MOLD_BONEMAP[p.b]];if(!bone)return;const a=moldPiece(p,bone,X,cache,false);a.userData.moldPiece=i+1;pieces.push(a);
-    if(p.mi){const ob=MOLD_MIRROR[p.b],b2=ob?R[MOLD_BONEMAP[ob]]:bone;const b=moldPiece(p,b2,X,cache,true);b.userData.moldPiece=i+1;b.userData.mirror=1;pieces.push(b);}});
-  return pieces;}
-/* ---- presets: starting points to build on ---- */
-const MP=(b,s,m,c,p,r,k,mi)=>({b,s,m,c,p,r,k,mi:!!mi});
-const MOLD_PRESETS={
-  KNIGHT:a=>[MP('chest','plate','metal',a.m,[0,.36,.12],[-8,0,0],[.44,.4,.2]),MP('chest','plate','metal',a.m,[0,.38,-.1],[8,0,0],[.42,.42,.16]),MP('uarmL','dome','metal',a.m,[0,.03,0],[0,0,-14],[.3,.24,.3],1),
-    MP('head','dome','metal',a.m,[0,.13,0],[0,0,0],[.39,.42,.4]),MP('head','box','glow',a.g,[0,.11,.17],[0,0,0],[.22,.025,.04]),MP('farmL','cyl','metal',a.m,[0,-.14,0],[0,0,0],[.15,.2,.15],1),
-    MP('shinL','cyl','metal',a.m,[0,-.18,.01],[0,0,0],[.17,.28,.17],1),MP('hips','plate','metal',a.m,[.12,-.12,.05],[0,0,10],[.15,.2,.22],1),MP('head','fin','glow',a.g,[0,.3,-.02],[0,90,0],[.04,.18,.3])],
-  SAMURAI:a=>[MP('head','dome','gloss',a.m,[0,.14,0],[0,0,0],[.4,.4,.42]),MP('head','horn','metal',a.g,[.08,.24,.08],[-20,0,-25],[.07,.22,.07],0),MP('head','horn','metal',a.g,[-.08,.24,.08],[-20,0,25],[.07,.22,.07],0),
-    MP('uarmL','plate','gloss',a.m,[.08,-.04,0],[0,0,-25],[.08,.22,.24],1),MP('uarmL','plate','gloss',a.m,[.11,-.12,0],[0,0,-25],[.08,.2,.24],1),MP('chest','plate','gloss',a.m,[0,.3,.1],[0,0,0],[.42,.36,.24]),
-    MP('hips','plate','gloss',a.m,[.1,-.16,.08],[-10,0,8],[.16,.26,.06],1),MP('hips','plate','gloss',a.m,[0,-.16,.12],[-10,0,0],[.16,.26,.06])],
-  MECH:a=>[MP('chest','box','metal',a.m,[0,.38,.06],[0,0,0],[.5,.42,.38]),MP('chest','cyl','dark',0x2a2a34,[.12,.42,-.24],[90,0,0],[.12,.2,.12],1),MP('chest','disc','glow',a.g,[.12,.42,-.34],[90,0,0],[.1,1,.1],1),
-    MP('uarmL','box','metal',a.m,[.04,0,0],[0,0,0],[.3,.24,.28],1),MP('head','box','metal',a.m,[0,.13,0],[0,0,0],[.34,.3,.36]),MP('head','box','glow',a.g,[0,.13,.18],[0,0,0],[.26,.06,.03]),
-    MP('head','spike','metal',a.m,[.12,.28,-.05],[0,0,-10],[.05,.25,.05]),MP('shinL','box','metal',a.m,[0,-.2,.03],[0,0,0],[.18,.32,.2],1),MP('farmL','box','metal',a.m,[0,-.12,0],[0,0,0],[.17,.26,.17],1)],
-  DEMON:a=>[MP('head','horn','dark',0x1a1218,[.1,.2,0],[-15,0,-35],[.09,.32,.09],1),MP('uarmL','spike','dark',0x1a1218,[.06,.08,0],[0,0,-40],[.06,.22,.06],1),MP('uarmL','spike','dark',0x1a1218,[.02,.1,-.05],[-25,0,-20],[.05,.18,.05],1),
-    MP('chest','wing','dark',0x2a0a10,[.08,.45,-.16],[0,-30,0],[.75,.7,.7],1),MP('chest','crystal','glow',a.g,[0,.42,.2],[0,0,0],[.08,.12,.08]),MP('head','box','glow',a.g,[0,.12,.17],[0,0,0],[.2,.03,.03])],
-  ANGEL:a=>[MP('head','halo','glow',0xffe08a,[0,.42,-.04],[10,0,0],[.36,.36,.36]),MP('chest','wing','gloss',0xf4f6ff,[.08,.45,-.16],[0,-30,10],[.85,.8,.8],1),MP('chest','crystal','glow',a.g,[0,.42,.2],[0,0,0],[.09,.14,.09]),
-    MP('uarmL','dome','gloss',0xf4f6ff,[0,.03,0],[0,0,-14],[.28,.2,.28],1),MP('hips','plate','gloss',0xf4f6ff,[0,-.2,.08],[-8,0,0],[.36,.3,.08])],
-  BRUTE:a=>[MP('uarmL','sphere','metal',a.m,[.03,.04,0],[0,0,0],[.36,.32,.36],1),MP('chest','box','matte',0x5a3a2a,[0,.3,.0],[0,0,32],[.08,.8,.42]),MP('farmL','cyl','metal',a.m,[0,-.16,0],[0,0,0],[.2,.24,.2],1),
-    MP('chest','spike','metal',a.m,[.14,.5,-.18],[-40,0,-10],[.06,.2,.06],1),MP('hips','ring','metal',a.m,[0,.05,0],[0,0,0],[.5,.5,.5])]};
-/* ================= the editor ================= */
-const MD={open:false,m:null,undo:[],sel:-1,R:null,pieces:[],yaw:.3,pitch:.15,dist:5.2,tgt:new V3(0,1,0),pose:'idle',dirty:0,box:null,raf:0,cvsHome:null,tab:'body'};
-function moldHero(){const s=Object.assign({},CR.spec,{mold:MD.m});return customHero(s,true);}
-function moldRebuild(){if(!PV.r||!MD.open)return;if(MD.R){PV.scene.remove(MD.R.root);MD.R.root.traverse(o=>{if(o.isMesh&&o.material&&o.material.dispose&&!o.material._keep)o.material.dispose();});if(MD.R.whip)PV.scene.remove(MD.R.whip.group);}
-  const h=moldHero();const R=buildRig(h,PV.scene);PV.scene.add(R.root);MD.R=R;MD.pieces=R.moldPieces||[];Object.values(PV.rigs).forEach(r=>r.root.visible=false);PV.ped.visible=true;moldSelBox();}
-function moldPush(){MD.undo.push(JSON.stringify(MD.m));if(MD.undo.length>60)MD.undo.shift();}
-function moldChanged(full){MD.dirty=full?2:Math.max(MD.dirty,1);}
-function moldSelBox(){if(MD.box){PV.scene.remove(MD.box);MD.box=null;}const ms=MD.pieces.filter(x=>x.userData.moldPiece===MD.sel+1);if(!ms.length)return;MD.box=new THREE.Group();
-  ms.forEach(x=>{const b=new THREE.BoxHelper(x,0xffd23f);b.userData.of=x;MD.box.add(b);});PV.scene.add(MD.box);}
-function moldTPose(){const P=Object.assign({},POSES.showcase);Object.assign(P,{lSx:0,lSz:1.45,rSx:0,rSz:-1.45,lE:0,rE:0,lHx:0,rHx:0,lHz:.12,rHz:-.12,lK:0,rK:0,sx:0,sy:0,sz:0,hd:0,hx:0,hy:0});return P;}
-function moldLoop(){if(!MD.open)return;MD.raf=requestAnimationFrame(moldLoop);const cvs=$('pv'),w=cvs.clientWidth,h=cvs.clientHeight;if(!w||!h)return;
-  if(cvs.width!==Math.floor(w*PV.r.getPixelRatio())||cvs.height!==Math.floor(h*PV.r.getPixelRatio()))PV.r.setSize(w,h,false);
-  if(MD.dirty){MD.dirty=0;moldRebuild();}PV.ped.visible=true;
-  const R=MD.R;if(R){const P=MD.pose==='t'?moldTPose():MD.pose==='act'?POSES.heavyh||POSES.showcase:POSES.showcase;poseRig(R,P,game.time);R.hips.position.y=(R.hipY||.95)+(P.hy||0);R.root.rotation.y=0;}
-  if(MD.box)MD.box.children.forEach(b=>b.update());
-  const c=PV.cam;c.aspect=w/h;c.fov=34;c.updateProjectionMatrix();c.position.set(MD.tgt.x+Math.sin(MD.yaw)*Math.cos(MD.pitch)*MD.dist,MD.tgt.y+Math.sin(MD.pitch)*MD.dist,MD.tgt.z+Math.cos(MD.yaw)*Math.cos(MD.pitch)*MD.dist);c.lookAt(MD.tgt);PV.r.render(PV.scene,c);}
-function openMold(){if(!CR.spec){const txt=$('crText').value.trim()||'A hero.';CR.spec=parseFighter($('crName').value,txt);renderCreator();}
-  MD.m=sanitizeMold(CR.spec.mold)||moldDefault();MD.undo=[];MD.sel=-1;MD.open=true;MD.tab='body';MD.pose='idle';MD.cvsHome=$('pv').parentNode;$('mdView').appendChild($('pv'));
-  showScreen('mold');moldRebuild();renderMoldUI();moldLoop();}
-function closeMold(save){MD.open=false;cancelAnimationFrame(MD.raf);if(MD.R){PV.scene.remove(MD.R.root);if(MD.R.whip)PV.scene.remove(MD.R.whip.group);MD.R=null;}if(MD.box){PV.scene.remove(MD.box);MD.box=null;}
-  MD.cvsHome.insertBefore($('pv'),MD.cvsHome.firstChild);PV.ped.visible=true;if(save){CR.spec.mold=sanitizeMold(MD.m);CR.spec=sanitizeSpec(CR.spec);}showScreen('creator');renderCreator();}
-/* panel */
-function mdSlider(label,val,lo,hi,step,on,key){return `<label class="mdsl"><span>${label}</span><input type="range" min="${lo}" max="${hi}" step="${step}" value="${val}" data-k="${key}"><b>${(+val).toFixed(step<1?2:0)}</b></label>`;}
-function mdSel(key,opts,val){return `<select data-k="${key}">${Object.keys(opts).map(k=>`<option value="${k}"${k===val?' selected':''}>${opts[k]}</option>`).join('')}</select>`;}
-function renderMoldUI(){const m=MD.m,el=$('mdPanel');document.querySelectorAll('#mdTabs span').forEach(s=>s.classList.toggle('sel',s.dataset.t===MD.tab));let h='';
-  if(MD.tab==='body'){h+=`<div class="mdrow"><span class="chip${!m.plain?' sel':''}" data-act="armored">ARMORED BASE</span><span class="chip${m.plain?' sel':''}" data-act="plain">BARE BODY</span><span class="chip${m.visor?' sel':''}" data-act="visor">VISOR</span></div>`;
-    for(const k in MOLD_BODY)h+=mdSlider(MOLD_BODY[k][0],m.body[k],MOLD_BODY[k][1],MOLD_BODY[k][2],.01,0,'b_'+k);
-    h+=`<div class="mdrow"><span class="chip" data-act="bodyreset">RESET BODY</span></div>`;}
-  else if(MD.tab==='colors'){const h0=moldHero();const cur={suit:m.cols.suit!=null?m.cols.suit:h0.suit,main:m.cols.main!=null?m.cols.main:(h0.mainCol||h0.color),trim:m.cols.trim!=null?m.cols.trim:h0.color,glow:m.cols.glow!=null?m.cols.glow:h0.accent};
-    [['suit','Bodysuit'],['main','Armor / skin'],['trim','Trim'],['glow','Glow / eyes']].forEach(([k,n])=>{h+=`<label class="mdsl"><span>${n}</span><input type="color" data-k="c_${k}" value="${hexCss(cur[k]||0)}"><b></b></label>`;});
-    h+=`<div class="mdnote">Armor pieces have their own colors in the ARMOR tab.</div>`;}
-  else{h+=`<div class="mdrow"><span class="lblx">ADD</span>${mdSel('newShape',MOLD_SHAPES,MD.newShape||'plate')}<span class="lblx">ON</span>${mdSel('newBone',MOLD_BONES,MD.newBone||'chest')}<span class="chip" data-act="add">+ ADD PIECE</span></div>`;
-    h+=`<div class="mdrow"><span class="lblx">PRESETS</span>${Object.keys(MOLD_PRESETS).map(k=>`<span class="chip sm" data-act="preset" data-v="${k}">${k}</span>`).join('')}</div>`;
-    h+=`<div class="mdlist">${m.parts.map((p,i)=>`<div class="mdit${i===MD.sel?' sel':''}" data-i="${i}"><i style="background:${hexCss(p.c)}"></i>${i+1}. ${MOLD_SHAPES[p.s]} · ${MOLD_BONES[p.b]}${p.mi?' ⇄':''}</div>`).join('')||'<div class="mdnote">No pieces yet. Add one, pick a preset, or click a piece in the view to select it.</div>'}</div>`;
-    const p=m.parts[MD.sel];if(p){h+=`<div class="mdpiece"><div class="mdrow">${mdSel('p_s',MOLD_SHAPES,p.s)}${mdSel('p_b',MOLD_BONES,p.b)}</div><div class="mdrow">${mdSel('p_m',MOLD_MATS,p.m)}<input type="color" data-k="p_c" value="${hexCss(p.c)}">
-      <span class="chip sm${p.mi?' sel':''}" data-act="mirror">MIRROR ⇄</span><span class="chip sm" data-act="dup">DUPLICATE</span><span class="chip sm" data-act="del">DELETE</span></div>`;
-      ['X','Y','Z'].forEach((a,i)=>h+=mdSlider('Move '+a,p.p[i],-.8,.8,.005,0,'pp'+i));['X','Y','Z'].forEach((a,i)=>h+=mdSlider('Turn '+a,p.r[i],-180,180,1,0,'pr'+i));
-      ['X','Y','Z'].forEach((a,i)=>h+=mdSlider('Size '+a,p.k[i],.01,1.6,.005,0,'pk'+i));h+=mdSlider('Size (all)',1,.5,1.5,.01,0,'pall')+'</div>';}}
-  el.innerHTML=h;
-  el.querySelectorAll('input[type=range]').forEach(r=>{r.addEventListener('pointerdown',moldPush);r.oninput=()=>{const k=r.dataset.k,v=+r.value;r.nextElementSibling.textContent=v.toFixed(+r.step<1?2:0);
-    if(k.startsWith('b_')){m.body[k.slice(2)]=v;moldChanged(true);}
-    else if(k==='pall'){const p=m.parts[MD.sel];if(!MD.kAll)MD.kAll=p.k.slice();p.k=MD.kAll.map(x=>clamp(x*v,.01,1.6));moldChanged();}
-    else{const p=m.parts[MD.sel],i=+k[2];({pp:p.p,pr:p.r,pk:p.k})[k.slice(0,2)][i]=v;moldLive(MD.sel);}};
-    r.onchange=()=>{MD.kAll=null;if(r.dataset.k==='pall')renderMoldUI();};});
-  el.querySelectorAll('input[type=color]').forEach(c=>c.onchange=()=>{moldPush();const k=c.dataset.k,v=parseInt(c.value.slice(1),16);if(k.startsWith('c_'))m.cols[k.slice(2)]=v;else m.parts[MD.sel].c=v;moldChanged(true);renderMoldUI();});
-  el.querySelectorAll('select').forEach(s=>s.onchange=()=>{const k=s.dataset.k;if(k==='newShape'){MD.newShape=s.value;return;}if(k==='newBone'){MD.newBone=s.value;return;}
-    moldPush();const p=m.parts[MD.sel];p[k.slice(2)]=s.value;moldChanged(true);renderMoldUI();});
-  el.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{AU.ui();const a=b.dataset.act;moldPush();
-    if(a==='armored')m.plain=false;if(a==='plain')m.plain=true;if(a==='visor')m.visor=!m.visor;if(a==='bodyreset')m.body=moldDefault().body;
-    if(a==='add'){const s=MD.newShape||'plate',bn=MD.newBone||'chest';const def={head:[0,.15,0],chest:[0,.4,.12],hips:[0,0,.12]}[bn]||(bn.startsWith('hand')?[0,-.02,0]:[0,-.12,0]);
-      m.parts.push({b:bn,s,m:'metal',c:CR.spec.color,p:def,r:[0,0,0],k:s==='spike'||s==='horn'||s==='blade'?[.06,.25,.06]:s==='wing'?[.7,.7,.7]:[.25,.25,.25],mi:!!MOLD_MIRROR[bn]});MD.sel=m.parts.length-1;MD.tab='armor';}
-    if(a==='preset'){const add=MOLD_PRESETS[b.dataset.v]({m:CR.spec.color,g:CR.spec.accent});m.parts.push(...add);m.parts=m.parts.slice(0,80);MD.sel=m.parts.length-1;}
-    if(a==='mirror')m.parts[MD.sel].mi=!m.parts[MD.sel].mi;
-    if(a==='dup'){const c=JSON.parse(JSON.stringify(m.parts[MD.sel]));c.p[0]+=.05;m.parts.push(c);MD.sel=m.parts.length-1;}
-    if(a==='del'){m.parts.splice(MD.sel,1);MD.sel=-1;}
-    moldChanged(true);renderMoldUI();});
-  el.querySelectorAll('.mdit').forEach(it=>it.onclick=()=>{MD.sel=+it.dataset.i;AU.ui();moldSelBox();renderMoldUI();});
-  $('mdCount').textContent=`${m.parts.length} / 80 pieces`;}
-/* move a piece without rebuilding the whole body */
-function moldLive(i){const p=MD.m.parts[i];MD.pieces.filter(x=>x.userData.moldPiece===i+1).forEach(x=>{const sx=x.userData.mirror?-1:1;x.position.set(p.p[0]*sx,p.p[1],p.p[2]);
-  x.rotation.set(p.r[0]*Math.PI/180,p.r[1]*Math.PI/180*sx,p.r[2]*Math.PI/180*sx);x.scale.set(p.k[0]*sx,p.k[1],p.k[2]);});}
-/* view: drag to orbit, wheel to zoom, click to select a piece */
-(()=>{const v=$('mdView');let drag=null;
-  v.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,moved:0};v.setPointerCapture(e.pointerId);});
-  v.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved+=Math.abs(dx)+Math.abs(dy);drag.x=e.clientX;drag.y=e.clientY;MD.yaw-=dx*.008;MD.pitch=clamp(MD.pitch+dy*.006,-.6,1.2);});
-  v.addEventListener('pointerup',e=>{if(drag&&drag.moved<5&&MD.pieces.length){const r=v.getBoundingClientRect();const m=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
-      const rc=new THREE.Raycaster();rc.setFromCamera(m,PV.cam);const hit=rc.intersectObjects(MD.pieces,false)[0];MD.sel=hit?hit.object.userData.moldPiece-1:-1;if(hit)MD.tab='armor';moldSelBox();renderMoldUI();}drag=null;});
-  v.addEventListener('wheel',e=>{e.preventDefault();MD.dist=clamp(MD.dist*(1+Math.sign(e.deltaY)*.08),1.2,9);},{passive:false});})();
-document.querySelectorAll('#mdTabs span').forEach(s=>s.onclick=()=>{MD.tab=s.dataset.t;AU.ui();renderMoldUI();});
-document.querySelectorAll('#mdFocus span').forEach(s=>s.onclick=()=>{const f={full:[1,5.2],head:[1.75,1.6],chest:[1.35,2.4],arms:[1.2,3],legs:[.55,2.6]}[s.dataset.f];MD.tgt.set(0,f[0]*(MD.m.body.hgt||1),0);MD.dist=f[1];AU.ui();});
-document.querySelectorAll('#mdPose span').forEach(s=>s.onclick=()=>{MD.pose=s.dataset.p;document.querySelectorAll('#mdPose span').forEach(x=>x.classList.toggle('sel',x===s));AU.ui();});
-$('mdUndo').onclick=()=>{if(!MD.undo.length)return;MD.m=JSON.parse(MD.undo.pop());MD.sel=Math.min(MD.sel,MD.m.parts.length-1);moldChanged(true);renderMoldUI();AU.ui();};
-$('mdReset').onclick=()=>{moldPush();MD.m=moldDefault();MD.sel=-1;moldChanged(true);renderMoldUI();AU.ui();};
-$('mdCancel').onclick=()=>{AU.ui();closeMold(false);};$('mdDone').onclick=()=>{AU.ui();closeMold(true);};
-addEventListener('keydown',e=>{if(!MD.open)return;if((e.ctrlKey||e.metaKey)&&e.code==='KeyZ'){e.preventDefault();$('mdUndo').click();}if(e.code==='Delete'&&MD.sel>=0&&document.activeElement.tagName!=='INPUT'){moldPush();MD.m.parts.splice(MD.sel,1);MD.sel=-1;moldChanged(true);renderMoldUI();}});
-window.__md=()=>MD;
 /* Fighter creator: text-to-fighter keyword parsing */
 /* ================= FIGHTER CREATOR =================
    Reads a written description and builds a fighter from the game's powers:
@@ -4381,142 +4189,12 @@ function customHero(spec,nocache){spec=sanitizeSpec(spec);if(!spec)return HEROES
   if(spec.mold){h.mold=spec.mold;if(spec.mold.plain)h.as.look='plain';}
   if(key)CUSTOM_CACHE[key]=h;return h;}
 /* saved creations */
-let CSPECS=[];try{CSPECS=(JSON.parse(store.get('surge.customs')||'[]')||[]).map(sanitizeSpec).filter(Boolean).slice(0,12);}catch(e){CSPECS=[];}
+let CSPECS=[];   // the fighter creator has been removed; no created fighters are loaded
 function saveCustoms(){store.set('surge.customs',JSON.stringify(CSPECS));}
 const CUST0=1000;
 function heroAt(i){return i>=CUST0?(CSPECS[i-CUST0]?customHero(CSPECS[i-CUST0]):HEROES[0]):(HEROES[i]||HEROES[0]);}
 function selEntry(){const cos=myCos();return mySel>=CUST0&&CSPECS[mySel-CUST0]?{hero:0,cos,cust:Object.assign({},CSPECS[mySel-CUST0],{text:''})}:{hero:Math.min(mySel,HEROES.length-1),cos};}
 function rosterHero(r){if(r&&r.raid&&typeof raidBossHero==='function')return raidBossHero(r.raid);if(r&&r.heroObj)return r.heroObj;if(r&&r.dummy)return dummyHero();if(r&&r.cust)return customHero(r.cust);const h=HEROES[clamp(r.hero|0,0,HEROES.length-1)];const H=r&&r.cos&&r.cos.skin?skinHero(h,r.cos.skin):h;return r&&r.cos&&r.cos.human?Object.assign({},H,{human:true}):H;}
-/* Fighter creator: Claude-designed abilities */
-/* ================= ABILITY DESIGNER =================
-   Turns a written description into new ability recipes.
-   1) Claude designs them when this page can ask Claude (the published version here).
-   2) Otherwise the built-in designer composes them from the words used. */
-const DF={bolt:['ball','orb!','orbs!','bolt','shot','shoot','bullet','projectile','fireball','throw','hurl','spear','lance','arrow'],volley:['barrage','volley','flurry of','spray of','many','multiple','daggers','knives','needles','shards','feathers','swarm','bats!','turns into bats'],
-  beam:['beam','laser','ray','stream'],wave:['wave','tsunami','ripple','wall of','ground wave','shockwave along','shockwaves'],burst:['explode','explosion','nova','burst','time stop','stops time','freeze time','freezes everything','around me','around them','around her','around him','nearby','detonate','blast around','pulse'],
-  zone:['field','zone','area','pool','cloud','fog','mist','puddle','domain','storm over','aura that','toxic gas','gas!','spreads'],rain:['rain','meteor','from the sky','falling','downpour','hail of','hailstorm','shower of','raining','storm of','thunderstorm','lightning storm','blizzard','airstrike','air strike'],
-  pillar:['pillar','pillar of','giant pillar','geyser','erupt','eruption','from the ground','column','spikes from','under them','orbital','orbital laser','laser strike','from orbit','strike from above','beam from the sky','sky beam','earthquake','earthquakes'],dash:['dash','charge','charges into','charges at','rush','tackle','ram!','rams!','lunge','barrel','slams into','plows'],blink:['teleport','blink','behind them','warp','vanish','invisible','turns invisible','from behind','appears behind','shadow step','sneak'],
-  grab:['grab','pull','hook','tether','lasso','drag!','drags','dragging','chain them','reel','stretch','stretches','stretchy'],orbit:['orbit','circle','circling','spinning around','swirl around','surround'],cone:['breath','breathe','flamethrower','spray','cone','roar','scream','howl'],
-  shield:['shield','barrier','block','reflect','protect','wall!'],buff:['power up','powers up','transform','transforms into','turns into a','becomes a giant','rage','enhance','boost','empower','mode!','awaken','unleash','berserk'],slam:['slam','ground pound','leap','jump and','smash the ground','smashes the ground','slams the ground','pounds the ground','stomp'],
-  summon:['summon','turret','minion','clone','totem','familiar','drone','pet!','pets!','army of','robots']};
-const DS={fire:['fire','flame','burn','lava','magma','heat','inferno','ember','sun','solar'],ice:['ice','icicle','frost','freez','snow','frozen','cold','blizzard','glacier'],water:['water','ocean','wave','tide','sea','aqua','bubble','splash'],
-  wind:['wind','air','tornado','storm','gust','breeze','hurricane'],lightning:['lightning','electric','thunder','shock!','shocks!','volt','spark','plasma'],shadow:['shadow','dark','night','abyss','nightmare'],
-  light:['light','holy','angel','radiant','sun','divine','laser','star'],earth:['earth','rock','stone','ground','sand','mountain','boulder','quake'],metal:['metal','steel','iron','chain!','robot','gear!','magnet','car!','cars!'],
-  crystal:['crystal','gem','diamond','glass','prism'],blood:['blood','flesh','bone','vampire','gore'],poison:['poison','toxic','venom','acid','plague','sick!','sickness'],void:['void','space','cosmic','black hole','gravity','galaxy','star'],
-  spirit:['spirit','ghost','soul','phantom','spectral','ethereal'],sound:['sound','sonic','music','song','scream','bass','echo'],plant:['plant','vine','thorn','leaf','flower','nature','root','wood','forest'],
-  explosion:['explo','bomb','blast','grenade','boom','missile','rocket'],time:['time','clock','rewind','frame'],blade:['sword','blade','slash','cut','katana','scythe','sickle']};
-const DFX={burn:['burn','ignite','set on fire','scorch'],freeze:['freez','frozen','frost','ice','chill'],poison:['poison','toxic','venom','acid','plague','rot'],stun:['stun','paralyz','daze','shock!','stagger'],
-  pull:['pull','suck','draw in','vacuum','magnet','drag','reel'],push:['push','blow away','knock back','knockback','repel','blast away','send flying'],launch:['launch','into the air','uppercut','toss','skyward','up into'],
-  float:['float','levitat','lift them','weightless','zero-g'],lifesteal:['lifesteal','drain life','heal','vampir','absorb life','siphon life'],chain:['chain','bounce','jumps between','arc!','arcs!','spread to'],
-  explode:['explod','explosive','detonat','blow up','boom'],pierce:['pierce','through','penetrat','skewer'],mark:['mark!','marks!','curse','hex!','brand!'],slow:['slow','sticky','heavy','web','root','entangle'],drain:['steal energy','drain power','sap','steal their']};
-const DSH={weapon:['his weapon','her weapon','their weapon','my weapon'],shuriken:['shuriken','throwing star','ninja star'],skull:['skull','skeleton','skulls'],dragon:['dragon','serpent','snake','wyrm','hydra'],
-  bat:['bats!','vampire bat','bat!'],car:['car!','cars!','truck','trucks','bus!','vehicle','vehicles'],bubble:['bubble'],boulder:['boulder','rock','rocks','stone','meteor','asteroid'],lightning:['lightning','thunderbolt'],petal:['petal','rose','sakura','cherry blossom','flower','blossom'],
-  leaf:['leaf','leaves'],card:['card','cards','tarot'],note:['note','notes','music','song','melody'],bomb:['bomb','grenade','dynamite','tnt'],knife:['knife','knives','dagger','kunai'],bullet:['bullet','bullets'],
-  heart:['heart','love'],snowflake:['snowflake','snowflakes'],flame:['flame','flames','fireball','fire ball'],tornado:['tornado','twister','whirlwind','cyclone'],chakram:['chakram','ring blade','buzzsaw','saw blade'],
-  crescent:['crescent','slash wave','wave of','air slash','blade wave'],eye:['eye','eyes','eyeball'],bone:['bone','bones'],feather:['feather','feathers','quill'],coin:['coin','coins','money','cash'],
-  axe:['axe','axes','hatchet'],hammer:['hammer','hammers','mallet'],sword:['sword','swords','blade'],fist:['fist','fists','punch'],hand:['hand','hands','palm'],
-  spike:['spike','spear','icicle','needle','thorn','lance','stake','fang'],blade:['scythe','sickle','disc'],ring:['ring','halo','hoop'],shard:['shard','crystal','gem','glass'],star:['star','comet','spark'],
-  bird:['bird','phoenix','raven','crow','eagle','hawk','butterfl','wasp','bee','moth'],arrow:['arrow','arrows','bolt','missile','dart']};
-const NUMW={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,dozen:12};
-const NAMEW={fire:['INFERNO','BLAZE','EMBER','SOLAR'],ice:['FROST','GLACIER','ICE','WINTER'],water:['TIDAL','TORRENT','HYDRO','RIPTIDE'],wind:['GALE','CYCLONE','TEMPEST','ZEPHYR'],lightning:['THUNDER','VOLT','STORM','ARC'],
-  shadow:['SHADOW','UMBRAL','NIGHT','DUSK'],light:['RADIANT','HOLY','DAWN','PRISM'],earth:['TERRA','STONE','QUAKE','BOULDER'],metal:['IRON','STEEL','CHROME','RIVET'],crystal:['CRYSTAL','GEM','PRISM','SHARD'],
-  blood:['CRIMSON','BLOOD','MARROW','SANGUINE'],poison:['VENOM','TOXIC','PLAGUE','ACID'],void:['VOID','COSMIC','STAR','NEBULA'],spirit:['SPIRIT','PHANTOM','SOUL','WRAITH'],sound:['SONIC','ECHO','RESONANCE','BASS'],
-  plant:['THORN','VINE','BLOOM','ROOT'],explosion:['BLAST','NOVA','DETONATION','KABOOM'],time:['CHRONO','TICK','REWIND','STASIS'],blade:['RAZOR','EDGE','SEVERING','CRESCENT']};
-const FORMW={bolt:['SHOT','ORB','BOLT','LANCE'],volley:['BARRAGE','VOLLEY','STORM','SPRAY'],beam:['BEAM','RAY','CANNON','LANCE'],wave:['WAVE','SURGE','RIPPLE','TIDE'],burst:['NOVA','BURST','PULSE','ERUPTION'],
-  zone:['FIELD','DOMAIN','PRISON','GROUNDS'],rain:['RAIN','FALL','DOWNPOUR','HAIL'],pillar:['PILLAR','GEYSER','SPIRE','ERUPTION'],dash:['RUSH','CHARGE','STRIKE','DRIVE'],blink:['STEP','BLINK','AMBUSH','PHASE'],
-  grab:['HOOK','GRASP','TETHER','SNARE'],orbit:['HALO','ORBIT','RING','GUARD'],cone:['BREATH','ROAR','SPRAY','HOWL'],shield:['WALL','AEGIS','WARD','BARRIER'],buff:['AWAKENING','MODE','ASCENT','OVERDRIVE'],
-  slam:['IMPACT','CRASH','QUAKE','DROP'],summon:['SENTINEL','TOTEM','FAMILIAR','TURRET']};
-function dScore(map,t){const sc={};for(const k in map)for(const w of map[k]){const m=t.match(kwRe(w));if(m)sc[k]=(sc[k]||0)+m.length*(1+w.split(' ').length*.5);}return sc;}
-function dTop(sc,n){return Object.keys(sc).sort((a,b)=>sc[b]-sc[a]).slice(0,n);}
-function dCount(t){const m=t.match(/\b(\d{1,2})\b/);if(m)return +m[1];for(const w in NUMW)if(kwRe(w).test(t))return NUMW[w];return 0;}
-function dName(style,form,seed){seed=Math.abs(Math.floor(seed))||0;const a=NAMEW[style]||['NEW'],b=FORMW[form]||['STRIKE'];return a[seed%a.length]+' '+b[Math.floor(seed/4)%b.length];}
-function designOne(t,quoted,fallbackStyle,fallbackForm,seed,tier){
-  const fsc=dScore(DF,t),ssc=dScore(DS,t),xsc=dScore(DFX,t),hsc=dScore(DSH,t);
-  if(fsc.summon&&/summon\w*\s+(?:a |an |the )?(?:\w+\s+)?(storm|thunderstorm|rain|meteors?|lightning|tornado|blizzard|flood|tsunami|earthquake|wave|pillar|black hole|fire|ice)/.test(t))delete fsc.summon;
-  let form=dTop(fsc,1)[0]||fallbackForm;let style=dTop(ssc,1)[0]||fallbackStyle;if(ssc[fallbackStyle]&&ssc[fallbackStyle]>=ssc[style])style=fallbackStyle;
-  const fx=dTop(xsc,3);if(style==='fire'&&fx.indexOf('burn')<0&&fx.length<3)fx.push('burn');if(style==='ice'&&fx.indexOf('freeze')<0&&fx.length<3)fx.push('freeze');if(style==='poison'&&fx.indexOf('poison')<0&&fx.length<3)fx.push('poison');
-  if(style==='blood'&&fx.indexOf('lifesteal')<0&&fx.length<3)fx.push('lifesteal');if(style==='lightning'&&fx.indexOf('chain')<0&&fx.length<3)fx.push('chain');if(style==='explosion'&&fx.indexOf('explode')<0&&fx.length<3)fx.push('explode');
-  const self=[];if(/\bheal(s|ing)? (me|myself|self|them?selves)|regenerat/.test(t))self.push('heal');if(/\bshield(s)? (me|myself)|armor up|harden/.test(t)&&form!=='shield')self.push('shield');
-  if(/faster|speed boost|haste/.test(t))self.push('haste');if(/stronger|damage boost|power boost/.test(t)&&form!=='buff')self.push('power');
-  const shape=dTop(hsc,1)[0]||({fire:'orb',ice:'spike',water:'blade',wind:'ring',lightning:'arrow',shadow:'orb',light:'star',earth:'shard',metal:'blade',crystal:'shard',blood:'spike',poison:'orb',void:'star',spirit:'bird',sound:'ring',plant:'spike',explosion:'orb',time:'ring',blade:'blade'})[style];
-  let shp=shape;if(/\b(throw|throws|hurl|hurls|toss|tosses|fling|flings|launch|launches)\b/.test(t)&&designOne.gear&&designOne.gear!=='none'&&new RegExp(designOne.gear).test(t))shp='weapon';
-  const n=dCount(t);const size=/\b(huge|giant|massive|enormous|colossal|gigantic)\b/.test(t)?1.8:/\b(big|large)\b/.test(t)?1.35:/\b(small|tiny|little|mini)\b/.test(t)?.7:1;
-  const fast=/\b(fast|quick|rapid|lightning.fast|speeding)\b/.test(t),slow=/\b(slow|lumbering)\b/.test(t);
-  return sanitizeAbil({name:quoted||dName(style,form,seed),form,style,shape:shp,count:n||undefined,size:tier==='ult'?Math.max(size,1.2):size,speed:fast?45:slow?16:undefined,
-    range:/\b(long range|far|across the|sniper)\b/.test(t)?30:undefined,dur:/\b(long|lasting|linger)\b/.test(t)?3:undefined,power:tier==='ult'?1.1:1,fx,self,colors:undefined});}
-const ALTFORM={bolt:'burst',volley:'dash',beam:'blink',wave:'slam',burst:'bolt',zone:'dash',rain:'burst',pillar:'slam',dash:'bolt',blink:'burst',grab:'burst',orbit:'dash',cone:'blink',shield:'burst',buff:'dash',slam:'bolt',summon:'blink'};
-const ULTFORM={bolt:'rain',volley:'rain',beam:'beam',wave:'wave',burst:'burst',zone:'zone',rain:'rain',pillar:'pillar',dash:'pillar',blink:'burst',grab:'zone',orbit:'orbit',cone:'beam',shield:'burst',buff:'burst',slam:'slam',summon:'summon'};
-const GEARK={greatsword:['greatsword','great sword','giant sword','huge sword','massive sword','claymore','zweihander','buster sword'],katana:['katana','samurai sword','odachi'],
-  sword:['sword','longsword','broadsword','saber','sabre','rapier','cutlass'],dagger:['dagger','daggers','knife','knives','kunai','dirk'],axe:['axe','hatchet','battle axe','battleaxe'],
-  hammer:['hammer','warhammer','war hammer','mallet','sledgehammer'],mace:['mace','morning star','flail'],club:['club','baseball bat','crowbar','pipe','bat'],spear:['spear','javelin','pike','naginata','halberd'],
-  trident:['trident'],lance:['lance'],scythe:['scythe','reaper'],sickle:['sickle','kama'],staff:['staff','quarterstaff','bo staff','rod','cane'],wand:['wand'],gun:['gun','guns','pistol','blaster','rifle','revolver','shotgun'],
-  bow:['bow and arrow','bow','archer','crossbow','slingshot','sling!'],guitar:['guitar'],fan:['war fan','fans','fan'],chakram:['chakram','ring blade','discus'],claws:['claws','claw','talons'],gauntlets:['gauntlet','gauntlets','power glove','knuckles','brass knuckle'],
-  whip:['whip','whips','tentacle','tentacles'],chain:['chains','chain','kusarigama'],shield:['sword and shield','with a shield','carries a shield','shield and sword']};
-const GEARMAT={gold:0xffd23f,golden:0xffd23f,silver:0xd8dce6,steel:0xc8ccd8,iron:0x9aa0aa,black:0x26262e,obsidian:0x1a1824,dark:0x2a2a34,wooden:0x8a5a3a,wood:0x8a5a3a,bone:0xf0e6d6,crystal:0xbfefff,ice:0xbfefff,
-  blood:0xc4102a,red:0xd02030,rusty:0x8a4a2a,glass:0xd8f4ff,neon:0x4fffd2,purple:0x8a3cff,blue:0x2a7aff,green:0x2ad86a,pink:0xff4f8b,white:0xf4f6ff};
-function readGear(text,accent){const t=' '+String(text||'').toLowerCase().replace(/chain lightning/g,'')+' ';const sc=dScore(GEARK,t);if(sc.bow&&/elbow|bow down|rainbow/.test(t))sc.bow-=1;if(sc.club&&!/baseball bat|\bclub\b|crowbar|pipe/.test(t))delete sc.club;
-  const type=dTop(Object.fromEntries(Object.entries(sc).filter(e=>e[1]>0)),1)[0]||'none';if(type==='none')return {type:'none'};
-  const words=(GEARK[type]||[type]).map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,''));let mat=null;
-  for(const w of words){const m=t.match(new RegExp('([a-z]+)\\s+([a-z]+)\\s+'+w+'|([a-z]+)\\s+'+w));if(m){const c=[m[2],m[1],m[3]].find(x=>x&&GEARMAT[x]!=null);if(c){mat=GEARMAT[c];break;}}}
-  const dual=new RegExp('\\b(dual|two|twin|pair of|double)\\s+(?:[a-z]+\\s+)?('+words.join('|')+')').test(t);
-  const size=new RegExp('\\b(giant|huge|massive|enormous|colossal|oversized)\\s+(?:[a-z]+\\s+)?('+words.join('|')+')').test(t)?1.45:new RegExp('\\b(small|tiny|little)\\s+(?:[a-z]+\\s+)?('+words.join('|')+')').test(t)?.8:1;
-  return sanitizeGear({type,c1:mat!=null?mat:({wand:0x8a5a3a,staff:0x8a5a3a,bow:0x8a5a3a,guitar:0xc4102a,club:0x8a5a3a})[type]||0xc8ccd8,c2:accent,size,dual,glow:true});}
-function composeAbilities(text,mainStyle){const raw=String(text||'');
-  const cl=raw.split(/[.;!?\n]+/).map(c=>c.trim()).filter(Boolean).map(c=>{const l=c.toLowerCase();const alt=/\balt(ernate)?\b|second ult|other ult|back ult/.test(l),ult=alt||/\bult|ultimate|super move|final move|finisher/.test(l);
-    const salt=!ult&&/(second|other|back|alt(ernate)?) (special|ability|move)/.test(l),sp=!ult&&!salt&&/special|ability|skill|power move/.test(l);const q=(c.match(/["“”]([^"“”]{2,24})["“”]/)||[])[1];return {l,k:alt?'ua':ult?'u':salt?'sa':sp?'s':'any',q:q?q.trim().toUpperCase():''};});
-  const all=raw.toLowerCase();designOne.gear=(readGear(raw,0)||{}).type;const seed=[...all].reduce((a,ch)=>(a*31+ch.charCodeAt(0))>>>0,7);
-  const sc0=dScore(DS,all);if(sc0.blade&&Object.keys(sc0).length>1)delete sc0.blade;const st=dTop(sc0,1)[0]||mainStyle||'light';
-  const grab=k=>{const c=cl.filter(x=>x.k===k);return {t:c.map(x=>x.l).join('. '),q:(c.find(x=>x.q)||{}).q||''};};
-  const anyT=cl.filter(x=>x.k==='any').map(x=>x.l).join('. ');
-  const s=grab('s'),sa=grab('sa'),u=grab('u'),ua=grab('ua');
-  // powers described without a label ("throws bombs and turns invisible") each become their own move
-  const ch=abilityChunks(anyT),used=new Set(),take=pred=>{const c=ch.find(x=>!used.has(x)&&pred(x));if(c)used.add(c);return c;};
-  const uC=!u.t?take(c=>c.big):null,sC=!s.t?take(c=>c.atk)||take(()=>true):null,saC=!sa.t?take(c=>!c.big)||take(()=>true):null,uaC=!ua.t?take(c=>c.big)||take(()=>true):null;
-  const sp=designOne(s.t||(sC&&sC.t)||anyT||all,s.q,st,'bolt',seed,'sp');
-  const spAlt=designOne(sa.t||(saC?saC.t:''),sa.q,sp.style,ALTFORM[sp.form],Math.floor(seed/8),'sp');
-  const ult=designOne(u.t||(uC?uC.t:''),u.q,st,ULTFORM[sp.form],Math.floor(seed/32),'ult');
-  if(!u.t&&!uC){ult.form=ULTFORM[sp.form];ult.fx=sp.fx.slice();ult.name=dName(ult.style,ult.form,Math.floor(seed/32));}
-  if(!sa.t&&!saC){spAlt.form=ALTFORM[sp.form];spAlt.fx=sp.fx.slice(0,2);spAlt.name=dName(spAlt.style,spAlt.form,Math.floor(seed/8));}
-  if(spAlt.form===sp.form&&spAlt.style===sp.style&&!sa.t){spAlt.form=ALTFORM[sp.form];spAlt.name=dName(spAlt.style,spAlt.form,Math.floor(seed/8));}
-  const ultAlt=designOne(ua.t||(uaC?uaC.t:''),ua.q,st,ult.form==='rain'?'burst':'rain',Math.floor(seed/128),'ult');
-  if(!ua.t&&!uaC){ultAlt.form=ult.form==='rain'?'zone':'rain';ultAlt.fx=ult.fx.slice(0,2);ultAlt.name=dName(ultAlt.style,ultAlt.form,Math.floor(seed/128));}
-  if(ultAlt.form===ult.form&&!ua.t){ultAlt.form=ult.form==='rain'?'zone':'rain';ultAlt.name=dName(ultAlt.style,ultAlt.form,Math.floor(seed/128));}
-  return {sp,spAlt,ult,ultAlt};}
-const BIGW=/\b(giant|huge|massive|enormous|colossal|everything|everyone|all enemies|whole|entire|army|horde|storm|thunderstorm|sky|orbital|meteor|black hole|tsunami|earthquake|transforms?|apocalypse|armageddon|nuke|pillar)\b/;
-function abilityChunks(t){if(!t)return [];const ATK=['bolt','volley','beam','cone','grab','dash','blink','slam','wave','burst'];
-  return t.split(/,|;|\band then\b|\bthen\b|\band\b|\bwho\b|\bthat\b|\bwhile\b|\bbut\b/).map(x=>x.trim()).filter(x=>x.length>4&&!(/^(a|an)\s/.test(x)&&/\bwith\b/.test(x))).map(x=>{const sc=dScore(DF,x);
-    if(sc.summon&&/summon\w*\s+(?:a |an |the )?(?:\w+\s+)?(storm|thunderstorm|rain|meteors?|lightning|tornado|blizzard|flood|tsunami)/.test(x))delete sc.summon;
-    const f=dTop(sc,1)[0];return f?{t:x,f,big:f!=='shield'&&BIGW.test(x)||['rain','pillar','summon','buff'].indexOf(f)>=0&&!/\bsmall|little|tiny\b/.test(x),atk:ATK.indexOf(f)>=0}:null;}).filter(Boolean);}
-/* ---- Claude-designed fighters (only where this page can ask Claude) ---- */
-const SAMPLE_P=(window.claude&&typeof window.claude.use==='function')?window.claude.use('sample').catch(()=>null):Promise.resolve(null);
-let AI_OK=false;SAMPLE_P.then(s=>{AI_OK=!!s;if(typeof aiBadge==='function')aiBadge();});
-function aiPrompt(name,text){return `You design fighters for a 3D superhero battle royale game. Read the player's description and design a fighter with brand-new abilities that match it as closely as possible.
-Reply with ONLY a JSON object, no other text, in exactly this shape:
-{"name":"<max 14 chars>","faction":"hero|villain","colors":["#rrggbb","#rrggbb"],"look":"<base look id>","power":"<punch power id>","weapon":{"type":"<weapon type>","colors":["#rrggbb metal/main","#rrggbb glow"],"size":0.7-1.6,"dual":true|false},"speed":"slow|normal|fast","size":"small|normal|big","strength":"light|normal|strong",
-"special":ABILITY,"specialAlt":ABILITY,"ultimate":ABILITY,"ultimateAlt":ABILITY}
-ABILITY = {"name":"<catchy, max 22 chars>","desc":"<what it does, max 100 chars>","form":"<form>","style":"<style>","shape":"<shape>","colors":["#rrggbb","#rrggbb"],"count":1-12,"size":0.5-2.2,"range":3-36,"speed":8-60,"duration":0-4,"power":0.6-1.5,"effects":[up to 4],"self":[up to 2]}
-form (how it is delivered): bolt (one projectile), volley (many small projectiles), beam (channelled laser), wave (travels along the ground), burst (explodes around the user), zone (lingering damaging area at a target), rain (things fall from the sky on an area), pillar (erupts under enemies), dash (dashes through enemies), blink (teleports behind target and strikes), grab (pulls the target in), orbit (orbs circle the user), cone (breath/spray in front), shield (blocks and reflects), buff (powers the user up), slam (leaps and crashes down), summon (a turret/familiar that shoots).
-style (visuals and sound): fire, ice, water, wind, lightning, shadow, light, earth, metal, crystal, blood, poison, void, spirit, sound, plant, explosion, time, blade.
-shape (the model that flies or orbits — pick what the description says it looks like): car, orb, spike, blade, ring, shard, star, bird, arrow, axe, hammer, sword, shuriken, skull, fist, hand, dragon, bat, bubble, boulder, lightning, petal, leaf, card, note, bomb, knife, bullet, heart, snowflake, flame, tornado, chakram, crescent, eye, bone, feather, coin, weapon (throws the fighter's own weapon).
-weapon type (what the fighter holds and fights with; choose what the description says, "none" for bare hands): none, sword, katana, greatsword, dagger, axe, hammer, mace, club, spear, trident, lance, scythe, sickle, staff, wand, gun, bow, guitar, fan, chakram, claws, gauntlets, whip, chain, shield (sword and shield). Guns, bows and wands shoot when attacking; spears and staffs have long reach; hammers, axes, greatswords, clubs and guitars hit slow and hard.
-effects (on enemies): burn, freeze, poison, stun, pull, push, launch, float, lifesteal, chain, explode, pierce, mark, slow, drain.
-self (on the user): heal, shield, haste, power, lift.
-look ids (body style to start from) and power ids (punch effect): cinder fire, riptide water, gale wind, nitro explosions, titan strength, volta lightning, umbra shadow beast, drift gravity, bastion metal armor, quill feathers/wings, void cosmic, ronin samurai, quake earth, marrow blood/flesh, entropy decay, sovereign power theft, strobe time, pyre blue fire, warp portals, hex curses, scathe demon, solstice ice and fire, piston engine kicks, snare erasure scarf, marble compression magician, legion clones, recoil sniper rifle.
-Rules: "special" is the main move (short cooldown). "specialAlt" is a different second special. "ultimate" is the big finisher; "ultimateAlt" is a second, different ultimate. Keep moves different from each other. Use the player's own move names when they give them (often in quotes). Higher count/size/duration should come with lower power. Pick colors that fit.
-Player's fighter name: ${JSON.stringify(String(name||'').slice(0,20))}
-Design rules: use every power the player wrote, each in the slot they gave it (special, ultimate, alternate ultimate); powers they listed without a slot become the special and specialAlt, with the biggest or most dramatic one as the ultimate. Give the four abilities four different forms unless the description clearly wants the same delivery twice. Pick the look and power ids for the fighter's main power, not for words that only describe a weapon or the body. Keep any name the player put in quotes exactly.
-Player's description: ${JSON.stringify(String(text||'').slice(0,1200))}`;}
-function pickJSON(t){const s=String(t||'');const i=s.indexOf('{'),j=s.lastIndexOf('}');if(i<0||j<=i)return null;try{return JSON.parse(s.slice(i,j+1));}catch(e){return null;}}
-async function aiDesign(name,text,onProgress){const sample=await SAMPLE_P;if(!sample)return null;
-  const r=await sample(aiPrompt(name,text),{modelTier:'default',onText:({text})=>{if(onProgress)onProgress(text.length);}});const j=pickJSON(r&&r.text);if(!j)throw {code:'bad_json',message:'Could not read the design'};return j;}
-function specFromAI(j,base){const ids=HEROES.map(h=>h.id);const one=(v,l,d)=>l.indexOf(v)>=0?v:d;const s=Object.assign({},base);
-  if(j.name)s.name=j.name;s.faction=j.faction==='villain'?'villain':j.faction==='hero'?'hero':s.faction;
-  const cs=Array.isArray(j.colors)?j.colors:[];s.color=cabCol(cs[0],s.color);s.accent=cabCol(cs[1],s.accent);
-  s.look=one(j.look,ids,s.look);s.elem=one(j.power,ids,s.elem);if(j.weapon&&typeof j.weapon==='object'){const gw=j.weapon;s.gear=sanitizeGear({type:gw.type,colors:gw.colors,size:gw.size,dual:gw.dual,glow:true});s.wpn='fist';}else s.wpn=one(j.weapon,['fist','titan','ronin','scathe','marrow','umbra'],s.wpn);
-  s.spd=({slow:.9,normal:1,fast:1.18})[j.speed]||s.spd;s.size=({small:'small',normal:'normal',big:'big'})[j.size]||s.size;s.pow=({light:.92,normal:1,strong:1.12})[j.strength]||s.pow;
-  const sp=sanitizeAbil(j.special),spAlt=sanitizeAbil(j.specialAlt),ult=sanitizeAbil(j.ultimate),ultAlt=sanitizeAbil(j.ultimateAlt);
-  if(sp&&ult){s.cab={sp,spAlt:spAlt||null,ult,ultAlt:ultAlt||null};s.special='cab';s.ult='cab';s.alt=ultAlt?'cab':s.alt;s.spName=sp.name;s.ultName=ult.name;s.altName=ultAlt?ultAlt.name:'';s.ai=1;}
-  return s;}
 /* Points and the shop */
 /* ================= SHOP & COSMETICS =================
    Spend points on calling cards, per-fighter skins, pets and name tags. Owned items and the equipped loadout
@@ -7557,7 +7235,7 @@ let mySel=(()=>{const v=+(store.get('surge.hero')||0)||0;return v>=CUST0&&CSPECS
 const BOTN=['Vex','Kairo','Nyx','Brakk','Sola','Juno','Ryze','Mako','Tess','Orin','Pike','Zara','Dax','Lumen'];
 function botName(){return pick(BOTN)+' (BOT)';}
 function myName(){return cleanName($('nameIn').value||store.get('surge.name')||'Player');}
-function showScreen(id){['title','setup','lobby','pause','result','msg','creator','mold','shop','story','missions','gmodes','settings','prog','credits'].forEach(s=>$(s).classList.toggle('on',s===id));}
+function showScreen(id){['title','setup','lobby','pause','result','msg','shop','missions','gmodes','settings','prog','credits'].forEach(s=>$(s).classList.toggle('on',s===id));}
 function showMsg(t){$('msgT').textContent=t;showScreen('msg');}
 /* ---- fighter select: rendered portraits + 3D pedestal ---- */
 const PV={r:null,scene:null,cam:null,rigs:{},idx:0,ped:null,beams:[],portraits:{},filter:'all'};
@@ -7594,12 +7272,12 @@ function poseRig(R,P,t){
   if(R.beast){R.beast.group.position.set(0,.95+Math.sin(t*2)*.05,-.42);R.beast.head.rotation.y=Math.sin(t*1.2)*.3;R.beast.jaw.rotation.x=.15+Math.sin(t*1.7)*.1;}
   if(R.spikes)R.spikes.forEach(c=>c.visible=true);
 }
-function renderPortrait(i){if(!PV.r)return;const cvs=$('pv');const mdv=MD.R?MD.R.root:null;if(mdv)mdv.visible=false;const h=heroAt(i),R=pvRig(i);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;PV.ped.visible=false;
+function renderPortrait(i){if(!PV.r)return;const cvs=$('pv');const h=heroAt(i),R=pvRig(i);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;PV.ped.visible=false;
   poseRig(R,POSES.showcase,0);R.root.rotation.y=.35;R.root.position.set(0,0,0);
   const sc=h.scale,hy=1.8*sc;PV.cam.aspect=.82;PV.cam.fov=26;PV.cam.updateProjectionMatrix();PV.cam.position.set(.22*sc,hy+.06,1.35*sc);PV.cam.lookAt(0,hy-.1,0);
   PV.r.setSize(205,250,false);PV.r.render(PV.scene,PV.cam);try{PV.portraits[i]=cvs.toDataURL('image/png');}catch(e){}
   Object.values(PV.rigs).forEach(r=>r.root.visible=false);const cur=PV.rigs[pvKey(PV.idx)];if(cur)cur.root.visible=true;R.root.rotation.y=-.5;
-  PV.r.setSize(cvs.clientWidth||400,cvs.clientHeight||400,false);if(mdv)mdv.visible=true;PV.ped.visible=true;}
+  PV.r.setSize(cvs.clientWidth||400,cvs.clientHeight||400,false);PV.ped.visible=true;}
 function makePortraits(){
   if(!PV.r)return;let i=0;const ids=HEROES.map((h,k)=>k).concat(CSPECS.map((s,k)=>CUST0+k));
   const next=()=>{if(i>=ids.length){buildCards();return;}renderPortrait(ids[i]);
@@ -7610,7 +7288,7 @@ function previewHero(i){PV.idx=i;const h=heroAt(i);
   $('pvDiff').textContent=h.diff;$('pvName').textContent=h.name;
   $('pvTags').innerHTML=`<span class="tag ${h.faction==='hero'?'h':'v'}">${h.faction==='hero'?'HERO':'VILLAIN'}</span><span class="tag">${h.cls}</span><span class="tag">${h.power}</span>`;
   $('pvTags2').innerHTML=h.tags.map(t=>`<span class="tag o">${t}</span>`).join('')+`<span class="tag o">Ult: ${h.ultName}</span>`;
-  $('pvDesc').textContent=h.desc;$('pvDesc').style.setProperty('--c',h.css);$('pvMoves').innerHTML=movesHTML(h);$('pvEdit').style.display=i>=CUST0?'inline-block':'none';$('pvEdit').onclick=()=>{AU.ui();openCreator(i-CUST0);};if(!PV.mvb){PV.mvb=1;$('pvMvBtn').onclick=()=>{const pi=document.querySelector('.pvinfo');pi.classList.toggle('mv');$('pvMvBtn').textContent=pi.classList.contains('mv')?'ABOUT':'MOVE LIST';AU.ui();};}$('pvMoves').style.setProperty('--c',h.css);
+  $('pvDesc').textContent=h.desc;$('pvDesc').style.setProperty('--c',h.css);$('pvMoves').innerHTML=movesHTML(h);$('pvEdit').style.display='none';if(!PV.mvb){PV.mvb=1;$('pvMvBtn').onclick=()=>{const pi=document.querySelector('.pvinfo');pi.classList.toggle('mv');$('pvMvBtn').textContent=pi.classList.contains('mv')?'ABOUT':'MOVE LIST';AU.ui();};}$('pvMoves').style.setProperty('--c',h.css);
   if(PV.r){const R=pvRig(i,ARMOR_OFF);Object.values(PV.rigs).forEach(r=>r.root.visible=false);R.root.visible=true;R.root.rotation.y=-.5;}
   const ab=$('armorBtn');if(ab){ab.textContent=ARMOR_OFF?'🧍 ARMOR: OFF':'🛡 ARMOR: ON';ab.classList.toggle('on',!ARMOR_OFF);ab.style.display=i<CUST0?'':'none';}
 }
@@ -7623,7 +7301,7 @@ function renderPreview(dt){
   PV.cam.position.set(off,1.35*sc,6.8);PV.cam.lookAt(off,1.0*sc,0);PV.r.render(PV.scene,PV.cam);
 }
 function buildCards(){
-  const f=$('filters');f.innerHTML='';[['all','ALL'],['hero','HEROES'],['villain','VILLAINS'],['vigilante','VIGILANTES'],['custom','CREATED']].forEach(([k,n])=>{const b=document.createElement('span');b.textContent=n;b.className=PV.filter===k?'sel':'';b.onclick=()=>{PV.filter=k;AU.ui();buildCards();};f.appendChild(b);});
+  const f=$('filters');f.innerHTML='';[['all','ALL'],['hero','HEROES'],['villain','VILLAINS'],['vigilante','VIGILANTES']].forEach(([k,n])=>{const b=document.createElement('span');b.textContent=n;b.className=PV.filter===k?'sel':'';b.onclick=()=>{PV.filter=k;AU.ui();buildCards();};f.appendChild(b);});
   const g=$('grid');g.innerHTML='';
   const ids=HEROES.map((h,k)=>k).concat(CSPECS.map((s,k)=>CUST0+k));
   ids.forEach(i=>{const h=heroAt(i),cu=i>=CUST0;if(PV.filter==='custom'?!cu:PV.filter==='vigilante'?!h.vig:(PV.filter!=='all'&&h.faction!==PV.filter))return;const t=document.createElement('div');t.className='tile'+(h.faction==='villain'?' vil':'')+(mySel===i?' sel':'');t.style.setProperty('--c',h.css);
@@ -7631,7 +7309,6 @@ function buildCards(){
     if(cu){const d=t.querySelector('.del');d.onclick=e=>{e.stopPropagation();AU.ui();if(d.dataset.arm){deleteCustom(i);}else{d.dataset.arm=1;d.textContent='DEL?';d.style.width='44px';d.style.background='#c4102a';setTimeout(()=>{d.dataset.arm='';d.textContent='✕';d.style.width='';d.style.background='';},2500);}};}
     t.onmouseenter=()=>previewHero(i);t.onmouseleave=()=>previewHero(mySel);
     t.onclick=()=>{mySel=i;store.set('surge.hero',i);AU.init();AU.ui();buildCards();previewHero(i);};g.appendChild(t);});
-  if(PV.filter==='all'||PV.filter==='custom'){const a=document.createElement('div');a.className='tile add';a.innerHTML='<b>+</b>CREATE';a.onclick=()=>{AU.ui();openCreator();};g.appendChild(a);}
   const dd=$('diffs');dd.innerHTML='';['ROOKIE','PRO','LEGEND'].forEach((n,i)=>{const b=document.createElement('div');b.className='chip'+(game.diff===i?' sel':'');b.textContent=n;b.onclick=()=>{game.diff=i;AU.ui();buildCards();};dd.appendChild(b);});
   const md=$('modes');md.innerHTML='';[['solo','SOLO'],['duos','DUOS']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(game.mode===k?' sel':'');b.textContent=n;b.onclick=()=>{game.mode=k;store.set('surge.mode',k);AU.ui();buildCards();};md.appendChild(b);});
   rulesChips('rules',game.rules,k=>{game.rules=k;store.set('surge.rules',k);buildCards();});$('modeTab').textContent=game.rules==='arena'?'ARENA':game.rules==='raid'?'BOSS RAID':'BATTLE ROYALE';
@@ -7757,75 +7434,6 @@ window.__dbg={pvcam:()=>PV.cam,au:()=>[AU.live,!!AU.ctx&&AU.ctx.state],applyHit,
 // collapse the settings + details over the fighter preview (remembered between visits)
 (function(){const R=document.querySelector('.selR'),b=$('menuTog');const set=c=>{R.classList.toggle('collapsed',c);b.textContent=c?'▴ SHOW MENU':'▾ HIDE MENU';store.set('surge.selMenu',c?'hide':'show');};
   set(store.get('surge.selMenu')==='hide');b.onclick=()=>{AU.ui();set(!R.classList.contains('collapsed'));};})();
-/* Fighter creator screen */
-/* ================= FIGHTER CREATOR SCREEN ================= */
-const CR={spec:null,edit:-1};
-function clearCustomRigs(){Object.keys(PV.rigs).forEach(k=>{if(+k>=CUST0){PV.scene.remove(PV.rigs[k].root);delete PV.rigs[k];delete PV.portraits[k];}});}
-function deleteCustom(i){const k=i-CUST0;if(!CSPECS[k])return;CSPECS.splice(k,1);saveCustoms();clearCustomRigs();
-  if(mySel===i)mySel=0;else if(mySel>i)mySel--;store.set('surge.hero',mySel);makePortraits();buildCards();previewHero(mySel);AU.ui();}
-function openCreator(edit){CR.edit=edit==null?-1:edit;const s=CR.edit>=0?CSPECS[CR.edit]:null;CR.spec=s?Object.assign({},s):null;
-  $('crName').value=s?s.name:'';$('crText').value=s?s.text:'';$('crSave').style.display=s?'':'none';$('crSave').textContent=s?'SAVE CHANGES':'SAVE FIGHTER';
-  crStat('');if(s)renderCreator();else{$('crRes').innerHTML='<div class="crhead">WRITE A DESCRIPTION, THEN BUILD IT</div>';$('crImg').removeAttribute('src');}
-  showScreen('creator');setTimeout(()=>$('crText').focus(),50);}
-function shotOf(h){if(!PV.r)return '';const R=buildRig(h,PV.scene);PV.scene.add(R.root);Object.values(PV.rigs).forEach(r=>r.root.visible=false);PV.ped.visible=true;
-  poseRig(R,POSES.showcase,0);R.root.rotation.y=.4;const sc=h.scale;PV.cam.aspect=.62;PV.cam.fov=30;PV.cam.updateProjectionMatrix();PV.cam.position.set(0,1.2*sc,5.4);PV.cam.lookAt(0,1.0*sc,0);
-  PV.r.setSize(250,400,false);PV.r.render(PV.scene,PV.cam);let url='';try{url=$('pv').toDataURL('image/png');}catch(e){}
-  PV.scene.remove(R.root);const cur=PV.rigs[PV.idx];if(cur)cur.root.visible=true;const cvs=$('pv');PV.r.setSize(cvs.clientWidth||400,cvs.clientHeight||400,false);return url;}
-const ELEM_LABEL=()=>HEROES.map(h=>[h.id,h.power+' ('+h.name+')']);
-function crSelect(key,opts,val){return `<select data-k="${key}">${opts.map(([v,n])=>`<option value="${v}"${v===val?' selected':''}>${n}</option>`).join('')}</select>`;}
-function crChips(key,opts,val){return `<span class="two">${opts.map(([v,n])=>`<span class="chip${v===val?' sel':''}" data-k="${key}" data-v="${v}">${n}</span>`).join('')}</span>`;}
-function renderCreator(){const s=CR.spec;if(!s)return;const h=customHero(s);const G=s.gear||{type:'none',c1:0xc8ccd8,c2:s.accent,size:1,dual:false};
-  const C=s.cab||{};const sp=(C.sp?[['cab','★ NEW · '+C.sp.name]]:[]).concat(HEROES.map(x=>[x.special,spLabel(x.special)+' · '+x.name]));
-  const ul=(C.ult?[['cab','★ NEW · '+C.ult.name]]:[]).concat(HEROES.map(x=>[x.ult,x.ultName+' · '+x.name])),al=(C.ultAlt?[['cab','★ NEW · '+C.ultAlt.name]]:[]).concat(HEROES.map(x=>[x.id,(ALTULT[x.id]?ALTULT[x.id].name:'—')+' · '+x.name]));
-  const card=(lbl,A,on)=>A?`<div style="--c:${hexCss(A.c1)};opacity:${on?1:.45}"><i>${lbl}${on?'':' · not equipped'}</i><b>${esc(A.name)}</b>${esc(cabDescribe(A))}<br><i>${A.form.toUpperCase()} · ${A.style.toUpperCase()}${A.fx.length?' · '+A.fx.join(' · ').toUpperCase():''}${A.self.length?' · SELF: '+A.self.join(', ').toUpperCase():''}</i></div>`:'';
-  const cards=s.cab?`<div class="crnote" style="font-size:14px;color:#e8d8ff;letter-spacing:.1em">${s.ai?'✦ NEW ABILITIES DESIGNED BY CLAUDE':'★ NEW ABILITIES BUILT FROM YOUR WORDS'}</div><div class="crab">${card('SPECIAL',C.sp,s.special==='cab')}${card('BACK SPECIAL',C.spAlt,s.special==='cab')}${card('ULTIMATE',C.ult,s.ult==='cab')}${card('ALT ULTIMATE',C.ultAlt,s.alt==='cab')}</div>`:'';
-  const wp=[['fist','Fists'],['titan','Heavy fists'],['ronin','Sword'],['scathe','Claws'],['marrow','Whips'],['umbra','Shadow beast']];
-  $('crRes').innerHTML=`<div class="crhead" style="color:${h.css}">${esc(h.name)}</div>${cards}
-    <span class="k">POWER</span>${crSelect('elem',ELEM_LABEL(),s.elem)}
-    <span class="k">LOOK</span>${crSelect('look',HEROES.map(x=>[x.id,'Like '+x.name]),s.look)}
-    <span class="k">WEAPON</span><span class="two">${crSelect('gtype',Object.keys(GEAR_TYPES).map(k=>[k,GEAR_TYPES[k][0]]),G.type)}${GEAR_DUAL_OK.indexOf(G.type)>=0?`<span class="chip${G.dual?' sel':''}" data-k="gdual" data-v="1">DUAL</span>`:''}</span>
-    ${G.type!=='none'?`<span class="k">WEAPON LOOK</span><span class="two"><input type="color" data-k="gc1" value="${hexCss(G.c1)}"><input type="color" data-k="gc2" value="${hexCss(G.c2)}">${crChips('gsize',[[.8,'SMALL'],[1,'NORMAL'],[1.45,'HUGE']],G.size)}</span>`:''}
-    <span class="k">SPECIAL</span><span class="two">${crSelect('special',sp,s.special)}<input class="nm" data-k="spName" maxlength="24" placeholder="custom name" value="${esc(s.spName)}"></span>
-    <span class="k">ULTIMATE</span><span class="two">${crSelect('ult',ul,s.ult)}<input class="nm" data-k="ultName" maxlength="24" placeholder="custom name" value="${esc(s.ultName)}"></span>
-    <span class="k">ALT ULT</span><span class="two">${crSelect('alt',al,s.alt)}<input class="nm" data-k="altName" maxlength="24" placeholder="custom name" value="${esc(s.altName)}"></span>
-    <span class="k">COLORS</span><span class="two"><input type="color" data-k="color" value="${hexCss(s.color)}"><input type="color" data-k="accent" value="${hexCss(s.accent)}"></span>
-    <span class="k">SPEED</span>${crChips('spd',[[.9,'SLOW'],[1,'NORMAL'],[1.18,'FAST']],s.spd)}
-    <span class="k">SIZE</span>${crChips('size',[['small','SMALL'],['normal','NORMAL'],['big','BIG']],s.size)}
-    <span class="k">STRENGTH</span>${crChips('pow',[[.92,'LIGHT'],[1,'NORMAL'],[1.12,'STRONG']],s.pow)}
-    <span class="k">SIDE</span>${crChips('faction',[['hero','HERO'],['villain','VILLAIN']],s.faction)}
-    <div class="crnote">Punch effect: ${PFX_DESC[s.elem]||''}. Every created fighter also gets the full set of punch variants, a charged special, and an overcharge.</div>`;
-  const upd=(k,v)=>{if(k[0]==='g'&&k.length>2&&['gtype','gdual','gc1','gc2','gsize'].indexOf(k)>=0){const g=Object.assign({type:'none',c1:0xc8ccd8,c2:CR.spec.accent,size:1,dual:false},CR.spec.gear||{});
-      if(k==='gtype')g.type=v;if(k==='gdual')g.dual=!g.dual;if(k==='gc1')g.c1=parseInt(String(v).slice(1),16);if(k==='gc2')g.c2=parseInt(String(v).slice(1),16);if(k==='gsize')g.size=+v;
-      CR.spec.gear=sanitizeGear(g);CR.spec=sanitizeSpec(CR.spec);renderCreator();return;}
-    const n=['spd','pow'].indexOf(k)>=0?+v:(k==='color'||k==='accent')?parseInt(String(v).slice(1),16):v;CR.spec[k]=n;
-    if(k==='elem'){const b=heroById(v);CR.spec.look=v;CR.spec.special=b.special;CR.spec.ult=b.ult;CR.spec.alt=v;}CR.spec=sanitizeSpec(CR.spec);renderCreator();};
-  $('crRes').querySelectorAll('select').forEach(el=>el.onchange=()=>{AU.ui();upd(el.dataset.k,el.value);});
-  $('crRes').querySelectorAll('input.nm').forEach(el=>el.onchange=()=>{CR.spec[el.dataset.k]=el.value.toUpperCase();CR.spec=sanitizeSpec(CR.spec);});
-  $('crRes').querySelectorAll('input[type=color]').forEach(el=>el.onchange=()=>upd(el.dataset.k,el.value));
-  $('crRes').querySelectorAll('.chip[data-k]').forEach(el=>el.onclick=()=>{AU.ui();upd(el.dataset.k,el.dataset.v);});
-  $('crImg').src=shotOf(h);$('crSave').style.display='';}
-function crStat(t,busy){$('crStat').textContent=t;$('crStat').classList.toggle('busy',!!busy);}
-function aiBadge(){const b=$('crAI');if(!b)return;b.textContent=AI_OK?'✦ CLAUDE DESIGNS YOUR ABILITIES':'BUILT-IN DESIGNER';b.classList.toggle('ai',AI_OK);}
-aiBadge();
-$('crBuild').onclick=async()=>{AU.init();AU.ui();const txt=$('crText').value.trim();if(!txt){$('crText').focus();return;}if(CR.busy)return;
-  const old=CR.spec,nm=$('crName').value;CR.spec=parseFighter(nm,txt);if(old&&CR.edit>=0)CR.spec.uid=old.uid;renderCreator();
-  if(!AI_OK){crStat('Built from your words by the built-in designer.');return;}
-  CR.busy=true;$('crBuild').disabled=true;crStat('Claude is designing your abilities…',true);const tok=CR.tok=(CR.tok||0)+1;
-  try{const j=await aiDesign(nm,txt,n=>{if(tok===CR.tok)crStat('Claude is designing your abilities… '+'▮'.repeat(Math.min(12,Math.floor(n/120))),true);});
-    if(tok!==CR.tok)return;const uid=CR.spec.uid;CR.spec=sanitizeSpec(specFromAI(j,CR.spec));CR.spec.uid=uid;if(nm.trim())CR.spec.name=nm.trim().toUpperCase().slice(0,14);$('crName').value=CR.spec.name;renderCreator();crStat('✦ Designed by Claude. Change anything below, or build again for a new take.');}
-  catch(e){const c=e&&e.code;crStat(c==='not_granted'?'Claude access was not allowed, so the built-in designer made these.':c==='rate_limited'?'Claude is busy right now, so the built-in designer made these. Try again in a minute.':'Claude could not finish, so the built-in designer made these.');}
-  finally{CR.busy=false;$('crBuild').disabled=false;}};
-$('crMold').onclick=()=>{AU.init();AU.ui();openMold();};
-$('crIdea').onclick=()=>{AU.ui();$('crText').value=pick(IDEAS);$('crName').value='';$('crBuild').click();};
-$('crBack').onclick=()=>{AU.ui();openSetup(setupMode||'off');};
-$('crName').addEventListener('change',()=>{if(CR.spec){CR.spec.name=$('crName').value.trim().toUpperCase()||CR.spec.name;CR.spec=sanitizeSpec(CR.spec);renderCreator();}});
-$('crSave').onclick=()=>{if(!CR.spec)return;AU.ui();const s=sanitizeSpec(Object.assign({},CR.spec,{text:$('crText').value,name:$('crName').value.trim()||CR.spec.name}));
-  if(CR.edit>=0)CSPECS[CR.edit]=s;else{if(CSPECS.length>=12)CSPECS.shift();CSPECS.push(s);}saveCustoms();clearCustomRigs();
-  mySel=CR.edit>=0?CUST0+CR.edit:CUST0+CSPECS.length-1;store.set('surge.hero',mySel);PV.filter='custom';makePortraits();openSetup(setupMode||'off');};
-['crText','crName'].forEach(id=>$(id).addEventListener('keydown',e=>e.stopPropagation()));
-window.__cr={heroes:()=>HEROES,parseFighter,customHero,specs:()=>CSPECS,add(s){CSPECS.push(s);saveCustoms();clearCustomRigs();mySel=CUST0+CSPECS.length-1;}};
-window.__shot=(s)=>shotOf(customHero(s));
-window.__model=(shape,c1,c2)=>{const A=sanitizeAbil({form:'bolt',style:'light',shape,colors:[c1,c2]});const g=cabMesh(A,1.6,null);PV.scene.add(g);Object.values(PV.rigs).forEach(r=>r.root.visible=false);PV.ped.visible=false;g.position.set(0,1.2,0);g.rotation.y=-.7;PV.cam.aspect=1;PV.cam.fov=30;PV.cam.updateProjectionMatrix();PV.cam.position.set(0,1.6,4);PV.cam.lookAt(0,1.2,0);PV.r.setSize(160,160,false);PV.r.render(PV.scene,PV.cam);const u=$('pv').toDataURL('image/png');PV.scene.remove(g);return u;};
 /* Practice mode */
 /* ================= PRACTICE MODE =================
    A separate training ground with dummies: test every punch, special and ultimate with
@@ -7932,236 +7540,16 @@ $('prFighter').onclick=()=>{AU.ui();endMatchCleanup();openSetup('prac');};
 $('prExit').onclick=()=>{AU.ui();leaveMatch();};
 $('prHide').onclick=()=>{PR.panel=!PR.panel;$('prac').classList.toggle('min',!PR.panel);AU.ui();};
 $('bPractice').onclick=()=>{AU.init();AU.ui();openSetup('prac');};
-$('bCreate').onclick=()=>{AU.init();AU.ui();setupMode='off';openCreator();};
-/* Story mode script: every chapter, line of dialogue, cutscene staging and mission. Add chapters here */
-/* ================= STORY MODE: "SURGE: ORIGIN" =================
-   An original hero-school story told in chapters: cutscenes, then missions with set teams.
-   Cast: everyone except the JJK-inspired fighters (Void, Ronin, Strobe, Hex, Scathe) and Marrow. */
-const STORY_KEY='surge.story';
-// speakers who aren't fighters
-const NPC={narr:{name:'',css:'#cfd6e6'},paragon:{name:'PARAGON',css:'#ffd23f',em:'★'},principal:{name:'PRINCIPAL KODA',css:'#9ad8ff',em:'◆'},crowd:{name:'CROWD',css:'#ff9ad8',em:'✦'}};
-const SL=(s,t,o)=>[s,t,o||{}];
-// SL(speaker, line, staging): staging can set a pose, play an effect at a character (fx/at), bring characters in or out (enter/exit) and pick a shot (cam: wide/close)
-const STORY=[
- {t:'THE INHERITOR',loc:'Sector 7 Streets',
-  sPre:{where:[0,-30],actors:[['titan',-1.6,0],['paragon',1.8,0,1]]},
-  pre:[
-   SL('narr','Sector 7. Eight in ten people are born with a power. Kai Mori was one of the two who were not.',{cam:'wide'}),
-   SL('narr','He filled notebooks with every hero he ever saw, and dreamed of joining Aegis Academy anyway.',{cam:'close',at:'titan'}),
-   SL('paragon','Kid. I saw you run toward that collapsing bridge when everyone else ran away. You had no power, and you went anyway.',{enter:['paragon'],fx:'aura',at:'paragon',pose:'point'}),
-   SL('paragon','My power, OVERPOWER, can be passed on. I have carried it a long time. I want you to carry it next.',{fx:'transfer',at:'titan',pose:'command'}),
-   SL('titan','Me? ...I won\'t waste it. I promise.',{pose:'charge',fx:'aura',at:'titan'}),
-   SL('narr','Ten months of training later: the Aegis Academy entrance exam. Wreck as many exam robots as you can.',{cam:'wide'})],
-  stages:[{player:'titan',enemies:[{h:'bastion',name:'EXAM BOT α',take:1.4},{h:'bastion',name:'EXAM BOT β',take:1.4},{h:'bastion',name:'EXAM BOT γ',take:1.4}],diff:0,goal:'Destroy the exam robots'}],
-  sPost:{where:[48,24],actors:[['titan',-1.5,0],['principal',1.5,0],['paragon',0,3,1]]},
-  post:[SL('principal','Exam complete. Applicant Kai Mori, codename TITAN: you passed.',{pose:'point'}),SL('titan','I... passed? I passed!',{pose:'win',fx:'confetti',at:'titan'}),SL('paragon','Told you. Welcome to Aegis, Titan.',{enter:['paragon'],pose:'point'})]},
- {t:'BATTLE TRIAL',loc:'Aegis Academy · Training Ground',
-  sPre:{where:'train',actors:[['snare',0,2.5],['titan',-2,-1],['nitro',2,-1]]},
-  pre:[
-   SL('snare','I\'m Snare, your homeroom teacher. I\'ll be brief, because talking is tiring.',{pose:'idle'}),
-   SL('snare','First lesson: a one-on-one battle trial. Titan, you\'re up against Nitro.',{pose:'point'}),
-   SL('nitro','You?! The kid who didn\'t have a power last year? Stay down when I knock you over, Titan.',{pose:'point',fx:'explosion',at:'nitro'}),
-   SL('titan','I\'m not the same as last year, Nitro.',{pose:'charge',fx:'aura',at:'titan'})],
-  stages:[{player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.9}],diff:1,goal:'Win the battle trial against Nitro'}],
-  sPost:{where:'train',actors:[['nitro',1.5,0],['titan',-1.5,0],['snare',0,3]]},
-  post:[SL('nitro','Tch. That was luck. Next time I\'m blowing you off the map.',{pose:'point'}),SL('snare','Both of you, decent. Now go to the nurse. Both of you.',{pose:'idle'})]},
- {t:'ATTACK ON THE DOME',loc:'Rescue Training Dome',
-  sPre:{where:[-24,-48],actors:[['drift',-2.5,-1],['snare',0,-1.2],['titan',2.5,-1],['warp',0,5,1],['entropy',-1.8,5.5,1]]},
-  pre:[
-   SL('drift','Rescue training at the Dome today! Floating people out of rubble is kind of my whole thing.',{pose:'win'}),
-   SL('snare','Wait. Get behind me. That portal isn\'t ours.',{pose:'block',fx:'portal',at:'warp',cam:'wide'}),
-   SL('warp','Good afternoon, students. We are THE SEVERANCE. We came to meet the Symbol of Peace, Paragon.',{enter:['warp'],fx:'portal',at:'warp',pose:'command'}),
-   SL('entropy','He isn\'t here? Then we\'ll break his students instead. Everything falls apart eventually.',{enter:['entropy'],fx:'decay',at:'entropy',pose:'point'}),
-   SL('snare','Titan, Drift, with me. Don\'t let anyone touch you with five fingers.',{pose:'stare',fx:'erase',at:'snare'})],
-  stages:[{player:'titan',allies:['snare','drift'],enemies:[{h:'warp',name:'WARP',take:.8},{h:'entropy',name:'ENTROPY',flee:.55},{h:'quake',name:'SEVERANCE THUG',take:1.4},{h:'legion',name:'SEVERANCE THUG',take:1.4}],diff:1,goal:'Drive off the Severance'}],
-  sPost:{where:[-24,-48],actors:[['entropy',0,5],['drift',-2,-1],['titan',2,-1],['paragon',0,-4,1]]},
-  post:[SL('entropy','This was a test run. Next time, Paragon\'s little heir won\'t be so lucky.',{pose:'point',fx:'portal',at:'entropy',exit:['entropy']}),SL('drift','They... they ran. We actually held them off!',{pose:'win'}),
-   SL('paragon','You were brave today, Titan. But that man, Entropy, is only the hand. Someone is moving him.',{enter:['paragon'],pose:'idle'})]},
- {t:'SPORTS FESTIVAL',loc:'Aegis Stadium',
-  sPre:{where:'train',actors:[['titan',0,0],['solstice',-3,3],['nitro',3,3]]},
-  pre:[
-   SL('crowd','AEGIS SPORTS FESTIVAL! Every pro agency in the country is watching!',{cam:'wide',fx:'confetti',at:'titan'}),
-   SL('solstice','Titan. I only use my ice. I refuse to use my father\'s fire. Even so, I\'ll beat you.',{pose:'point',fx:'ice',at:'solstice'}),
-   SL('titan','You\'re holding back half of yourself... and you think that\'s enough?',{pose:'charge'}),
-   SL('nitro','Shut up, both of you. The only one winning this is me.',{pose:'point',fx:'explosion',at:'nitro'})],
-  stages:[
-   {player:'titan',enemies:[{h:'piston',name:'PISTON',take:1}],diff:1,goal:'Round 1: defeat Piston'},
-   {player:'titan',enemies:[{h:'solstice',name:'SOLSTICE',take:.85}],diff:1,goal:'Semifinal: defeat Solstice',sPre:{where:'train',actors:[['titan',-2,0],['solstice',2,0]]},
-    pre:[SL('titan','It\'s YOUR power, Solstice! Fire and ice, both of them! Use all of it!',{pose:'point'}),SL('solstice','...Fine. Don\'t regret asking.',{pose:'charge',fx:'fire',at:'solstice'})]},
-   {player:'titan',enemies:[{h:'nitro',name:'NITRO',take:.8}],diff:2,goal:'Final: defeat Nitro',sPre:{where:'train',actors:[['titan',-2,0],['nitro',2,0]]},
-    pre:[SL('nitro','No holding back, Titan. I want a REAL win.',{pose:'charge',fx:'explosion',at:'nitro'}),SL('titan','Then come on!',{pose:'charge',fx:'aura',at:'titan'})]}],
-  sPost:{where:'train',actors:[['titan',0,0],['nitro',2.5,1.5],['solstice',-2.5,1.5]]},
-  post:[SL('crowd','TITAN WINS THE SPORTS FESTIVAL!',{cam:'wide',fx:'confetti',at:'titan'}),SL('nitro','...Next year. Next year it\'s mine.',{pose:'idle'}),SL('solstice','Thank you, Titan. For the first time, my fire felt like mine.',{fx:'fire',at:'solstice'})]},
- {t:'THE HERO HUNTER',loc:'Hosu Back Alleys',
-  sPre:{where:[96,-30],actors:[['recoil',0,6],['piston',-2,-1],['solstice',0,-1.5],['titan',2,-1]]},
-  pre:[
-   SL('narr','During internships, pro heroes start disappearing. Each was shot from impossible angles.',{cam:'wide'}),
-   SL('recoil','I was a hero once. A government hero. I pulled the trigger on whoever they told me to.',{pose:'aim',fx:'shot',at:'recoil'}),
-   SL('recoil','Now I hunt the ones who smile for cameras. You students are in my sights too.',{pose:'aim'}),
-   SL('piston','She took out my brother\'s whole agency. I\'m not running.',{pose:'charge',fx:'engine',at:'piston'}),
-   SL('solstice','Then we fight together. Titan, stay out of her line of fire.',{pose:'point',fx:'ice',at:'solstice'})],
-  stages:[{player:'titan',allies:['piston','solstice'],enemies:[{h:'recoil',name:'RECOIL',take:.55}],diff:2,goal:'Bring down Recoil'}],
-  sPost:{where:[96,-30],actors:[['recoil',0,2],['titan',-1.5,-1],['solstice',1.5,-1]]},
-  post:[SL('recoil','You kids... actually aim to save people. Maybe the world isn\'t completely rotten.',{pose:'idle'}),SL('narr','Recoil is taken into custody. Her words about the hero system spread across the news.',{cam:'wide'})]},
- {t:'FOREST CAMP RAID',loc:'Summer Training Camp',
-  sPre:{where:[-120,96],actors:[['volta',-2.5,-1],['umbra',0,-1.5],['titan',2.5,-1],['nitro',4.5,-2],['pyre',-2,6,1],['marble',0,6.5,1],['legion',2,6,1]]},
-  pre:[
-   SL('volta','Training camp! Forest, fresh air, zero villains. Best week ever.',{pose:'win',fx:'lightning',at:'volta'}),
-   SL('umbra','Too quiet. My shadow doesn\'t like it.',{pose:'idle',fx:'dark',at:'umbra'}),
-   SL('pyre','Evening, kids. Nice campfire. Mine burns blue.',{enter:['pyre'],fx:'bluefire',at:'pyre',pose:'command'}),
-   SL('marble','Ladies and gentlemen, the Severance\'s vanguard has arrived! Tonight\'s trick: a disappearing student!',{enter:['marble'],fx:'glass',at:'marble',pose:'snap'}),
-   SL('legion','Two of me! No, a hundred of me! No, just enough to win! Ha!',{enter:['legion'],fx:'mud',at:'legion',pose:'win'})],
-  stages:[{player:'titan',allies:['volta','umbra'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'marble',name:'MARBLE',take:.85},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Stop the Severance vanguard'}],
-  sPost:{where:[-120,96],actors:[['marble',0,5],['titan',-1.5,-1],['nitro',1.8,1.5],['warp',2.5,6,1]]},
-  post:[SL('marble','A fine performance! But the show already ended. Look in my pocket.',{pose:'snap'}),SL('narr','A single glass marble glints in his hand. Inside it: Nitro.',{fx:'capture',at:'nitro',cam:'close'}),
-   SL('titan','NITRO!',{pose:'point',fx:'aura',at:'titan'}),SL('warp','Retrieval complete. We\'re leaving.',{enter:['warp'],fx:'portal',at:'marble',exit:['marble','warp']})]},
- {t:'RESCUE AT THE DOCKS',loc:'Kamino Harbor',
-  sPre:{where:[120,48],actors:[['quill',0,1.5],['solstice',-2,-1],['titan',2,-1]]},
-  pre:[
-   SL('quill','I\'m Quill. Pro hero. The Severance hideout is in the warehouses by the harbor. They have your classmate.',{pose:'point',fx:'feathers',at:'quill'}),
-   SL('solstice','We\'re not waiting for permission.',{pose:'charge',fx:'ice',at:'solstice'}),
-   SL('titan','We get in, we get Nitro, we get out.',{pose:'charge',fx:'aura',at:'titan'})],
-  stages:[
-   {player:'titan',allies:['solstice','quill'],enemies:[{h:'pyre',name:'PYRE',take:.75},{h:'quake',name:'QUAKE',take:.7},{h:'warp',name:'WARP',flee:.5}],diff:2,goal:'Break into the hideout'},
-   {player:'titan',allies:['bastion','cinder'],enemies:[{h:'sovereign',name:'SOVEREIGN',take:.35,boss:true}],diff:2,goal:'Survive Sovereign',
-    sPre:{where:[120,48],actors:[['sovereign',0,6],['paragon',0,1.5],['titan',-2,-1],['bastion',-4,-2,1],['cinder',3.5,-2,1]]},
-    pre:[SL('sovereign','So this is the boy who inherited Overpower. Paragon always did love a lost cause.',{pose:'command',fx:'dark',at:'sovereign'}),SL('paragon','Get away from my student, Sovereign!',{pose:'charge',fx:'aura',at:'paragon'}),
-      SL('narr','Paragon throws himself at Sovereign, but his power is almost gone. Titan steps in beside him.',{cam:'wide',fx:'explosion',at:'sovereign'}),
-      SL('bastion','Bastion and Cinder, reporting! Titan, we\'ve got your back!',{enter:['bastion','cinder'],pose:'charge',fx:'fire',at:'cinder'}),SL('sovereign','Then I\'ll take ALL of your powers. One by one.',{pose:'point',fx:'dark',at:'sovereign'})]}],
-  sPost:{where:[120,48],actors:[['paragon',0,0],['titan',-2,-1.5],['nitro',2.2,-1.5]]},
-  post:[SL('narr','Sovereign falls. Paragon, his power spent, stands one last time before the cameras.',{cam:'wide'}),SL('paragon','Next... it\'s your turn.',{pose:'point',fx:'aura',at:'titan'}),
-   SL('narr','The Symbol of Peace retires that night. Nitro is rescued. And the whole country looks at a boy named Titan.',{cam:'wide'}),SL('nitro','...Don\'t think I\'m thanking you. ...Thanks.',{pose:'idle'})]},
- {t:'THE LIBERATION WAR',loc:'Jaku City',
-  sPre:{where:[0,72],actors:[['principal',-4.5,-2.5],['snare',-2.5,-1],['nitro',-.8,-1.3],['solstice',.8,-1.3],['titan',2.5,-1],['entropy',0,7,1]]},
-  pre:[
-   SL('principal','Entropy has woken up with Sovereign\'s power inside him. The Severance is marching on the city.',{pose:'point'}),
-   SL('snare','Every hero in the country is on the line today. Students included. I\'ll erase his power, Titan. You end this.',{pose:'stare',fx:'erase',at:'snare'}),
-   SL('nitro','We do it together. Don\'t you dare fall behind.',{pose:'charge',fx:'explosion',at:'nitro'}),SL('solstice','Fire and ice. All of it.',{pose:'charge',fx:'fireice',at:'solstice'}),
-   SL('entropy','Heroes, symbols, peace... I\'ll decay all of it. Come on, heir. Let\'s see what Paragon left you.',{enter:['entropy'],fx:'decay',at:'entropy',pose:'command'})],
-  stages:[{player:'titan',allies:['nitro','solstice','snare'],enemies:[{h:'entropy',name:'ENTROPY',take:.3,boss:true},{h:'pyre',name:'PYRE',take:.75},{h:'legion',name:'LEGION',take:.9}],diff:2,goal:'Defeat Entropy'}],
-  sPost:{where:[0,72],actors:[['entropy',0,2.5],['titan',0,-.5],['paragon',-3,-3,1],['nitro',2.5,-2],['solstice',-2.5,-1.5]]},
-  post:[SL('entropy','Why... does everyone... keep reaching out to me...',{pose:'idle',fx:'decay',at:'entropy'}),SL('titan','Because somebody should have, a long time ago.',{pose:'idle'}),
-   SL('narr','The war ends. The city starts to rebuild, one street at a time.',{cam:'wide',exit:['entropy']}),
-   SL('paragon','Kai. You were never "powerless." You were a hero before I gave you anything.',{enter:['paragon'],pose:'point'}),
-   SL('titan','I\'ll keep going, Paragon. Plus Ultra... no. SURGE FORWARD.',{pose:'win',fx:'aura',at:'titan'}),SL('narr','THE END ... for now.',{cam:'wide',fx:'confetti',at:'titan'})]},
-];
-/* TRAINING ARC: the story-mode tutorial. Paragon drills Titan through every control, step by step.
-   Each step has text, a check(st) that returns true when it's done, and an optional start(st) to set it up. */
-const TUT_STEPS=[
-  {t:'MOVE',k:'W A S D',d:'Walk around. Mouse (or arrow keys) turns the camera.',start(s){s.p0=ME.pos.clone();},check(s){return ME.pos.distanceTo(s.p0)>10;}},
-  {t:'JUMP',k:'SPACE',d:'Jump. Press it again in the air to double jump.',check(){return ME.state==='air'&&ME.vel.y>0;}},
-  {t:'DASH',k:'SHIFT',d:'Tap Shift to dash. Hold it to sprint.',check(){return ME.state==='dash';}},
-  {t:'BASIC ATTACKS',k:'J / LEFT CLICK · K / RIGHT CLICK',d:'Hit the training bot 5 times. Light attacks chain; heavy attacks launch.',start(s){s.hits=0;},check(s){return s.hits>=5;}},
-  {t:'SPECIAL MOVE',k:'1',d:'Your special move. Press 2 for its alternate version.',check(){return ME.state==='special'&&!ME.xmOn;}},
-  {t:'EXTRA MOVES',k:'3 · 4',d:'Every fighter has two extra moves on 3 and 4.',check(){return !!ME.xmOn;}},
-  {t:'BLOCK',k:'HOLD F',d:'The bot is attacking now. Face it and hold F to block a hit.',start(s){s.bot.hold=false;s.bot.diff=0;},check(){return ME.state==='bstun';}},
-  {t:'BREAK OUT',k:'SHIFT WHILE BEING HIT',d:'Your BREAK bar is full. When you are caught in a combo, tap Shift to burst out.',start(s){ME.brk=100;},check(){return ME.brk===0;}},
-  {t:'CLIMB',k:'JUMP INTO A WALL + HOLD W',d:'Jump into a building wall and keep holding forward to climb it. Press Space on a wall to wall-jump.',start(s){s.bot.hold=true;},check(){return ME.state==='climb';}},
-  {t:'ULTIMATE',k:'Q',d:'Your ult meter is full. Unleash your ultimate!',start(){ME.meter=100;},check(){return ME.state==='ult';}},
-  {t:'SWITCH MODE',k:'5',d:'Every fighter has a second mode with new moves. Press 5 to switch!',start(){ME._formCD=0;},check(){return typeof inMode==='function'&&inMode(ME);}},
-  {t:'SPARRING MATCH',k:'EVERYTHING',d:'Final lesson: beat Nitro in a real spar!',start(s){s.final=true;s.bot.hold=false;}}];
-function tutStage(){const st={i:-1,hits:0,bk:false,bot:null,final:false};
-  function go(i){st.i=i;const T=TUT_STEPS[i];if(T.start)T.start(st);announceSmall(T.t);AU.scale=1;if(i>0)AU.pick();}
-  return {player:'titan',enemies:[{h:'bastion',name:'TRAINING BOT',take:.4},{h:'nitro',name:'NITRO',take:1.3}],diff:0,custom:true,music:'story',goal:'Training: follow Paragon\'s lessons',
-    setup(){Object.assign(st,{i:-1,hits:0,bk:false,final:false,lastBrk:0});st.bot=FS.find(f=>f.team===1&&f.name==='TRAINING BOT');st.nitro=FS.find(f=>f.name==='NITRO');st.bot.hold=true;st.nitro.hold=true;st.nitro.rig.root.visible=false;
-      const p=ME.pos;st.bot.reset(p.x,p.z+6,Math.PI);st.nitro.reset(p.x+40,p.z+40,0);st.hk=e=>{};go(0);},
-    tick(dt){const T=TUT_STEPS[st.i];
-      if(!st.final){ME.hp=Math.max(ME.hp,st.i===10?1:40);st.bot.hp=100;
-        if(T.check(st)){if(st.i+1<TUT_STEPS.length)go(st.i+1);
-          if(TUT_STEPS[st.i].t==='SPARRING MATCH'){st.bot.dead=true;st.bot.rig.root.visible=false;const N=st.nitro;N.reset(ME.pos.x+rand(-3,3),ME.pos.z+8,Math.PI);N.rig.root.visible=true;N.hold=false;N.invuln=1;portal(N.chest(new V3()),2,true,1);STG.boss=N;}}}
-      const C=TUT_STEPS[st.i];setObj(`<b>LESSON ${st.i+1}/${TUT_STEPS.length} · ${C.t}</b> <kbd>${C.k}</kbd><br><span>${C.d}${C.t==='BASIC ATTACKS'?` (${st.hits}/5)`:''}</span>`);
-      setArrow(C.t==='BASIC ATTACKS'||C.t==='BLOCK'?st.bot.pos:(st.final&&st.nitro?st.nitro.pos:null));
-      if(st.final&&st.nitro.dead)return true;},
-    hud(){return 'TRAINING';},end(){setObj('');setArrow(null);},
-    _st:st};}
-onEv('hit',(att,def)=>{const S=STG.S;if(S&&S._st&&att===ME&&def.name==='TRAINING BOT')S._st.hits++;});
-const TRAIN_ARC=[
- {t:'PLUS ULTRA BOOT CAMP',loc:'Dagobah Beach Park',
-  sPre:{where:[48,-12],actors:[['titan',-1.6,0],['paragon',1.8,0]]},
-  pre:[SL('narr','Ten months before the entrance exam. A beach buried in trash, and a boy with no power.',{cam:'wide'}),
-   SL('paragon','Kai! Before you can carry OVERPOWER, your body has to be ready to hold it.',{pose:'point',fx:'aura',at:'paragon'}),
-   SL('titan','I\'ll do whatever it takes. Teach me everything!',{pose:'charge'}),
-   SL('paragon','Ha! That\'s the spirit. Moving, fighting, defending, climbing — we drill it all. Then you spar with a real rival.',{pose:'command'}),
-   SL('paragon','Go beyond, kid. PLUS ULTRA!',{pose:'win',fx:'aura',at:'paragon',cam:'close'})],
-  stages:[tutStage()],
-  sPost:{where:[48,-12],actors:[['titan',-1.6,0],['paragon',1.8,0],['nitro',0,4]]},
-  post:[SL('nitro','Tch. You got lucky, nobody.',{pose:'point',fx:'explosion',at:'nitro'}),
-   SL('paragon','Not luck. Work. Kai, you\'re ready for the entrance exam. Story mode awaits!',{pose:'win',fx:'confetti',at:'paragon'})]}];
-/* VILLAIN STORY: "THE SEVERANCE" — the rise of Entropy and the villains of the hero story, told from their side.
-   Same format as chapters.js. You play the villains; the heroes are the enemy team. */
-Object.assign(NPC,{sovereign_v:{name:'SOVEREIGN',css:'#c84aff',em:'♛'},news:{name:'NEWS ANCHOR',css:'#9ad8ff',em:'📺'}});
-const VSTORY=[
- {t:'NOBODY\'S CHILD',loc:'Sector 9 Backstreets',
-  sPre:{where:[-48,30],actors:[['entropy',0,0],['sovereign',0,5,1],['bastion',-3,-4,1],['quill',3,-4,1]]},
-  pre:[SL('narr','Fifteen years ago. A boy whose touch turned everything to dust. Nobody came to save him.',{cam:'wide'}),
-   SL('entropy','The heroes walked right past me. Every single one of them.',{pose:'idle',fx:'decay',at:'entropy',cam:'close'}),
-   SL('bastion','Hold it! Reports of a power going out of control — kid, put your hands where I can see them!',{enter:['bastion','quill'],pose:'point'}),
-   SL('entropy','...Now you notice me?',{pose:'command',fx:'decay',at:'entropy'})],
-  stages:[{player:'entropy',enemies:[{h:'bastion',name:'BASTION (PATROL)',take:1.3},{h:'quill',name:'QUILL (PATROL)',take:1.3}],diff:0,goal:'Escape the hero patrol'}],
-  sPost:{where:[-48,30],actors:[['entropy',0,0],['sovereign',0,4,1]]},
-  post:[SL('sovereign','Remarkable. They called you a monster, and they were right. Monsters are what this world needs.',{enter:['sovereign'],pose:'point',fx:'dark',at:'sovereign'}),
-   SL('sovereign','Come with me, child. I will teach you to break everything they built.',{pose:'command'}),
-   SL('entropy','...Fine. Teach me.',{pose:'idle',fx:'decay',at:'entropy'})]},
- {t:'THE SEVERANCE',loc:'An Abandoned Bar, Kamino Ward',
-  sPre:{where:[-96,-60],actors:[['entropy',0,0],['warp',-2.5,1.5],['sovereign',2.5,1.5,1]]},
-  pre:[SL('narr','Years later. A hidden bar. A gathering of people the hero society threw away.',{cam:'wide'}),
-   SL('warp','Master Sovereign has named you our leader, Entropy. The Severance answers to you now.',{pose:'point',fx:'portal',at:'warp'}),
-   SL('entropy','Then our first job is simple. A hero agency is holding a gala tonight. We crash it.',{pose:'command'}),
-   SL('warp','I\'ll open the gate.',{pose:'charge',fx:'portal',at:'warp'})],
-  stages:[{player:'entropy',allies:['warp'],enemies:[{h:'cinder',name:'CINDER',take:1},{h:'gale',name:'GALE',take:1.1},{h:'riptide',name:'RIPTIDE',take:1.1}],diff:1,goal:'Ruin the hero gala'}],
-  sPost:{where:[-96,-60],actors:[['entropy',0,0],['warp',-2.5,1.5]]},
-  post:[SL('news','...a villain group calling itself THE SEVERANCE attacked a hero gala last night...',{cam:'wide'}),
-   SL('entropy','See? Now everyone knows our name.',{pose:'win',fx:'decay',at:'entropy'})]},
- {t:'FOREST CAMP RAID',loc:'Summer Training Camp',
-  sPre:{where:[96,-30],actors:[['pyre',0,0],['legion',-2.5,1],['marble',2.5,1]]},
-  pre:[SL('pyre','The hero kids are camping out here. Cute. Let\'s set the whole forest on fire.',{pose:'command',fx:'bluefire',at:'pyre'}),
-   SL('legion','Copies of me are already in position. Lots of copies.',{pose:'charge',fx:'mud',at:'legion'}),
-   SL('marble','And I\'ll take a little souvenir for the boss. The explosive one.',{pose:'point',fx:'glass',at:'marble'})],
-  stages:[{player:'pyre',allies:['legion','marble'],enemies:[{h:'solstice',name:'SOLSTICE',take:.9},{h:'piston',name:'PISTON',take:1},{h:'nitro',name:'NITRO',take:.9,flee:.25}],diff:1,goal:'Raid the training camp'}],
-  sPost:{where:[96,-30],actors:[['pyre',0,0],['marble',2.5,1],['nitro',0,5,1]]},
-  post:[SL('marble','Ta-da! One explosive hero, gift-wrapped.',{pose:'win',fx:'capture',at:'nitro'}),
-   SL('pyre','Heh. Burn bright, heroes. You won\'t last long.',{pose:'idle',fx:'bluefire',at:'pyre'})]},
- {t:'THE SNIPER\'S NEST',loc:'Kamino Rooftops',
-  sPre:{where:[0,-80],actors:[['recoil',0,0],['entropy',-2.5,1],['snare',0,6,1]]},
-  pre:[SL('entropy','The heroes are coming to rescue their friend. Recoil, nobody gets close.',{pose:'command'}),
-   SL('recoil','Every bullet I fire curves. They can\'t hide behind anything.',{pose:'charge',fx:'shot',at:'recoil'}),
-   SL('snare','Found you. Your powers are erased the second I look at you.',{enter:['snare'],pose:'stare',fx:'erase',at:'snare'})],
-  stages:[{player:'recoil',allies:['entropy'],enemies:[{h:'snare',name:'SNARE',take:.85,boss:true},{h:'volta',name:'VOLTA',take:1},{h:'umbra',name:'UMBRA',take:1}],diff:1,goal:'Hold off the rescue team'}],
-  sPost:{where:[0,-80],actors:[['recoil',0,0],['entropy',-2.5,1]]},
-  post:[SL('recoil','Snare\'s down. That eraser was the only thing keeping them alive.',{pose:'point'}),
-   SL('entropy','Good. Now the real monster gets to play.',{pose:'idle',fx:'decay',at:'entropy'})]},
- {t:'ALL FOR NOTHING',loc:'Kamino Ward Ruins',
-  sPre:{where:[48,-96],actors:[['sovereign',0,0],['paragon',0,6,1]]},
-  pre:[SL('narr','The night the symbol of peace came for the master of villains.',{cam:'wide'}),
-   SL('paragon','SOVEREIGN! This ends tonight!',{enter:['paragon'],pose:'point',fx:'aura',at:'paragon'}),
-   SL('sovereign','Paragon. You look tired. Let me show you every power I have taken over the years.',{pose:'command',fx:'dark',at:'sovereign',cam:'close'}),
-   SL('paragon','I\'ve got one punch left. That\'s all I need.',{pose:'charge',fx:'aura',at:'paragon'})],
-  stages:[{player:'sovereign',enemies:[{h:'paragon',name:'PARAGON',take:.45,boss:true}],diff:2,goal:'Defeat Paragon, the symbol of peace'}],
-  sPost:{where:[48,-96],actors:[['sovereign',0,0],['paragon',0,4]]},
-  post:[SL('paragon','...Even if I fall... someone will carry it on...',{pose:'idle',cam:'close',at:'paragon'}),
-   SL('sovereign','Let them come. Entropy will be waiting.',{pose:'win',fx:'dark',at:'sovereign'}),
-   SL('narr','The symbol of peace has fallen. But somewhere, a boy named Kai just made him a promise.',{cam:'wide',fx:'aura',at:'paragon'})]},
- {t:'DECAY',loc:'Jaku City',
-  sPre:{where:[0,72],actors:[['entropy',0,0],['legion',-2.5,1],['recoil',2.5,1],['titan',0,7,1]]},
-  pre:[SL('entropy','Sovereign\'s gone. Fine. I\'ll finish what he started — I\'ll decay the whole world.',{pose:'command',fx:'decay',at:'entropy',cam:'close'}),
-   SL('titan','Entropy! You were a kid nobody saved. I\'m here now!',{enter:['titan'],pose:'point',fx:'aura',at:'titan'}),
-   SL('entropy','Too late, heir. TEN YEARS too late.',{pose:'charge',fx:'decay',at:'entropy'})],
-  stages:[{player:'entropy',allies:['legion','recoil'],enemies:[{h:'titan',name:'TITAN',take:.55,boss:true},{h:'nitro',name:'NITRO',take:.9},{h:'solstice',name:'SOLSTICE',take:.9}],diff:2,goal:'Destroy the heroes\' last stand'}],
-  sPost:{where:[0,72],actors:[['entropy',0,0],['titan',0,3]]},
-  post:[SL('entropy','I won... so why... does it still hurt...',{pose:'idle',fx:'decay',at:'entropy',cam:'close'}),
-   SL('titan','Because you never wanted to win. You wanted somebody to reach for you. ...I\'m reaching.',{pose:'point'}),
-   SL('narr','THE SEVERANCE · END. Play SURGE: ORIGIN to see the heroes\' side of the war.',{cam:'wide',fx:'dark',at:'entropy'})]}];
 /* Story mode engine: 3D anime cutscenes, missions, progress */
 const STG={on:false,ch:0,st:0,boss:null,camp:'hero',S:null};
 // campaigns: each has its own chapter list, save slot, menu title and cutscene music
-const CAMPS={train:{arr:TRAIN_ARC,key:'surge.train',name:'TRAINING ARC',sub:'PROLOGUE · LEARN TO FIGHT LIKE A HERO',music:'story',ep:'LESSON'},
-  hero:{arr:STORY,key:STORY_KEY,name:'SURGE: ORIGIN',sub:'THE TALE OF THE HERO TITAN',music:'story',ep:'EPISODE'},
-  villain:{arr:VSTORY,key:'surge.vstory',name:'THE SEVERANCE',sub:'VILLAIN STORY · THE RISE OF ENTROPY',music:'dark',ep:'VILLAIN ARC'}};
+// Story mode has been removed; this file is now only the mission engine (missions.js runs on storyStart/storyTick/storyEnd).
+const CAMPS={hero:{arr:[],key:'surge.story',name:'',sub:'',music:'story',ep:''}};
 function CAMP(){return CAMPS[STG.camp]||CAMPS.hero;}function CAMPA(){return CAMP().arr;}
 function storyProg(){try{const v=JSON.parse(store.get(CAMP().key)||'null');if(v&&Array.isArray(v.done))return v;}catch(e){}return {done:[]};}
 function storyDone(i){const p=storyProg();if(p.done.indexOf(i)<0){p.done.push(i);store.set(CAMP().key,JSON.stringify(p));return true;}return false;}
 function heroIdx(id){return HEROES.findIndex(h=>h.id===id);}
-function spkInfo(id){if(NPC[id])return NPC[id];const i=heroIdx(id);const h=HEROES[i];return h?{name:h.name,css:h.css,img:PV.portraits[i]}:NPC.narr;}
+function spkInfo(id){const i=heroIdx(id);const h=HEROES[i];return h?{name:h.name,css:h.css,img:PV.portraits[i]}:{name:'',css:'#fff'};}
 
 /* ---- chapter menu ---- */
 function showStory(){showScreen('story');const p=storyProg();const el=$('storyList');const C=CAMP();$('storyH').textContent=C.name;$('storySub').textContent=C.sub;
@@ -8321,10 +7709,7 @@ function storyEnd(win){if(STG.over)return;STG.over=true;emitEv('missionEnd',win,
 function storyFailPanel(){showScreen('story');$('storyList').innerHTML=`<div class="stfail"><div class="stt">MISSION FAILED</div><div class="stl">${CAMPA()[STG.ch].t} · ${CAMPA()[STG.ch].stages[STG.st].goal}</div>
   <div class="rowb" style="margin-top:16px"><button class="btn cy" id="stRetry">RETRY</button><button class="btn" id="stBack">CHAPTERS</button></div></div>`;
   $('stRetry').onclick=()=>{AU.ui();showScreen(null);storyStart(CAMPA()[STG.ch].stages[STG.st]);};$('stBack').onclick=()=>{AU.ui();showStory();};}
-$('bStory').onclick=()=>{AU.init();AU.ui();showStory();};
-$('bStoryBack').onclick=()=>{AU.ui();showScreen('gmodes');};
-window.__story={STG,STORY,CAMPS,showStory,storyChapter,storyStart,cutNext,cutEnd,CINE};
-window.__cutTest=(ch,k)=>{const c=STORY[ch];showScreen(null);if(k==='post')cutscene(c.post,()=>{},c.sPost);else{const S=c.stages[1];cutscene(S.pre,()=>{},S.sPre);}};
+window.__story={STG,CAMPS,storyStart,cutNext,cutEnd,CINE};
 /* Music: a procedural soundtrack with a theme per situation.
    menu   – title / menus            story – story cutscenes (hero side)
    dark   – villain cutscenes        battle – matches (the original intensity-driven track)
@@ -8823,11 +8208,11 @@ Object.assign(SKINS_U,{
   legend:['Legend',0x1a1a2a,0xf0f0ff,0xffd23f,0xffffff,'pearl',LOCKED]});
 function campDone(key,i){try{const v=JSON.parse(store.get(key)||'null');return !!(v&&v.done&&v.done.indexOf(i)>=0);}catch(e){return false;}}
 const UNLOCKS={
-  academy:{why:'Clear the Training Arc',ok:()=>campDone('surge.train',0)},
+  academy:{why:'Finish the tutorial',ok:()=>store.get('surge.tutDone')==='1'||campDone('surge.train',0)},
   licensed:{why:'Get rank A or S in the Hero License Exam',ok:()=>{const E=(typeof MIS!=='undefined'&&MIS.best.exam)||null;return !!E&&(E.rank==='S'||E.rank==='A');}},
   veteran:{why:'Reach level 5 with this fighter',ok:h=>progLevel(h)>=5},
   elite:{why:'Reach level 10 with this fighter',ok:h=>progLevel(h)>=10},
-  severance:{why:'Clear the villain story',ok:()=>campDone('surge.vstory',5)},
+  severance:{why:'Win 25 matches',ok:()=>{try{return (ACHS.c.wins||0)>=25;}catch(e){return false;}}},
   legend:{why:'Reach level 20 with this fighter',ok:h=>progLevel(h)>=20}};
 const _owns0=owns;
 owns=function(key){const m=/^skin:([^:]+):(.+)$/.exec(key);if(m&&UNLOCKS[m[2]])return UNLOCKS[m[2]].ok(m[1]);return _owns0(key);};
@@ -8890,7 +8275,7 @@ onEv('frame',()=>{const T=$('touch');if(T)T.classList.toggle('on',TOUCH.on&&inMa
 buildTouch();
 /* Settings menu, the Game Modes menu, shift lock / lock-on camera, and controller button prompts.
    Settings are saved on this device ('surge.settings'). To add a setting: add a default to SET_DEF and a row to SET_ROWS. */
-const SET_DEF={cinematic:true,cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true,customVoice:true,ultSfx:false};
+const SET_DEF={gore:true,cinematic:true,cursorLock:true,music:70,sfx:85,sens:50,invertY:false,shake:100,shiftLock:false,slKey:'KeyC',hint:true,touch:'auto',pad:'xbox',dmgNums:true,voiceLines:true,voice:'ptt',vcVol:80,tod:'random',weather:'random',crowds:true,surgeEv:true,cbMode:'off',bigText:false,calm:false,decreeVoice:true,customVoice:true,ultSfx:false};
 const SET=Object.assign({},SET_DEF);try{Object.assign(SET,JSON.parse(store.get('surge.settings')||'{}'));}catch(e){}
 function setSave(){store.set('surge.settings',JSON.stringify(SET));}
 const SL_KEYS=[['KeyC','C'],['KeyV','V'],['KeyZ','Z'],['KeyG','G'],['KeyB','B'],['CapsLock','CAPS LOCK'],['AltLeft','LEFT ALT']];
@@ -10211,7 +9596,7 @@ const _clSS=showSettings;showSettings=function(){const r=_clSS.apply(this,argume
   const row=document.createElement('div');row.className='setrow';row.innerHTML='<span class="setl">YOUR CLIPS</span>';const b=document.createElement('button');b.className='chip';b.textContent='🎬 OPEN';b.onclick=()=>clipUI();row.appendChild(b);L.appendChild(row);}catch(e){}return r;};
 /* SECRET: on the title screen, press every letter A–Z (any order). Unlocks everything and maxes out every fighter:
    all shop items, costumes and season rewards owned; every fighter at level 20 with all skills at rank 5 and mastery 10;
-   every story chapter (hero, villain, training) opened; +100,000 points. Ranked and achievements stay earned the normal way.
+   +100,000 points. Ranked and achievements stay earned the normal way.
    Saved like normal progress (and wiped with it by the anti-teaming penalty). */
 const SECRET={keys:new Set()};
 PROGRESS_KEYS.push('surge.secret');
@@ -10227,13 +9612,11 @@ function secretUnlock(){store.set('surge.secret','1');
   progSave();store.set('surge.mastery',JSON.stringify(MAST));
   // season pass complete (its item rewards are covered by owning everything)
   META.sxp=Math.max(META.sxp,SEASON.tiers.length*SEASON.per);META.claimed=SEASON.tiers.length;metaSave();
-  // every story chapter opened
-  Object.values(CAMPS).forEach(C=>{try{let v=null;try{v=JSON.parse(store.get(C.key)||'null');}catch(e){}v=v&&typeof v==='object'?v:{};v.done=C.arr.map((_,i)=>i);store.set(C.key,JSON.stringify(v));}catch(e){}});
   POINTS+=100000;store.set('surge.points',String(POINTS));try{renderPoints();}catch(e){}
   try{achGive('secret');}catch(e){}
   secretShow();}
 function secretShow(){let b=$('secretBox');if(!b){b=document.createElement('div');b.id='secretBox';document.body.appendChild(b);}
-  b.innerHTML=`<div><small>SECRET FOUND</small><b>EVERYTHING UNLOCKED</b><span>All fighters maxed · every costume, emote, pose, card, tag and pet · all story chapters · +100,000 points</span></div>`;
+  b.innerHTML=`<div><small>SECRET FOUND</small><b>EVERYTHING UNLOCKED</b><span>All fighters maxed · every costume, emote, pose, card, tag and pet · +100,000 points</span></div>`;
   b.classList.remove('on');void b.offsetWidth;b.classList.add('on');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('on'),5200);
   try{AU.init();AU.scale=1;AU.levelUp&&AU.levelUp();setTimeout(()=>AU.fanfare&&AU.fanfare(),350);}catch(e){}
   try{if(typeof buildCards==='function')buildCards();if(typeof previewHero==='function'&&PV&&PV.idx!=null)previewHero(PV.idx);}catch(e){}}
@@ -10676,7 +10059,7 @@ const SIG={
   recoil(f){const h=limbPos(f,'r',new V3());if(Math.random()<.4)pf(h,[0xffd23f,0xff7a2a],{speed:.2,up:.3,life:.15,size:.1,bright:2.6});const T=f.tgt;
     if(T&&!T.dead&&T.pos.distanceTo(f.pos)<45&&Math.random()<.35){const to=T.chest(new V3());bolt(h,to,0xff2a2a,.012,.06);pf(to,0xff2a2a,{speed:0,up:0,life:.08,size:.14,bright:3});}},
   // blood drips from her hands
-  crimson(f){if(Math.random()<.25){const h=limbPos(f,Math.random()<.5?'r':'l',new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.5,rand(-.2,.2),..._rgb(0xc4102a,1.3),.6,.08,.06,-9,0);}},
+  crimson(f){if(Math.random()<.25){const h=limbPos(f,Math.random()<.5?'r':'l',new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.5,rand(-.2,.2),..._rgb(0xc4102a,1.3),.6,.08,.06,9,0);}},
   // steel glints run along the blade bundle
   sawback(f){if(Math.random()<.3){const h=limbPos(f,'r',new V3()).add(TMP2.set(rand(-.3,.3),rand(0,.8),rand(-.3,.3)));pf(h,[0xffffff,0xd8e0e8],{speed:.4,up:.2,life:.15,size:.12,bright:3});}},
   // red restructuring cracks crawl over his hands
@@ -10684,7 +10067,7 @@ const SIG={
   // stored kinetic energy glows inside him while he holds it
   cushion(f){if(!(f.absT>0||f.stored>0)&&Math.random()>.12)return;pf(f.chest(new V3()).add(TMP2.set(rand(-.5,.5),rand(-.4,.4),rand(-.5,.5))),[0xffd23f,0xfff0a0],{speed:.4,up:.4,life:.4,size:.2,bright:2});},
   // acid drips off her hands and feet and sizzles
-  corrosa(f){if(Math.random()<.3){const h=limbPos(f,pick(['r','l','f']),new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.3,rand(-.2,.2),..._rgb(pick([0x9aff3a,0xff6ad8]),1.6),.5,.09,.05,-8,0);}},
+  corrosa(f){if(Math.random()<.3){const h=limbPos(f,pick(['r','l','f']),new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.3,rand(-.2,.2),..._rgb(pick([0x9aff3a,0xff6ad8]),1.6),.5,.09,.05,8,0);}},
   // a long blood-red scarf streams behind him
   verdict(f){const sp=Math.hypot(f.vel.x,f.vel.z);const n=sHead(f).add(TMP2.set(0,-.35,0));if(f._vp&&(sp>2||Math.random()<.3)){const tail=f._vp.clone().add(TMP2.set(0,-.15,0));trailSeg(tail,n,0x9a0a1a,.09,.5);}f._vp=n;},
   // stars sparkle around her
@@ -10826,6 +10209,75 @@ const _uaTP=Fighter.prototype.targetPose;Fighter.prototype.targetPose=function(d
   if(this.state==='ult'&&this._uaK==='beam'&&this.u1&&P){const j=Math.sin(game.time*55)*.035;P.lSx+=j;P.rSx-=j;}
   return P;};
 const _uaStart=Fighter.prototype.startUlt;Fighter.prototype.startUlt=function(){this._ultId=(this._ultId||0)+1;this._uaK=null;return _uaStart.apply(this,arguments);};
+/* ARENA PING — in Arena mode, PING (G · middle mouse · L3) sends out a sonar pulse that reveals every enemy for 5 s:
+   a red marker over each one (seen through walls) with its distance, and an arrow at the screen edge for anyone
+   off-screen. 10 s cooldown; while it's cooling down, G falls back to the normal team ping. Bots don't use it.
+   Outside Arena, G is the normal ping. */
+const APING={cd:0,until:0,els:{}};
+function arenaPing(){if(!ME||ME.dead||!isArena())return false;if(game.time<APING.cd)return false;
+  APING.cd=game.time+10;APING.until=game.time+5;const p=ME.pos.clone();
+  for(let k=0;k<3;k++)setTimeout(()=>{if(inMatch())ring(TMP2.set(p.x,p.y+.15,p.z).clone(),0xff3a4a,60,1.1,true,1.6);},k*180);
+  try{AU.init();AU.tone('sine',1200,700,.5,.07);setTimeout(()=>AU.tone('sine',1200,700,.4,.05),220);}catch(e){}
+  return true;}
+const _apPing=doPing;doPing=function(){if(isArena()&&arenaPing())return;return _apPing.apply(this,arguments);};
+// markers
+onEv('tick',()=>{const box=$('apMarks');if(!box)return;const on=inMatch()&&isArena()&&ME&&game.time<APING.until;
+  const hint=$('apHint');if(hint){const show=inMatch()&&isArena()&&ME&&!ME.dead;hint.style.display=show?'block':'none';if(show){const cd=Math.max(0,APING.cd-game.time);hint.innerHTML=cd>0?`<kbd>G</kbd> PING · ${Math.ceil(cd)}s`:`<kbd>G</kbd> PING ENEMIES`;hint.classList.toggle('ready',cd<=0);}}
+  const seen={};if(on){const W=innerWidth,H=innerHeight,v=new V3();
+    for(const f of FS){if(f===ME||f.dead||ally(f,ME))continue;seen[f.id]=1;let el=APING.els[f.id];if(!el){el=document.createElement('div');el.className='apm';el.innerHTML='<i></i><span></span>';box.appendChild(el);APING.els[f.id]=el;}
+      v.copy(f.pos);v.y+=2.4;const d=Math.round(f.pos.distanceTo(ME.pos));v.project(camera);let x=(v.x*.5+.5)*W,y=(-v.y*.5+.5)*H;const behind=v.z>1;
+      let off=behind||x<20||x>W-20||y<20||y>H-20;if(behind){x=W-x;y=H-y;}
+      if(off){const cx=W/2,cy=H/2,dx=x-cx,dy=y-cy,s=Math.min((W/2-34)/Math.abs(dx||1e-3),(H/2-34)/Math.abs(dy||1e-3));x=cx+dx*s;y=cy+dy*s;el.style.setProperty('--r',Math.atan2(dy,dx)+'rad');}
+      el.classList.toggle('off',off);el.style.transform=`translate(${x}px,${y}px)`;el.querySelector('span').textContent=d+'m';el.style.setProperty('--c',f.hero.css);el.style.opacity=Math.min(1,(APING.until-game.time)/1);}}
+  for(const id in APING.els){if(!seen[id]){APING.els[id].remove();delete APING.els[id];}}});
+onEv('matchStart',()=>{APING.cd=0;APING.until=0;});
+(function(){if(!$('apMarks')){const d=document.createElement('div');d.id='apMarks';document.body.appendChild(d);}if(!$('apHint')){const d=document.createElement('div');d.id='apHint';document.body.appendChild(d);}})();
+/* GORE — knock-outs are bloody (Settings → GORE ON KILLS, on by default; turn it off for a clean game).
+   On a KO: a burst of blood, a pool spreading under the body, splatter on the ground around it and on any wall
+   right next to it. Big finishing blows (ultimates or heavy hits) also tear off a limb — an arm, a leg, or the head
+   on an ultimate — which flies off spraying blood, bounces and lies there. Limbs come back when a fighter respawns.
+   Visual only (each player's own screen); everything is cleaned up when the match ends. */
+if(SET.gore===undefined)SET.gore=true;
+try{SET_ROWS.push(['gore','GORE ON KILLS','toggle']);}catch(e){}
+const GORE={decals:[],limbs:[],lastHit:{}};
+const BLOOD=[0x7a0010,0x9a0a18,0x5a0008,0xb0141e];
+const GORE_MAT=new THREE.MeshBasicMaterial({color:0x5a0008,transparent:true,opacity:.92,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2});
+const GORE_WALL=new THREE.MeshBasicMaterial({color:0x6a000c,transparent:true,opacity:.85,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,side:THREE.DoubleSide});
+function goreOn(){return SET.gore!==false;}
+function bloodBurst(p,n,sp){burst(SMK,p,n,{colors:BLOOD,speed:sp||7,up:3,life:.9,size:.13,size1:.08,grav:14,drag:.5});burst(ADD,p,Math.round(n/3),{colors:[0xc4102a,0x8a0010],speed:(sp||7)*.8,up:2,life:.4,size:.12,size1:0,bright:1.1,grav:12});}
+function bloodDecal(x,z,y,r,grow){const g=new THREE.CircleGeometry(1,14);const pa=g.attributes.position;for(let i=1;i<pa.count;i++){const k=.7+Math.random()*.55;pa.setXY(i,pa.getX(i)*k,pa.getY(i)*k);}
+  const m=new THREE.Mesh(g,GORE_MAT);m.rotation.x=-Math.PI/2;m.rotation.z=Math.random()*6.28;m.position.set(x,(y==null?floorAt(x,z,4):y)+.03,z);m.scale.setScalar(grow?.05:r);scene.add(m);
+  GORE.decals.push({m,r,t:0,grow});if(GORE.decals.length>70){const o=GORE.decals.shift();scene.remove(o.m);o.m.geometry.dispose();}}
+function wallSplat(p,n){const g=new THREE.CircleGeometry(.5+Math.random()*.5,12);const m=new THREE.Mesh(g,GORE_WALL);m.position.copy(p).addScaledVector(n,.04);m.lookAt(p.clone().add(n));scene.add(m);
+  GORE.decals.push({m,r:1,t:1,grow:false});}
+// remember who hit whom last, and how hard, so the finisher can decide how gory it gets
+onEv('hit',(a,d,dmg,o)=>{if(d)GORE.lastHit[d.id]={a,dmg,ult:a&&a.state==='ult',heavy:!!(o&&o.heavy),t:game.time};});
+onEv('kill',(d,a)=>{if(!goreOn()||!d||!d.rig||!nearCam(d.pos,70))return;const c=d.chest(new V3()),L=GORE.lastHit[d.id]||{};
+  const away=a&&a!==d?new V3(d.pos.x-a.pos.x,0,d.pos.z-a.pos.z).normalize():new V3(rand(-1,1),0,rand(-1,1)).normalize();
+  bloodBurst(c,60,9);setTimeout(()=>{if(inMatch())bloodBurst(c,25,4);},120);
+  bloodDecal(d.pos.x,d.pos.z,d.pos.y,1.6,true);
+  for(let k=0;k<6;k++){const r=rand(.8,3.2),a2=Math.atan2(away.z,away.x)+rand(-.9,.9);bloodDecal(d.pos.x+Math.cos(a2)*r,d.pos.z+Math.sin(a2)*r,null,rand(.2,.6),false);}
+  // splatter on a wall right behind them
+  for(let k=0;k<5;k++){const dir=away.clone().applyAxisAngle(UP,rand(-.6,.6)),q=c.clone().addScaledVector(dir,1.2+k*.6);if(insideBld(q.x,q.z,0,q.y)){wallSplat(c.clone().addScaledVector(dir,.8+k*.6),dir.clone().negate());break;}}
+  const big=L.ult||L.heavy||(L.dmg||0)>=18;if(big&&game.time-(L.t||0)<1.5)tearLimb(d,away,L.ult);});
+function tearLimb(f,away,ult){const R=f.rig;const opts=ult&&R.head?['head']:['lS','rS','lH','rH'].filter(k=>R[k]&&R[k].visible);if(!opts.length)return;const part=R[pick(opts)];
+  part.updateWorldMatrix(true,true);const p=new V3(),q=new THREE.Quaternion(),s=new V3();part.matrixWorld.decompose(p,q,s);
+  const cl=part.clone(true);cl.position.copy(p);cl.quaternion.copy(q);cl.scale.copy(s);scene.add(cl);part.visible=false;(f._goreHid=f._goreHid||[]).push(part);
+  const v=away.clone().multiplyScalar(rand(6,10)).add(new V3(rand(-2,2),rand(6,9),rand(-2,2)));
+  GORE.limbs.push({m:cl,v,w:new V3(rand(-12,12),rand(-12,12),rand(-12,12)),t:0,rest:false,from:p.clone(),f});
+  bloodBurst(p,40,6);}
+onEv('tick',dt=>{
+  for(const D of GORE.decals){if(!D.grow||D.t>=1)continue;D.t=Math.min(1,D.t+dt/1.6);D.m.scale.setScalar(D.r*(1-Math.pow(1-D.t,2)));}
+  for(let i=GORE.limbs.length-1;i>=0;i--){const L=GORE.limbs[i];L.t+=dt;
+    if(!L.rest){L.v.y-=22*dt;L.m.position.addScaledVector(L.v,dt);L.m.rotation.x+=L.w.x*dt;L.m.rotation.y+=L.w.y*dt;L.m.rotation.z+=L.w.z*dt;
+      if(Math.random()<.6)burst(SMK,L.m.position,1,{colors:BLOOD,speed:.5,up:0,life:.6,size:.1,size1:.06,grav:10});
+      const gy=floorAt(L.m.position.x,L.m.position.z,L.m.position.y+1)+.12;if(L.m.position.y<gy){L.m.position.y=gy;if(L.v.y<-3){L.v.y*=-.3;L.v.x*=.5;L.v.z*=.5;L.w.multiplyScalar(.4);bloodDecal(L.m.position.x,L.m.position.z,gy-.12,rand(.3,.5),false);}else L.rest=true;}}
+    // the stump keeps bleeding for a moment
+    if(L.t<1.2&&L.f&&L.f.rig&&Math.random()<.5)burst(SMK,L.f.chest(new V3()),1,{colors:BLOOD,speed:2,up:1,life:.5,size:.1,size1:.06,grav:12});
+    if(L.t>20){scene.remove(L.m);GORE.limbs.splice(i,1);}}});
+// limbs come back on respawn; everything is cleared at the end of the match
+const _goReset=Fighter.prototype.reset;Fighter.prototype.reset=function(){if(this._goreHid){this._goreHid.forEach(p=>p.visible=true);this._goreHid=null;}return _goReset.apply(this,arguments);};
+onEv('matchEnd',()=>{GORE.decals.forEach(D=>{scene.remove(D.m);D.m.geometry.dispose();});GORE.decals.length=0;GORE.limbs.forEach(L=>scene.remove(L.m));GORE.limbs.length=0;GORE.lastHit={};});
 /* Starts the game. Loaded last, after every other file. */
 buildGfx();if(!GFX.high)lampConeMat.visible=false;initPreview();makePortraits();$('load').style.display='none';showScreen('title');loop();
 })();

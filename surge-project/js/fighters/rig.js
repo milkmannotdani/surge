@@ -258,7 +258,7 @@ function buildRig(h,sc){
   root.scale.setScalar(h.scale);
   root.traverse(o=>{if(o.isMesh&&o!==fbox){o.castShadow=true;o.receiveShadow=true;}});
   let swordTip=null,hipY=null,moldPieces=null;if(h.gear&&h.gear.type!=='none'){const GR=attachGear(h,{rF,lF,sc});if(GR.sword!==undefined)sword=GR.sword;if(GR.whip)whip=GR.whip;if(GR.tip)swordTip=GR.tip;}
-  if(h.mold){const X={root,hips,spine,neck,head,lS,lE,lF,rS,rE,rF,lH,lK,rH,rK,suit,main,trim,glow,dark,visor,envT,envI:sc&&sc!==scene?.55:1,accent:h.accent};moldPieces=applyMold(h.mold,X);hipY=X.hipY;}
+  if(h.mold&&typeof applyMold==='function'){const X={root,hips,spine,neck,head,lS,lE,lF,rS,rE,rF,lH,lK,rH,rK,suit,main,trim,glow,dark,visor,envT,envI:sc&&sc!==scene?.55:1,accent:h.accent};moldPieces=applyMold(h.mold,X);hipY=X.hipY;}
   return {root,hips,spine,head,neck,lS,lE,rS,rE,lH,lK,rH,rK,lF,rF,cloth,mats:[suit,main,trim],glow,whip,blades,beam,beast,spikes,wings,orbiters,frame,main,field,sword,flames,swordTip,hipY,moldPieces,ext:XR.ext||null};
 }
 

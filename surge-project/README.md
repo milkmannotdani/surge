@@ -39,6 +39,8 @@ js/
     cinema.js         CINEMATIC MOVES: no move text pop-ups in fights; freeze-frames, camera punch-in, impact flash, ult letterbox, slow-mo
     sigs.js           SIGNATURES: each inspired fighter's constant signature look, inspiration-matched extra moves (Glacier Wall, Unpack, Curved Shot, Acid Shot), directed ult cinematics
     anim.js           spring-smoothed joint blending (fighter.js applyPose) + ultimate animations by what each ult does (punch, beam, slam, barrage, aoe, sky, ground, slash, rush, shot, roar, command)
+    arenaping.js      ARENA PING: G reveals every enemy for 5 s (markers through walls, edge arrows, distance), 10 s cooldown
+    gore.js           GORE on KOs (Settings toggle): blood burst, pools, splatter, torn-off limbs on big finishers
     dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
     hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)
@@ -51,10 +53,7 @@ js/
     looks.js          costume layer for every fighter: chest emblem, belt, bracers, boots, shoulders, collar, signature item (LOOKS)
     humans.js         ARMOR OFF mode: each fighter's face and hair under the suit (HUMAN table)
   creator/
-    mold.js           Mold editor
-    custom.js         fighter creator: turns a text description into a fighter
-    design.js         fighter creator: Claude-designed abilities
-    creator.js        fighter creator screen
+    custom.js         roster helpers (heroAt, selEntry, rosterHero…); the fighter creator itself was removed
   game/
     shop.js           points + shop
     ai.js             bots (ULT_RANGE, SPECIAL_AI)
@@ -64,10 +63,7 @@ js/
     ui.js             menus, screens, main loop
     practice.js       practice mode
   story/
-    chapters.js       hero story script (SURGE: ORIGIN): chapters, dialogue, cutscene staging, missions
-    training.js       TRAINING ARC: the tutorial chapter (TUT_STEPS lists each lesson)
-    villain.js        villain story script (THE SEVERANCE)
-    story.js          story engine: campaigns (CAMPS), anime cutscenes, missions, saving progress
+    story.js          mission engine (storyStart / storyTick / storyEnd) used by missions.js; story mode itself was removed
   features/           add-ons that plug in through event hooks (see below)
     music.js          procedural soundtrack: THEMES (menu/story/dark/battle/boss/exam) + stings
     teamup.js         team-up combos when partners ult together (TU_NAMES for named combos)
@@ -135,9 +131,6 @@ of adding six fighters with their own moves, ults, sounds and body parts.
 win/lose), `custom:true` (don't auto-win when enemies die), `hud()`, `end(win)`, `done(win)` and `music`.
 `features/missions.js` has two full examples.
 
-**New story chapter** — add an object to `STORY` in `story/chapters.js` (or `VSTORY` in `story/villain.js`). Lines are
-`SL(speaker, text, {pose, fx, at, enter, exit, cam})`; `sPre`/`sPost` stage the 3D
-cutscene (`where` = street position, `actors` = `[id, dx, dz, hidden]`).
 
 **New cutscene effect / SFX** — `cineFx` and `AN_SFX` in `story/story.js`.
 

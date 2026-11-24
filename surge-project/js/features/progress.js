@@ -20,11 +20,11 @@ Object.assign(SKINS_U,{
   legend:['Legend',0x1a1a2a,0xf0f0ff,0xffd23f,0xffffff,'pearl',LOCKED]});
 function campDone(key,i){try{const v=JSON.parse(store.get(key)||'null');return !!(v&&v.done&&v.done.indexOf(i)>=0);}catch(e){return false;}}
 const UNLOCKS={
-  academy:{why:'Clear the Training Arc',ok:()=>campDone('surge.train',0)},
+  academy:{why:'Finish the tutorial',ok:()=>store.get('surge.tutDone')==='1'||campDone('surge.train',0)},
   licensed:{why:'Get rank A or S in the Hero License Exam',ok:()=>{const E=(typeof MIS!=='undefined'&&MIS.best.exam)||null;return !!E&&(E.rank==='S'||E.rank==='A');}},
   veteran:{why:'Reach level 5 with this fighter',ok:h=>progLevel(h)>=5},
   elite:{why:'Reach level 10 with this fighter',ok:h=>progLevel(h)>=10},
-  severance:{why:'Clear the villain story',ok:()=>campDone('surge.vstory',5)},
+  severance:{why:'Win 25 matches',ok:()=>{try{return (ACHS.c.wins||0)>=25;}catch(e){return false;}}},
   legend:{why:'Reach level 20 with this fighter',ok:h=>progLevel(h)>=20}};
 const _owns0=owns;
 owns=function(key){const m=/^skin:([^:]+):(.+)$/.exec(key);if(m&&UNLOCKS[m[2]])return UNLOCKS[m[2]].ok(m[1]);return _owns0(key);};

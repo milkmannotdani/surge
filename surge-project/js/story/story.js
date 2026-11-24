@@ -1,14 +1,13 @@
 /* Story mode engine: 3D anime cutscenes, missions, progress */
 const STG={on:false,ch:0,st:0,boss:null,camp:'hero',S:null};
 // campaigns: each has its own chapter list, save slot, menu title and cutscene music
-const CAMPS={train:{arr:TRAIN_ARC,key:'surge.train',name:'TRAINING ARC',sub:'PROLOGUE · LEARN TO FIGHT LIKE A HERO',music:'story',ep:'LESSON'},
-  hero:{arr:STORY,key:STORY_KEY,name:'SURGE: ORIGIN',sub:'THE TALE OF THE HERO TITAN',music:'story',ep:'EPISODE'},
-  villain:{arr:VSTORY,key:'surge.vstory',name:'THE SEVERANCE',sub:'VILLAIN STORY · THE RISE OF ENTROPY',music:'dark',ep:'VILLAIN ARC'}};
+// Story mode has been removed; this file is now only the mission engine (missions.js runs on storyStart/storyTick/storyEnd).
+const CAMPS={hero:{arr:[],key:'surge.story',name:'',sub:'',music:'story',ep:''}};
 function CAMP(){return CAMPS[STG.camp]||CAMPS.hero;}function CAMPA(){return CAMP().arr;}
 function storyProg(){try{const v=JSON.parse(store.get(CAMP().key)||'null');if(v&&Array.isArray(v.done))return v;}catch(e){}return {done:[]};}
 function storyDone(i){const p=storyProg();if(p.done.indexOf(i)<0){p.done.push(i);store.set(CAMP().key,JSON.stringify(p));return true;}return false;}
 function heroIdx(id){return HEROES.findIndex(h=>h.id===id);}
-function spkInfo(id){if(NPC[id])return NPC[id];const i=heroIdx(id);const h=HEROES[i];return h?{name:h.name,css:h.css,img:PV.portraits[i]}:NPC.narr;}
+function spkInfo(id){const i=heroIdx(id);const h=HEROES[i];return h?{name:h.name,css:h.css,img:PV.portraits[i]}:{name:'',css:'#fff'};}
 
 /* ---- chapter menu ---- */
 function showStory(){showScreen('story');const p=storyProg();const el=$('storyList');const C=CAMP();$('storyH').textContent=C.name;$('storySub').textContent=C.sub;
@@ -168,7 +167,4 @@ function storyEnd(win){if(STG.over)return;STG.over=true;emitEv('missionEnd',win,
 function storyFailPanel(){showScreen('story');$('storyList').innerHTML=`<div class="stfail"><div class="stt">MISSION FAILED</div><div class="stl">${CAMPA()[STG.ch].t} · ${CAMPA()[STG.ch].stages[STG.st].goal}</div>
   <div class="rowb" style="margin-top:16px"><button class="btn cy" id="stRetry">RETRY</button><button class="btn" id="stBack">CHAPTERS</button></div></div>`;
   $('stRetry').onclick=()=>{AU.ui();showScreen(null);storyStart(CAMPA()[STG.ch].stages[STG.st]);};$('stBack').onclick=()=>{AU.ui();showStory();};}
-$('bStory').onclick=()=>{AU.init();AU.ui();showStory();};
-$('bStoryBack').onclick=()=>{AU.ui();showScreen('gmodes');};
-window.__story={STG,STORY,CAMPS,showStory,storyChapter,storyStart,cutNext,cutEnd,CINE};
-window.__cutTest=(ch,k)=>{const c=STORY[ch];showScreen(null);if(k==='post')cutscene(c.post,()=>{},c.sPost);else{const S=c.stages[1];cutscene(S.pre,()=>{},S.sPre);}};
+window.__story={STG,CAMPS,storyStart,cutNext,cutEnd,CINE};

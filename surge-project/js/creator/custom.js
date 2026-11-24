@@ -142,7 +142,7 @@ function customHero(spec,nocache){spec=sanitizeSpec(spec);if(!spec)return HEROES
   if(spec.mold){h.mold=spec.mold;if(spec.mold.plain)h.as.look='plain';}
   if(key)CUSTOM_CACHE[key]=h;return h;}
 /* saved creations */
-let CSPECS=[];try{CSPECS=(JSON.parse(store.get('surge.customs')||'[]')||[]).map(sanitizeSpec).filter(Boolean).slice(0,12);}catch(e){CSPECS=[];}
+let CSPECS=[];   // the fighter creator has been removed; no created fighters are loaded
 function saveCustoms(){store.set('surge.customs',JSON.stringify(CSPECS));}
 const CUST0=1000;
 function heroAt(i){return i>=CUST0?(CSPECS[i-CUST0]?customHero(CSPECS[i-CUST0]):HEROES[0]):(HEROES[i]||HEROES[0]);}

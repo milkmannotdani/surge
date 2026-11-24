@@ -25,7 +25,7 @@ const SIG={
   recoil(f){const h=limbPos(f,'r',new V3());if(Math.random()<.4)pf(h,[0xffd23f,0xff7a2a],{speed:.2,up:.3,life:.15,size:.1,bright:2.6});const T=f.tgt;
     if(T&&!T.dead&&T.pos.distanceTo(f.pos)<45&&Math.random()<.35){const to=T.chest(new V3());bolt(h,to,0xff2a2a,.012,.06);pf(to,0xff2a2a,{speed:0,up:0,life:.08,size:.14,bright:3});}},
   // blood drips from her hands
-  crimson(f){if(Math.random()<.25){const h=limbPos(f,Math.random()<.5?'r':'l',new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.5,rand(-.2,.2),..._rgb(0xc4102a,1.3),.6,.08,.06,-9,0);}},
+  crimson(f){if(Math.random()<.25){const h=limbPos(f,Math.random()<.5?'r':'l',new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.5,rand(-.2,.2),..._rgb(0xc4102a,1.3),.6,.08,.06,9,0);}},
   // steel glints run along the blade bundle
   sawback(f){if(Math.random()<.3){const h=limbPos(f,'r',new V3()).add(TMP2.set(rand(-.3,.3),rand(0,.8),rand(-.3,.3)));pf(h,[0xffffff,0xd8e0e8],{speed:.4,up:.2,life:.15,size:.12,bright:3});}},
   // red restructuring cracks crawl over his hands
@@ -33,7 +33,7 @@ const SIG={
   // stored kinetic energy glows inside him while he holds it
   cushion(f){if(!(f.absT>0||f.stored>0)&&Math.random()>.12)return;pf(f.chest(new V3()).add(TMP2.set(rand(-.5,.5),rand(-.4,.4),rand(-.5,.5))),[0xffd23f,0xfff0a0],{speed:.4,up:.4,life:.4,size:.2,bright:2});},
   // acid drips off her hands and feet and sizzles
-  corrosa(f){if(Math.random()<.3){const h=limbPos(f,pick(['r','l','f']),new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.3,rand(-.2,.2),..._rgb(pick([0x9aff3a,0xff6ad8]),1.6),.5,.09,.05,-8,0);}},
+  corrosa(f){if(Math.random()<.3){const h=limbPos(f,pick(['r','l','f']),new V3());ADD.spawn(h.x,h.y,h.z,rand(-.2,.2),-.3,rand(-.2,.2),..._rgb(pick([0x9aff3a,0xff6ad8]),1.6),.5,.09,.05,8,0);}},
   // a long blood-red scarf streams behind him
   verdict(f){const sp=Math.hypot(f.vel.x,f.vel.z);const n=sHead(f).add(TMP2.set(0,-.35,0));if(f._vp&&(sp>2||Math.random()<.3)){const tail=f._vp.clone().add(TMP2.set(0,-.15,0));trailSeg(tail,n,0x9a0a1a,.09,.5);}f._vp=n;},
   // stars sparkle around her

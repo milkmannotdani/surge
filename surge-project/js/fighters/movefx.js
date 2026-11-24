@@ -50,7 +50,7 @@ function coneFX(f,A,c,fw,R,t,D,vf,first,dt){const k=coneKind(A),c1=A.c1,c2=A.c2;
       burst(ADD,p,3,{colors:[c2,0xffffff],speed:5,life:.2,size:.18,size1:0,bright:2.6});}}break;}
   case 'bolt':{if(every(.07)){for(let q=0;q<3;q++){const p=conePt(c,fw,R,.42);bolt(c,p,pick([c1,c2,0xffffff]),.09,.12);burst(ADD,p,4,{colors:[c1,0xffffff],speed:5,life:.2,size:.25,size1:0,bright:2.8});}if(Math.random()<.4)flashLight(c,c1,6);}break;}
   case 'spray':{for(let q=0;q<9;q++){const a=rand(-.35,.35),d=fw.clone().applyAxisAngle(UP,a),sp=rand(R*1.1,R*1.6);
-      ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(1,3.5),d.z*sp,..._rgb(pick([c1,c2]),1.4),rand(.45,.65),.3*A.size,.55*A.size,-9,.4);}
+      ADD.spawn(c.x,c.y,c.z,d.x*sp,rand(1,3.5),d.z*sp,..._rgb(pick([c1,c2]),1.4),rand(.45,.65),.3*A.size,.55*A.size,9,.4);}
     if(Math.random()<.35){const g=conePt(f.pos,fw,R,.35);g.y=.08;ring(g,c1,1.6,.35,true,1.5);burst(SMK,g,2,{colors:[c1,c2],speed:1,up:1,life:.6,size:.4,size1:1.2});}break;}
   case 'boom':{if(every(.11)){const d=2+((t/.11)%5)*(R/5);const p=c.clone().addScaledVector(fw,d).add(TMP2.set(rand(-.8,.8),0,rand(-.8,.8)));explosion(p,1.4*A.size+d*.06,[c1,c2,0xffffff]);xSnd(p,()=>{AU.boom(false);});}break;}
   case 'decay':{// the ground crumbles away in a spreading fan

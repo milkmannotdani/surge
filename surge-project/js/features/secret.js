@@ -1,6 +1,6 @@
 /* SECRET: on the title screen, press every letter A–Z (any order). Unlocks everything and maxes out every fighter:
    all shop items, costumes and season rewards owned; every fighter at level 20 with all skills at rank 5 and mastery 10;
-   every story chapter (hero, villain, training) opened; +100,000 points. Ranked and achievements stay earned the normal way.
+   +100,000 points. Ranked and achievements stay earned the normal way.
    Saved like normal progress (and wiped with it by the anti-teaming penalty). */
 const SECRET={keys:new Set()};
 PROGRESS_KEYS.push('surge.secret');
@@ -16,13 +16,11 @@ function secretUnlock(){store.set('surge.secret','1');
   progSave();store.set('surge.mastery',JSON.stringify(MAST));
   // season pass complete (its item rewards are covered by owning everything)
   META.sxp=Math.max(META.sxp,SEASON.tiers.length*SEASON.per);META.claimed=SEASON.tiers.length;metaSave();
-  // every story chapter opened
-  Object.values(CAMPS).forEach(C=>{try{let v=null;try{v=JSON.parse(store.get(C.key)||'null');}catch(e){}v=v&&typeof v==='object'?v:{};v.done=C.arr.map((_,i)=>i);store.set(C.key,JSON.stringify(v));}catch(e){}});
   POINTS+=100000;store.set('surge.points',String(POINTS));try{renderPoints();}catch(e){}
   try{achGive('secret');}catch(e){}
   secretShow();}
 function secretShow(){let b=$('secretBox');if(!b){b=document.createElement('div');b.id='secretBox';document.body.appendChild(b);}
-  b.innerHTML=`<div><small>SECRET FOUND</small><b>EVERYTHING UNLOCKED</b><span>All fighters maxed · every costume, emote, pose, card, tag and pet · all story chapters · +100,000 points</span></div>`;
+  b.innerHTML=`<div><small>SECRET FOUND</small><b>EVERYTHING UNLOCKED</b><span>All fighters maxed · every costume, emote, pose, card, tag and pet · +100,000 points</span></div>`;
   b.classList.remove('on');void b.offsetWidth;b.classList.add('on');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('on'),5200);
   try{AU.init();AU.scale=1;AU.levelUp&&AU.levelUp();setTimeout(()=>AU.fanfare&&AU.fanfare(),350);}catch(e){}
   try{if(typeof buildCards==='function')buildCards();if(typeof previewHero==='function'&&PV&&PV.idx!=null)previewHero(PV.idx);}catch(e){}}
