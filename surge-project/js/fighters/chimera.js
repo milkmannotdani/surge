@@ -187,7 +187,7 @@ XCUSTOM.absorb=function(f,dt){const V=f.vf,t=f.stateT,c=f.chest(new V3());f.pose
     if(NET.role!=='client')for(const o of foes(f,12)){const d=f.pos.clone().sub(o.pos).setY(0),L=d.length();if(L>1.4){o.vel.x+=d.x/L*30*dt;o.vel.z+=d.z/L*30*dt;}
       if(!V.hit[o.id]||t-V.hit[o.id]>.3){V.hit[o.id]=t;if(L<3.5)hitO(f,o,{dmg:3,kb:0,up:0,stun:.3});}}}
   else if(!V.fin){V.fin=1;// whoever ended up close has flesh ripped off
-    for(const o of foes(f,3)){if(NET.role!=='client'){hitO(f,o,{dmg:10,kb:6,up:2,stun:.5,heavy:true});if(V.got<2){V.got++;chiAdd(f,Math.random()<.5?'arm':'leg');}}
+    for(const o of foes(f,3)){if(NET.role!=='client'){hitO(f,o,{dmg:10,kb:6,up:2,stun:.5,heavy:true});if(V.got<2){V.got++;const r=Math.random();chiAdd(f,r<.4?'head':r<.7?'arm':'leg');}}
       if(typeof bloodBurst==='function')bloodBurst(o.chest(new V3()),40,6);bolt(o.chest(new V3()),c,CHI_R,.06,.25);}
     shake(.3,c);xSnd(f.pos,()=>AU.boom&&AU.boom(false));}
   endAt(f,1.45);return 10;};
@@ -233,7 +233,7 @@ onEv('matchEnd',()=>{CHI_ARMS.forEach(A=>scene.remove(A.m));CHI_ARMS.length=0;CH
 // HUD: limb counts next to his meter
 onEv('tick',()=>{const el=document.getElementById('chiHud');if(!ME||!isChi(ME)||!inMatch()){if(el)el.style.display='none';return;}
   let e=el;if(!e){e=document.createElement('div');e.id='chiHud';e.style.cssText='position:fixed;left:50%;top:64px;transform:translateX(-50%);font:700 13px/1 system-ui,sans-serif;color:#e8d0c0;background:rgba(40,8,10,.65);padding:6px 10px;border-radius:8px;letter-spacing:.06em;pointer-events:none;z-index:20';document.body.appendChild(e);}
-  const S=chiS(ME),s=`ARMS ${S.a}/10 · LEGS ${S.l}/10 · HEADS ${S.h}/10${S.amal?' · AMALGAMATION':''}`;if(e.textContent!==s)e.textContent=s;e.style.display='block';});
+  const S=chiS(ME),s=`ARMS ${S.a}/10 · LEGS ${S.l}/10 · HEADS ${S.h}/10${S.amal?' · AMALGAMATION':''}`+chiHudTail(ME);if(e.textContent!==s)e.textContent=s;e.style.display='block';});
 /* ---------- moves, combo and opening ---------- */
 (function(){const h=HEROES.find(x=>x.id==='chimera');if(!h)return;
   const ab=o=>sanitizeAbil(Object.assign({colors:[CHI_R,CHI_B]},o));
@@ -296,12 +296,12 @@ const _chiBR=buildRig;buildRig=function(h){if(h&&h.id==='chimera'&&!h.human){con
 /* ---------- arm javelin needs an arm, bile needs a head (in his base mode) ---------- */
 function chiBase(f){return isChi(f)&&!(typeof inMode==='function'&&inMode(f));}
 function chiNeed(f,msg){if(f===ME&&typeof announceSmall==='function'&&(!f._needT||game.time-f._needT>1)){f._needT=game.time;announceSmall(msg);}if(f===ME&&AU.deny)AU.deny();}
-const _chiSS=Fighter.prototype.startSpecial;Fighter.prototype.startSpecial=function(){if(chiBase(this)){const alt=(typeof inDir==='function'&&inDir(this)==='b')||this.bufSB>0;
+const _chiSS=Fighter.prototype.startSpecial;Fighter.prototype.startSpecial=function(){if(chiBase(this)&&!this.hero._fuse){const alt=(typeof inDir==='function'&&inDir(this)==='b')||this.bufSB>0;
     if(!alt&&chiS(this).a<1){this.bufSB=0;chiNeed(this,'NEED AN ARM — PICK ONE UP');return false;}}return _chiSS.apply(this,arguments);};
-const _chiTX=Fighter.prototype.tryExtra;Fighter.prototype.tryExtra=function(){if(chiBase(this)&&this.bufXi===0&&chiS(this).h<1){this.bufX=0;chiNeed(this,'NEED A HEAD — PICK ONE UP');return false;}return _chiTX.apply(this,arguments);};
+const _chiTX=Fighter.prototype.tryExtra;Fighter.prototype.tryExtra=function(){if(chiBase(this)&&!this.hero._fuse&&this.bufXi===0&&chiS(this).h<1){this.bufX=0;chiNeed(this,'NEED A HEAD — PICK ONE UP');return false;}return _chiTX.apply(this,arguments);};
 // the ability bar shows those two as locked until he has the part
 const _chiSlIv=setInterval(()=>{if(typeof updateSlots!=='function')return;clearInterval(_chiSlIv);const _us=updateSlots;updateSlots=function(F){const r=_us.apply(this,arguments);const el=$('slots');if(!el)return r;
-  for(const d of el.children){const k=d.dataset.k;let lock='';if(F&&chiBase(F)){if(k==='sp'&&chiS(F).a<1)lock='NEED AN ARM';if(k==='x1'&&chiS(F).h<1)lock='NEED A HEAD';}
+  for(const d of el.children){const k=d.dataset.k;let lock='';if(F&&chiBase(F)&&!F.hero._fuse){if(k==='sp'&&chiS(F).a<1)lock='NEED AN ARM';if(k==='x1'&&chiS(F).h<1)lock='NEED A HEAD';}
     if((d.dataset.lock||'')!==lock){d.dataset.lock=lock;d.style.opacity=lock?'.35':'';d.style.filter=lock?'grayscale(1)':'';const sp=d.querySelector('span');if(sp){if(!sp.dataset.n)sp.dataset.n=sp.textContent;sp.textContent=lock?sp.dataset.n+' · '+lock:sp.dataset.n;}}
     if(lock)d.classList.remove('ready');}return r;};},5);
 
@@ -557,3 +557,132 @@ onEv('tick',()=>{const el=document.getElementById('slots');if(!el||!ME||!isChi(M
     const want=am&&AMAL_N[d.dataset.k]?AMAL_N[d.dataset.k]:sp.dataset.base;if(sp.dataset.n!==want){sp.dataset.n=want;sp.textContent=want;d.dataset.lock='';}}});
 onEv('matchEnd',()=>{ENGULFED.forEach(E=>{if(E.T.rig)E.T.rig.root.visible=true;});ENGULFED.length=0;ERUPTS.forEach(E=>scene.remove(E.g));ERUPTS.length=0;HANDS.forEach(H=>H.segs.forEach(ss=>ss.forEach(m=>scene.remove(m))));HANDS.length=0;
   for(const f of FS)if(f._lb2){f._lb2.dispose();f._lb2=null;}});
+
+/* ---------- heads are easier to come by ----------
+   Any KO near a Rotten Chimera (within 30 m) always pops the head off; with gore turned off, a Chimera within 12 m
+   just gains a head. ABSORPTION's flesh-rip favours heads too. */
+onEv('kill',(d,a)=>{if(!d||isChi(d)||!inMatch())return;const near=FS.filter(f=>isChi(f)&&!f.dead&&f.pos.distanceTo(d.pos)<30);if(!near.length)return;
+  if(typeof goreOn==='function'&&goreOn()&&typeof tearLimb==='function'){setTimeout(()=>{if(d.rig&&d.rig.head&&d.rig.head.visible&&!d._eaten){const away=new V3(rand(-1,1),0,rand(-1,1)).normalize();try{tearLimb(d,away,'head');}catch(e){}}},0);}
+  else{for(const f of near)if(f.pos.distanceTo(d.pos)<12)chiAdd(f,'head');}});
+
+/* ---------- DEVOUR: a Rotten Chimera next to a Marrow presses O to eat him and fuse ----------
+   MARROW CHIMERA (bone Marrow): bone-white flesh, crimson veins, bone spikes and flesh whips on his back.
+     1 MARROW WHIPS (hold: JAVELIN VOLLEY) · 2 SPLIT · 3 BONE BLADES · 4 ABSORPTION · Q BLOOD ARROW · Q+back AMALGAMATION
+   DREAD CHIMERA (Marrow in DREAD form): black-violet flesh, sickly green eyes, horns and fear smoke.
+     1 FEAR BLAST (hold: PANIC BURST) · 2 SPLIT · 3 NIGHTMARE GRASP · 4 ABSORPTION · Q ABSOLUTE DREAD · Q+back AMALGAMATION
+   The fusion lasts until he dies. The eaten Marrow is KO'd (and respawns as normal where the mode allows). */
+const FUSE_R=3.6;
+function isMarrowF(o){if(!o||!o.hero)return false;const b=o.hero._bone||o.hero._fbase||o.hero;return b.id==='marrow';}
+function marrowNear(f){let best=null,bd=FUSE_R;for(const o of FS){if(o===f||o.dead||o.downed||!isMarrowF(o)||o._eaten)continue;const d=o.pos.distanceTo(f.pos);if(d<bd){bd=d;best=o;}}return best;}
+function canFuse(f){return isChi(f)&&!f.dead&&!f.hero._fuse&&!(typeof inMode==='function'&&inMode(f))&&!f._fusing&&['idle','run','air','attack','block'].indexOf(f.state)>=0;}
+addEventListener('keydown',e=>{if(e.code!=='KeyO'||e.repeat||!ME||!inMatch())return;const el=document.activeElement;if(el&&(el.tagName==='INPUT'||el.tagName==='TEXTAREA'))return;
+  if(!isChi(ME))return;if(!canFuse(ME)){return;}if(!marrowNear(ME)){if(typeof announceSmall==='function')announceSmall('NO MARROW CLOSE ENOUGH TO DEVOUR');return;}
+  netSay({k:'chfreq',id:ME.id});});
+onEv('x:chfreq',o=>{if(NET.role==='client')return;const f=FS.find(q=>q.id===o.id);if(!f||!canFuse(f))return;const m=marrowNear(f);if(!m)return;netSay({k:'chfgo',a:f.id,d:m.id,dr:(m.hero._bone?1:0)});});
+onEv('x:chfgo',o=>{const f=FS.find(q=>q.id===o.a),m=FS.find(q=>q.id===o.d);if(f&&m)chiFuseStart(f,m,!!o.dr);});
+// bots do it too when they bump into a Marrow
+onEv('tick',dt=>{if(NET.role==='client'||!inMatch())return;for(const f of FS){if(!f.isBot||f.hold||!canFuse(f))continue;if(Math.random()>dt*.3)continue;const m=marrowNear(f);if(m)netSay({k:'chfgo',a:f.id,d:m.id,dr:(m.hero._bone?1:0)});}});
+function chiFuseStart(f,m,dread){if(f._fusing)return;f._fusing={m,dread,t:0};m._eaten=true;f.set('special');f.xmOn=true;f.xmA={custom:'fusing',name:'DEVOUR'};f.vf={};f.specVar='n';f.fired=true;
+  f.invuln=Math.max(f.invuln,3);m.invuln=0;faceTo(f,m);if(m.set)m.set('hit');m.stunT=5;m._eatPos=m.pos.clone();if(typeof ribCage==='function'){ribCage(f,m);RIBS[RIBS.length-1].dur=.5;}
+  if(f===ME||m===ME){if(typeof duckMusic==='function')duckMusic(3);}xSnd(f.pos,()=>{AU.hit&&AU.hit(true);AU.whoosh&&AU.whoosh(true);});}
+XCUSTOM.fusing=function(f,dt){const F=f._fusing;if(!F){f.set('idle');return 10;}const m=F.m,t=f.stateT;F.t=t;f.vel.set(0,f.vel.y,0);f.invuln=Math.max(f.invuln,.3);
+  const c=f.chest(new V3()),fw=f.fwd();
+  if(!m.dead){m.vel.set(0,0,0);if(m.state!=='hit'&&NET.role!=='client')m.set('hit');m.stunT=Math.max(m.stunT||0,m.stateT+.5);}
+  if(t<.55){// grabbed and caged
+    f.poseKey='burstIn';if(!m.dead)m.pos.copy(m._eatPos);if(Math.random()<.4)bloodDrops(m.chest(new V3()),6,5,null,null,2);}
+  else if(t<1.75){// devoured: pulled into the body, crushed, folded in
+    f.poseKey=Math.sin(t*16)>0?'roar':'burstIn';const k=(t-.55)/1.2;f._chBloat=true;const sw=1+k*.35+Math.sin(t*30)*.05;f.rig.root.scale.set(f.hero.scale*sw,f.hero.scale*(1+k*.2),f.hero.scale*sw);
+    if(m.rig&&!m.dead){m.pos.lerpVectors(m._eatPos,new V3(c.x,f.pos.y+.2,c.z),Math.min(1,k*1.3));const ms=m.hero.scale*Math.max(.05,1-k*.95)*(1+Math.sin(t*40)*.08);m.rig.root.scale.set(ms*(1+k*.3),ms,ms*(1-k*.2));m.rig.root.rotation.z=Math.sin(t*25)*.4*k;}
+    bloodDrops(c.clone().addScaledVector(fw,.4),10,7,fw,.8,3);if(Math.random()<.25){bloodBurst(c,20,6);xSnd(f.pos,()=>AU.hit&&AU.hit(Math.random()<.5));}
+    if(Math.random()<.12&&typeof gibs==='function')gibs(c,fw,2);if(Math.random()<.2)for(let i=0;i<3;i++)trailSeg(c,c.clone().add(TMP2.set(rand(-1.2,1.2),rand(-.6,1.2),rand(-1.2,1.2))),0xe8dcc0,.05,.15);
+    if(Math.random()<.3)chiStain(new V3(f.pos.x+rand(-1.5,1.5),f.pos.y,f.pos.z+rand(-1.5,1.5)),rand(.6,1.2));shake(.15,c);
+    atT(f,'eat',1.7,()=>{if(m.rig)m.rig.root.visible=false;if(NET.role!=='client'&&!m.dead){if(typeof killFighter==='function')killFighter(m,f,null);else _chiAH(f,m,{dmg:999,kb:0});}
+      if(typeof GORE!=='undefined')for(let i=GORE.limbs.length-1;i>=0;i--){const L=GORE.limbs[i];if(L.f===m){scene.remove(L.m);GORE.limbs.splice(i,1);}}});}
+  else{// the fusion takes hold
+    f._chBloat=false;f.poseKey=t<2.2?'armsUp':'roar';atT(f,'fz',1.8,()=>{chiFuse(f,F.dread);const col=F.dread?0x6a2a9a:0xc4102a;
+      bloodBurst(c,160,13);ring(c,col,5,.5,false,2);ring(TMP2.set(f.pos.x,f.pos.y+.2,f.pos.z).clone(),F.dread?0x8aff6a:0xe8dcc0,7,.5,true,1.6);
+      if(F.dread)burst(SMK,c,50,{colors:[0x6a2a9a,0x120a1a],speed:6,up:3,life:1.2,size:.8,size1:1.8});else{for(let i=0;i<14;i++){const a=i/14*6.283;spike(f.pos.x+Math.cos(a)*rand(1.5,3.5),f.pos.z+Math.sin(a)*rand(1.5,3.5),rand(.8,1.8));}}
+      shake(.8,c);hitStop(.1);flashLight(c,col,14);xSnd(f.pos,()=>{AU.boom&&AU.boom(true);if(F.dread&&SND.curse)SND.curse.hit(1.2);});
+      if(f===ME&&typeof announceSmall==='function')announceSmall(F.dread?'DREAD CHIMERA':'MARROW CHIMERA');});
+    if(t>2.5){f._fusing=null;f.set(f.onGround?'idle':'air');}}
+  return 10;};
+onEv('tick',()=>{for(const f of FS)if(f._fusing&&(f.dead||(f.state!=='special'&&f.stateT>.05))){const F=f._fusing;f._fusing=null;f._chBloat=false;if(F.m&&!F.m.dead&&F.m.rig){F.m.rig.root.visible=true;F.m.rig.root.scale.setScalar(F.m.hero.scale);F.m.rig.root.rotation.z=0;F.m._eaten=false;}}});
+const _fuReset=Fighter.prototype.reset;Fighter.prototype.reset=function(){if(this.hero&&this.hero._fuse){this.hero=this.hero._chiOrig;chiUnfuseLook(this);}this._eaten=false;this._fusing=null;
+  if(this.rig&&this.rig.root)this.rig.root.rotation.z=0;const r=_fuReset.apply(this,arguments);if(this===ME&&typeof buildSlots==='function')buildSlots();return r;};
+// the fused heroes
+const FUSE_HEROES={};
+function fuseHero(base,dread){const k=(dread?'d':'b');if(base['_fu'+k])return base['_fu'+k];const ab=o=>sanitizeAbil(Object.assign({colors:dread?[0x6a2a9a,0x8aff6a]:[0xc4102a,0xe8dcc0]},o));
+  const H=Object.assign({},base,{_fuse:dread?'dread':'bone',_chiOrig:base,name:dread?'DREAD CHIMERA':'MARROW CHIMERA',
+    as:Object.assign({},base.as,{alt:'chiamal'}),altName:'AMALGAMATION',color:dread?0x6a2a9a:0xc4102a,accent:dread?0x8aff6a:0xe8dcc0,css:dread?'#a46aff':'#ff3048',
+    special:dread?'chifuseD':'chifuseB',spName:dread?'FEAR BLAST':'MARROW WHIPS',specCD:dread?2.4:2.6,ult:dread?'absdread':'bloodfuse',ultName:dread?'ABSOLUTE DREAD':'BLOOD ARROW',
+    _xm:[Object.assign(ab({name:dread?'NIGHTMARE GRASP':'BONE BLADES',form:dread?'grab':'burst',style:dread?'shadow':'blood',shape:dread?'hand':'blade',fx:[]}),{custom:dread?'fgrasp':'fblades'}),
+      Object.assign(ab({name:'ABSORPTION',form:'grab',style:'blood',shape:'ring',fx:[]}),{custom:'absorb'})]});
+  base['_fu'+k]=H;return H;}
+function chiFuse(f,dread){const base=f.hero._fuse?f.hero._chiOrig:f.hero;f.hero=fuseHero(base,dread);chiFuseLook(f,dread);if(f===ME&&typeof buildSlots==='function')buildSlots();
+  if(NET.role!=='client'&&!(typeof healLocked==='function'&&healLocked(f)))f.hp=Math.min(100,f.hp+35);chiAdd(f,'arm',2);chiAdd(f,'head',1);}
+const CHI_SHARED=new Set();setTimeout(()=>{[CHI_BONE,CHI_MEAT,CHI_MEAT2,GUT_MAT].forEach(m=>CHI_SHARED.add(m));},0);
+const FU_ORIG=new WeakMap();
+function chiFuseLook(f,dread){const R=f.rig;chiUnfuseLook(f);const fx=[],list=[];
+  R.root.traverse(o=>{if(!o.isMesh||!o.material||Array.isArray(o.material)||CHI_SHARED.has(o.material)||o.userData.fuDeco)return;const m=o.material;if(!m.color)return;
+    if(!FU_ORIG.has(o)){FU_ORIG.set(o,m);o.material=m.clone();list.push(o);}const n=o.material,l=n.color.r*.3+n.color.g*.59+n.color.b*.11;
+    if(n.isMeshBasicMaterial){n.color.setHex(dread?0x8aff6a:0xff2a3a);return;}
+    if(dread){n.color.setHex(l<.06?0x08040c:l<.2?0x1e1228:0x2c1c3c);if(n.emissive){n.emissive.setHex(0x4a0a6a);n.emissiveIntensity=n.emissiveMap?1.4:.06;}}
+    else{n.color.setHex(l<.06?0x4a0a10:l<.2?0x8a7a6a:0xa89a86);n.roughness=.55;if(n.emissive){n.emissive.setHex(0x9a0010);n.emissiveIntensity=n.emissiveMap?1.6:.04;}}});
+  const add=(par,m)=>{if(!par)return;m.userData.fuDeco=1;par.add(m);fx.push(m);return m;};
+  const mat=dread?new THREE.MeshStandardMaterial({color:0x1a0a24,roughness:.4,emissive:0x2a0a3a,emissiveIntensity:.6}):CHI_BONE;
+  // spikes down the spine
+  for(let i=0;i<7;i++){const s=new THREE.Mesh(new THREE.ConeGeometry(.045,.32-i*.02,6),mat);s.position.set(0,.68-i*.1,-.17);s.rotation.x=-1.9;add(R.spine,s);}
+  [R.lS,R.rS].forEach((sh,i)=>{if(!sh)return;for(let k=0;k<3;k++){const s=new THREE.Mesh(new THREE.ConeGeometry(.04,.28,6),mat);s.position.set((i?-1:1)*.06,.06,-.04+k*.05);s.rotation.set(-.4,0,(i?1:-1)*(.6+k*.3));add(sh,s);}});
+  if(dread){// horns and a crown of eyes' glow
+    if(R.head)[-1,1].forEach(sd=>{const h=new THREE.Mesh(new THREE.ConeGeometry(.04,.3,6),mat);h.position.set(sd*.08,.16,-.02);h.rotation.set(-.5,0,-sd*.5);add(R.head,h);});}
+  else{// flesh whips hanging from his back
+    const wm=new THREE.MeshStandardMaterial({color:0x8a1a22,roughness:.3});for(let w=0;w<2;w++){const g=new THREE.Group();g.position.set((w?-1:1)*.12,.45,-.18);add(R.spine,g);for(let i=0;i<9;i++){const sg=new THREE.Mesh(GUT_G,wm);sg.scale.set(.8,.8,1.2);sg.position.set(0,-i*.1,-i*.04);sg.userData.fuDeco=1;g.add(sg);}g.userData.whip=w;}}
+  chiS(f).fuFx=fx;chiS(f).fuList=list;}
+function chiUnfuseLook(f){const R=f.rig;if(!R||!R.root)return;const S=f.chi;if(S&&S.fuList){S.fuList.forEach(o=>{const m=FU_ORIG.get(o);if(m){if(o.material!==m)o.material.dispose();o.material=m;FU_ORIG.delete(o);}});S.fuList=null;}
+  if(S&&S.fuFx){S.fuFx.forEach(m=>{if(m.parent)m.parent.remove(m);});S.fuFx=null;}}
+// the hanging whips sway; the dread fusion smokes
+onEv('tick',dt=>{for(const f of FS){if(!f.hero||!f.hero._fuse||f.dead||!nearCam(f.pos,50))continue;const S=chiS(f);
+  if(S.fuFx)S.fuFx.forEach(g=>{if(g.userData.whip!=null)g.rotation.x=Math.sin(game.time*3+g.userData.whip)*.4+.3;});
+  if(f.hero._fuse==='dread'&&Math.random()<.4){const a=rand(0,6.28);burst(SMK,TMP2.set(f.pos.x+Math.cos(a)*.5,f.pos.y+rand(.2,1.8),f.pos.z+Math.sin(a)*.5),1,{colors:[0x6a2a9a,0x120a1a],speed:.3,up:1.2,life:.8,size:.3,size1:.6});}}});
+/* fused moves */
+// MARROW WHIPS: two long flesh whips lash forward through everything in a line
+SPECIALS.chifuseB=function(f,dt){if(chiAmal(f))return amalEngulf(f,dt);const V=f.vf,t=f.stateT;
+  if(!V.w){V.w=1;V.hit={};const T=tgtOf(f,14);if(T)faceTo(f,T);V.segs=[];const wm=new THREE.MeshStandardMaterial({color:0x8a1a22,roughness:.25});for(let w=0;w<2;w++)for(let i=0;i<16;i++){const m=new THREE.Mesh(GUT_G,wm);m.scale.set(.9,.9,1.3);scene.add(m);V.segs.push(m);}
+    GUTS.push({f,segs:V.segs});f.vf.G=GUTS[GUTS.length-1];xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  f.poseKey=t<.12?'specw':'spech';const fw=f.fwd(),side=new V3(fw.z,0,-fw.x),c=f.chest(new V3());const ext=t<.3?t/.3:t<.45?1:Math.max(0,1-(t-.45)/.2),L=13*ext;
+  for(let w=0;w<2;w++){const sd=w?-1:1,base=c.clone().addScaledVector(side,sd*.25).add(TMP2.set(0,.15,-.1).clone());const tip=c.clone().addScaledVector(fw,L).addScaledVector(side,sd*.4);
+    for(let i=0;i<16;i++){const u=i/15,p=base.clone().lerp(tip,u);p.addScaledVector(side,Math.sin(u*9+t*30+w*2)*.35*u);p.y+=Math.sin(u*Math.PI)*.4+Math.cos(u*7+t*25)*.2*u;V.segs[w*16+i].position.copy(p);}}
+  if(t>.08&&t<.5)for(const o of foes(f,L+.5)){if(V.hit[o.id])continue;const d=o.pos.clone().sub(f.pos).setY(0),al=d.dot(fw),lat=Math.abs(d.dot(side));if(al<0||lat>1.4)continue;V.hit[o.id]=1;
+    if(NET.role!=='client'){hitO(f,o,{dmg:11,kb:6,up:3,stun:.6,pt:o.chest(new V3())});}bloodDrops(o.chest(new V3()),20,6,fw,.6,2);}
+  if(t>.7){f.set(f.onGround?'idle':'air');}return 10;};
+SPECVAR.chifuseB={chg:SPECVAR.chimjav.chg,alt:SPECVAR.chimjav.alt};
+// FEAR BLAST (dread's), PANIC BURST, then SPLIT
+SPECIALS.chifuseD=function(f,dt){if(chiAmal(f))return amalEngulf(f,dt);return SPECIALS.dread(f,dt);};
+SPECVAR.chifuseD={chg:SPECVAR.dread?SPECVAR.dread.chg:SPECVAR.chimjav.chg,alt:SPECVAR.chimjav.alt};
+// BONE BLADES: blades of bone burst from both arms and he spins through everyone around him
+XCUSTOM.fblades=function(f,dt){if(chiAmal(f))return amalTorrent(f,dt);const V=f.vf,t=f.stateT;
+  if(!V.b){V.b=1;V.hit={};V.g=new THREE.Group();scene.add(V.g);for(let i=0;i<2;i++){const b=new THREE.Mesh(new THREE.ConeGeometry(.09,2.2,6),CHI_BONE);b.geometry.translate(0,1.1,0);b.userData.own=1;V.g.add(b);}
+    bloodBurst(f.chest(new V3()),30,5);xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  f.poseKey=t<.15?'slashWind':'kickSpin';const spin=Math.min(1,Math.max(0,(t-.12)/.45));f.face+=dt*(spin>0&&spin<1?16:0);
+  V.g.position.copy(f.chest(new V3()));V.g.rotation.y=f.face;V.g.children.forEach((b,i)=>{b.rotation.set(0,0,(i?1:-1)*Math.PI/2);b.position.set((i?-1:1)*.3,0,0);b.scale.setScalar(Math.min(1,t/.12));});
+  if(spin>0&&spin<1)for(const o of foes(f,3.4)){if(V.hit[o.id])continue;V.hit[o.id]=1;if(NET.role!=='client')hitO(f,o,{dmg:14,kb:9,up:4,stun:.5,heavy:true,pt:o.chest(new V3())});bloodDrops(o.chest(new V3()),30,8,o.pos.clone().sub(f.pos).setY(.2).normalize(),.6,2);}
+  if(t>.75){V.g.traverse(o=>{if(o.geometry&&o.userData.own)o.geometry.dispose();});scene.remove(V.g);f.set(f.onGround?'idle':'air');}return 10;};
+onEv('tick',()=>{for(const f of FS)if(f.vf&&f.vf.g&&f.vf.b&&f.state!=='special'){scene.remove(f.vf.g);f.vf.g=null;}});
+// NIGHTMARE GRASP (dread's) as his third move
+XCUSTOM.fgrasp=function(f,dt){if(chiAmal(f))return amalTorrent(f,dt);return SPECVAR.dread?SPECVAR.dread.alt[1](f,dt):(endAt(f,.3),10);};
+// BLOOD ARROW for the Marrow Chimera: a liquid stream that he can steer
+ULTX.bloodfuse={r:24,s(f){f.vf.t0=null;f.uEnd=99;f.invuln=Math.max(f.invuln,1);f.poseKey='charge';},
+  u(f,t){const V=f.vf;if(V.t0==null){V.t0=t;f.uEnd=t+2.2;V.hit={};const T=tgtOf(f,30);if(T)faceTo(f,T);if(!f._lb3)f._lb3=liquidBeam();xSnd(f.pos,()=>{AU.boom&&AU.boom(true);});}
+    const r=t-V.t0,T=tgtOf(f,34);if(T){const want=Math.atan2(T.pos.x-f.pos.x,T.pos.z-f.pos.z);let d=want-f.face;d=Math.atan2(Math.sin(d),Math.cos(d));f.face+=clamp(d,-1.2*1/60,1.2*1/60);}
+    f.poseKey='beamPush';const fw=f.fwd(),org=f.chest(new V3()).addScaledVector(fw,.8),k=r<.15?r/.15:r<1.9?1:Math.max(0,1-(r-1.9)/.25);
+    let L=34;for(let d=1;d<34;d+=1){if(insideBld(org.x+fw.x*d,org.z+fw.z*d,0,org.y)){L=d;break;}}
+    if(k>0)f._lb3.update(org,fw,L*Math.min(1,r/.2+.05),.75*k+.05,game.time);else f._lb3.hide();
+    if(r>.1&&r<1.9){shake(.3,f.pos);if(!V.pt||r-V.pt>.15){V.pt=r;if(NET.role!=='client')for(const o of foes(f,L+1)){const rel=o.chest(new V3()).sub(org),al=rel.dot(fw),lat=Math.hypot(rel.x-fw.x*al,rel.z-fw.z*al);if(al<0||lat>1.8)continue;
+          hitO(f,o,{dmg:4.5,kb:3,up:0,stun:.3,ult:true,pt:o.chest(new V3())});}}}
+    if(r>2.1&&f._lb3)f._lb3.hide();return 10;}};
+onEv('tick',()=>{for(const f of FS)if(f._lb3&&(f.state!=='ult'||f.dead))f._lb3.hide();});
+Object.assign(ULT_RANGE,{bloodfuse:24});Object.assign(SPNAME,{chifuseB:'MARROW WHIPS',chifuseD:'FEAR BLAST'});Object.assign(SPECIAL_AI,{chifuseB:[3,13,.6],chifuseD:[3,9,.6]});
+// Q+back while fused: AMALGAMATION
+ALTULT.chiamal={name:'AMALGAMATION',r:12,s(f){return ULTX.amalgam.s(f);},u(f,t){return ULTX.amalgam.u(f,t);}};
+function chiHudTail(f){const m=canFuse(f)?marrowNear(f):null;return m?' · O: DEVOUR '+(m.hero._bone?'DREAD ':'')+'MARROW':f.hero._fuse?(' · '+f.hero.name):'';}
+onEv('matchEnd',()=>{for(const f of FS){if(f._lb3){f._lb3.dispose();f._lb3=null;}f._fusing=null;}});
