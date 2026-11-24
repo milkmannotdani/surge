@@ -360,13 +360,16 @@ function chiBlobPose(f,dt){const S=chiS(f),R=f.rig;
   const q=new THREE.Quaternion(),ax=new V3();
   for(const L of B.limbs){const k=L.low?Math.sin(t*9+L.ph)*(.15+mv*.35):Math.sin(t*2.5+L.ph)*.45+(atk?Math.sin(t*16+L.ph)*.6:0);ax.set(Math.cos(L.ph),Math.sin(L.ph),0).normalize();q.setFromAxisAngle(ax,k);L.piv.quaternion.copy(L.base).multiply(q);}
   // the red trail it leaves behind
-  if(f.onGround&&!f.dead){const p=f.pos;if(!f._stainAt)f._stainAt=p.clone();if(Math.hypot(p.x-f._stainAt.x,p.z-f._stainAt.z)>.5){f._stainAt.copy(p);chiStain(p,rand(.85,1.25)*f.hero.scale);}}
+  if(f.onGround&&!f.dead){const p=f.pos;if(!f._stainAt)f._stainAt=p.clone();if(Math.hypot(p.x-f._stainAt.x,p.z-f._stainAt.z)>.7){const d=new V3(p.x-f._stainAt.x,0,p.z-f._stainAt.z).normalize();f._stainAt.copy(p);chiStain(p,rand(1,1.4)*f.hero.scale,d);}}
   if(Math.random()<.2*mv+.05&&nearCam(f.pos,40))burst(SMK,TMP2.set(f.pos.x+rand(-1,1),f.pos.y+rand(.3,1.4),f.pos.z+rand(-1,1)),1,{colors:[0x6a0010,0x8a1a20],speed:.3,life:.7,size:.12,size1:.06,grav:10});}
 const CHI_STAINS=[];const STAIN_MAT=new THREE.MeshStandardMaterial({color:0x4a0008,roughness:.25,metalness:0,transparent:true,opacity:.88,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
-function chiStain(p,r){if(!nearCam(p,90))return;const m=new THREE.Mesh(CHI_DISC,STAIN_MAT.clone());m.scale.set(r,1,r*rand(1,1.4));m.rotation.y=rand(0,6.28);m.position.set(p.x,floorAt(p.x,p.z,p.y+1)+.03,p.z);scene.add(m);CHI_STAINS.push({m,t:0});
-  if(CHI_STAINS.length>180){const o=CHI_STAINS.shift();scene.remove(o.m);o.m.material.dispose();}}
-onEv('tick',dt=>{for(let i=CHI_STAINS.length-1;i>=0;i--){const o=CHI_STAINS[i];o.t+=dt;if(o.t>30){scene.remove(o.m);o.m.material.dispose();CHI_STAINS.splice(i,1);continue;}if(o.t>24)o.m.material.opacity=.88*(30-o.t)/6;}});
-onEv('matchEnd',()=>{CHI_STAINS.forEach(o=>{scene.remove(o.m);o.m.material.dispose();});CHI_STAINS.length=0;});
+function chiStain(p,r,dir){if(!nearCam(p,90))return;let m;
+  if(typeof splatMat==='function'){m=new THREE.Mesh(SPLAT_GEO,splatMat(dir?'smear':'splat',(Math.random()*4)|0));m.rotation.x=-Math.PI/2;m.rotation.z=dir?Math.atan2(-dir.z,dir.x):rand(0,6.28);m.scale.set(r*(dir?1.4:1),r,1);}
+  else{m=new THREE.Mesh(CHI_DISC,STAIN_MAT);m.scale.set(r,1,r);}
+  m.position.set(p.x,floorAt(p.x,p.z,p.y+1)+.03+Math.random()*.004,p.z);m.renderOrder=1;scene.add(m);CHI_STAINS.push({m,t:0});
+  if(CHI_STAINS.length>180){const o=CHI_STAINS.shift();scene.remove(o.m);}}
+onEv('tick',dt=>{for(let i=CHI_STAINS.length-1;i>=0;i--){const o=CHI_STAINS[i];o.t+=dt;if(o.t>30){scene.remove(o.m);CHI_STAINS.splice(i,1);}}});
+onEv('matchEnd',()=>{CHI_STAINS.forEach(o=>scene.remove(o.m));CHI_STAINS.length=0;});
 // when the amalgamation dies it bursts
 onEv('kill',d=>{if(!isChi(d)||!d.chi||!d.chi.amal)return;const c=d.chest(new V3());if(typeof bloodBurst==='function')bloodBurst(c,160,14);if(typeof gibs==='function')gibs(c,new V3(rand(-1,1),0,rand(-1,1)).normalize(),30);
   for(let i=0;i<14;i++)chiStain(new V3(d.pos.x+rand(-3,3),d.pos.y,d.pos.z+rand(-3,3)),rand(.6,1.6));chiBlobKill(d);shake(.6,c);});
@@ -483,3 +486,74 @@ const _chiMHIv=setInterval(()=>{if(typeof modeHero!=='function')return;clearInte
       _xm:[Object.assign(ab({name:'GUT ROPE',form:'grab',style:'blood',shape:'ring',fx:[]}),{custom:'gutrope'}),Object.assign(ab({name:'PUTRID BLOAT',form:'burst',style:'poison',shape:'orb',fx:[]}),{custom:'bloat'})]});
     if(H.cab)H.cab=Object.assign({},H.cab);}
   return H;};},5);
+
+/* ---------- AMALGAMATION moves: the meat pile fights differently ----------
+     1  ENGULF          the mass lunges and swallows the first enemy it reaches, digests them inside for 2.5 s, then
+                        spits what's left back out (he grows a limb from it)
+     2  BONE ERUPTION   bones spear out of the mass in every direction, impaling everyone around him
+     3  BLOOD TORRENT   every mouth vomits a heavy torrent of blood in front of him that he can sweep around
+     4  HUNDRED HANDS   every arm in the pile stretches out, grabs everyone nearby and drags them in to be crushed
+     Q  FLESH ERUPTION  (as before) */
+const AMAL_N={sp:'ENGULF',spB:'BONE ERUPTION',x1:'BLOOD TORRENT',x2:'HUNDRED HANDS'};
+function chiAmal(f){return isChi(f)&&chiS(f).amal&&chiBase(f);}
+const ENGULFED=[],ERUPTS=[],HANDS=[];
+function amalEngulf(f,dt){const V=f.vf,t=f.stateT;if(!V.e){V.e=1;V.from=f.pos.clone();const T=tgtOf(f,10);if(T)faceTo(f,T);const fw=f.fwd();V.to=f.pos.clone().addScaledVector(fw,Math.max(0,clearLen(f.pos,fw,6,f.pos.y+1)-1));xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  const k=Math.min(1,t/.32);if(!V.got){f.pos.lerpVectors(V.from,V.to,k*k);f.vel.set(0,f.vel.y,0);
+    for(const o of foes(f,2.6)){if(o.boss||ENGULFED.some(E=>E.T===o))continue;V.got=o;chiSwallow(f,o);if(NET.role!=='client')netEvent({k:'chengulf',a:f.id,d:o.id});break;}}
+  f.poseKey='burstIn';endAt(f,.6);return 10;}
+function chiSwallow(f,T){ENGULFED.push({f,T,t:0,tick:0});if(T.rig)T.rig.root.visible=false;bloodBurst(T.chest(new V3()),60,6);shake(.4,f.pos);xSnd(f.pos,()=>{AU.hit&&AU.hit(true);});}
+onEv('net:chengulf',e=>{const f=FS.find(o=>o.id===e.a),T=FS.find(o=>o.id===e.d);if(f&&T&&!ENGULFED.some(E=>E.T===T))chiSwallow(f,T);});
+onEv('tick',dt=>{for(let i=ENGULFED.length-1;i>=0;i--){const E=ENGULFED[i],f=E.f,T=E.T;E.t+=dt;
+  const out=()=>{ENGULFED.splice(i,1);if(T.rig)T.rig.root.visible=!T.dead||true;};
+  if(!inMatch()){out();continue;}
+  if(T.dead){out();continue;}
+  if(f.dead||E.t>2.5){// spat back out
+    out();const fw=f.fwd();T.pos.copy(f.pos).addScaledVector(fw,2.2);T.pos.y=f.pos.y+.6;bloodBurst(T.chest(new V3()),110,10);bloodDrops(T.chest(new V3()),60,12,fw,.5,2);
+    if(NET.role!=='client'&&!f.dead){_chiAH(f,T,{dmg:8,kb:14,up:6,launch:true,heavy:true,pt:T.chest(new V3())});chiAdd(f,Math.random()<.5?'arm':'leg');}xSnd(f.pos,()=>AU.boom&&AU.boom(false));continue;}
+  T.pos.copy(f.pos);T.pos.y+=.4;T.vel.set(0,0,0);if(NET.role!=='client'&&T.state!=='hit')T.set('hit');if(T.state==='hit')T.stunT=Math.max(T.stunT||0,T.stateT+.3);
+  E.tick-=dt;if(E.tick<=0){E.tick=.4;if(NET.role!=='client')_chiAH(f,T,{dmg:2.4,kb:0,up:0,stun:0,pt:f.chest(new V3())});if(nearCam(f.pos,50))bloodDrops(f.chest(new V3()).add(TMP2.set(rand(-.6,.6),rand(0,.6),rand(-.6,.6))),8,4,null,null,2);}
+  const B=f.chi&&f.chi.blob;if(B)B.g.scale.multiplyScalar(1+Math.sin(E.t*18)*.03);}});
+function amalErupt(f,dt){const V=f.vf,t=f.stateT;f.vel.set(0,f.vel.y,0);f.poseKey=t<.25?'burstIn':'burstOut';
+  atT(f,'er',.25,()=>{const g=new THREE.Group();g.position.copy(f.pos);scene.add(g);const sp=[];for(let i=0;i<18;i++){const a=i/18*6.283+rand(-.1,.1),el=rand(-.05,.55);
+      const m=new THREE.Mesh(new THREE.ConeGeometry(.11,1,6),CHI_BONE);m.geometry.translate(0,.5,0);m.position.set(0,rand(.4,1.1),0);m.quaternion.setFromUnitVectors(new V3(0,1,0),new V3(Math.cos(a),el,Math.sin(a)).normalize());g.add(m);sp.push(m);}
+    ERUPTS.push({g,sp,t:0});
+    if(NET.role!=='client')for(const o of foes(f,6)){hitO(f,o,{dmg:13,kb:12,up:6,launch:true,heavy:true,pt:o.chest(new V3())});}
+    for(const o of foes(f,6))bloodDrops(o.chest(new V3()),40,8,o.pos.clone().sub(f.pos).setY(.3).normalize(),.5,2);
+    bloodBurst(f.chest(new V3()),60,8);shake(.6,f.pos);hitStop(.06);xSnd(f.pos,()=>{AU.hit&&AU.hit(true);AU.boom&&AU.boom(false);});});
+  endAt(f,.85);return 10;}
+onEv('tick',dt=>{for(let i=ERUPTS.length-1;i>=0;i--){const E=ERUPTS[i];E.t+=dt;if(E.t>.9||!inMatch()){E.g.traverse(o=>{if(o.geometry)o.geometry.dispose();});scene.remove(E.g);ERUPTS.splice(i,1);continue;}
+  const k=E.t<.12?E.t/.12:E.t<.55?1:Math.max(0,1-(E.t-.55)/.35);E.sp.forEach((m,j)=>m.scale.set(1,Math.max(.01,k*(4.6+(j%3)*.6)),1));}});
+function amalTorrent(f,dt){const V=f.vf,t=f.stateT;f.vel.x*=.7;f.vel.z*=.7;f.poseKey='roar';
+  if(!V.tr){V.tr=1;V.hit={};const T=tgtOf(f,14);if(T)faceTo(f,T);if(!f._lb2)f._lb2=liquidBeam();xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  // he can sweep it while it pours
+  const T=tgtOf(f,16);if(T){const want=Math.atan2(T.pos.x-f.pos.x,T.pos.z-f.pos.z);let d=want-f.face;d=Math.atan2(Math.sin(d),Math.cos(d));f.face+=clamp(d,-1.6*dt,1.6*dt);}
+  const k=t<.15?t/.15:t<1.35?1:Math.max(0,1-(t-1.35)/.2),fw=f.fwd(),org=f.chest(new V3()).add(TMP2.set(0,.2,0)).addScaledVector(fw,1.1),dir=fw.clone().add(TMP2.set(0,-.12,0)).normalize();
+  const len=Math.max(1,clearLen(f.pos,fw,13,org.y)*k);
+  if(k>0){f._lb2.update(org,dir,len,.55*k+.05,game.time);}else f._lb2.hide();
+  if(t>.15&&t<1.4&&(!V.pt||t-V.pt>.18)){V.pt=t;for(const o of foes(f,len+.5,null,.86)){if(NET.role!=='client'){_chiAH(f,o,{dmg:1.3,kb:2.5,up:0,stun:.2,pt:o.chest(new V3())});o.slowT=Math.max(o.slowT||0,1.5);}}}
+  if(t>1.6){f._lb2.hide();f.set(f.onGround?'idle':'air');}return 10;}
+onEv('tick',()=>{for(const f of FS)if(f._lb2&&(f.state!=='special'||f.dead))f._lb2.hide();});
+function amalHands(f,dt){const V=f.vf,t=f.stateT;f.vel.set(0,f.vel.y,0);f.poseKey='armsUp';
+  if(!V.h){V.h=1;V.L=foes(f,10).slice(0,6);const H={f,L:V.L,t:0,segs:[]};V.L.forEach(()=>{const ss=[];for(let i=0;i<12;i++){const m=new THREE.Mesh(GUT_G,i%2?CHI_MEAT:CHI_MEAT2);m.scale.set(1.2,1.2,1.6);scene.add(m);ss.push(m);}H.segs.push(ss);});HANDS.push(H);V.H=H;
+    if(NET.role!=='client')V.L.forEach(o=>hitO(f,o,{dmg:4,kb:0,up:0,stun:1.2,pt:o.chest(new V3())}));xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  // reel everyone in, then crush
+  if(t<.9){const kk=Math.min(1,t/.9);for(const o of V.L){if(o.dead)continue;const d=f.pos.clone().sub(o.pos).setY(0),L=d.length();if(L>2.2&&t>.25){o.pos.addScaledVector(d.normalize(),Math.min(L-2.2,14*dt));}o.vel.set(0,0,0);}}
+  atT(f,'cr',.95,()=>{if(NET.role!=='client')for(const o of V.L){if(o.dead)continue;hitO(f,o,{dmg:10,kb:10,up:9,launch:true,heavy:true,pt:o.chest(new V3())});}
+    for(const o of V.L)bloodBurst(o.chest(new V3()),50,8);shake(.6,f.pos);xSnd(f.pos,()=>{AU.boom&&AU.boom(true);});});
+  endAt(f,1.25);return 10;}
+onEv('tick',dt=>{for(let i=HANDS.length-1;i>=0;i--){const H=HANDS[i],f=H.f;H.t+=dt;if(H.t>1.25||!inMatch()||f.dead){H.segs.forEach(ss=>ss.forEach(m=>scene.remove(m)));HANDS.splice(i,1);continue;}
+  const c=f.chest(new V3());H.L.forEach((o,j)=>{const ss=H.segs[j];const tip=o.chest(new V3()),ext=Math.min(1,H.t/.2);ss.forEach((m,q)=>{const u=q/(ss.length-1)*ext;m.position.copy(c).lerp(tip,u);m.position.y+=Math.sin(u*Math.PI)*.8;m.visible=!o.dead;});});}});
+// route his moves while he's the amalgamation
+const _chiJav=SPECIALS.chimjav;SPECIALS.chimjav=function(f,dt){if(chiAmal(f))return amalEngulf(f,dt);return _chiJav.apply(this,arguments);};
+const _chiChg=SPECVAR.chimjav.chg[1];SPECVAR.chimjav.chg[1]=function(f,dt,k){if(chiAmal(f))return amalEngulf(f,dt);return _chiChg.apply(this,arguments);};
+const _chiAlt=SPECVAR.chimjav.alt[1];SPECVAR.chimjav.alt[1]=function(f,dt){if(chiAmal(f))return amalErupt(f,dt);return _chiAlt.apply(this,arguments);};
+const _chiBile=XCUSTOM.bile;XCUSTOM.bile=function(f,dt){if(chiAmal(f))return amalTorrent(f,dt);return _chiBile.apply(this,arguments);};
+const _chiAbs=XCUSTOM.absorb;XCUSTOM.absorb=function(f,dt){if(chiAmal(f))return amalHands(f,dt);return _chiAbs.apply(this,arguments);};
+// a split can't happen as a pile of meat
+onEv('tick',()=>{for(const f of FS)if(f._chSplit&&chiS(f).amal&&isChi(f)){f._chSplit=false;}});
+// the ability bar shows the amalgamation's moves
+onEv('tick',()=>{const el=document.getElementById('slots');if(!el||!ME||!isChi(ME))return;const am=chiAmal(ME);
+  for(const d of el.children){const sp=d.querySelector('span');if(!sp)continue;if(!sp.dataset.n)sp.dataset.n=sp.textContent;if(!sp.dataset.base)sp.dataset.base=sp.dataset.n;
+    const want=am&&AMAL_N[d.dataset.k]?AMAL_N[d.dataset.k]:sp.dataset.base;if(sp.dataset.n!==want){sp.dataset.n=want;sp.textContent=want;d.dataset.lock='';}}});
+onEv('matchEnd',()=>{ENGULFED.forEach(E=>{if(E.T.rig)E.T.rig.root.visible=true;});ENGULFED.length=0;ERUPTS.forEach(E=>scene.remove(E.g));ERUPTS.length=0;HANDS.forEach(H=>H.segs.forEach(ss=>ss.forEach(m=>scene.remove(m))));HANDS.length=0;
+  for(const f of FS)if(f._lb2){f._lb2.dispose();f._lb2=null;}});

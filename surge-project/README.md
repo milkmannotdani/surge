@@ -27,7 +27,7 @@ js/
     uniqatk.js        unique light combo + heavy per fighter (UATK, built from TPL move templates; UATK_KEEP keeps old chains)
     torrent.js        TORRENT (inspired by Ryu Ishigori, Jujutsu Kaisen — Gege Akutami): huge steerable output beams, finger guns
     heir.js           HEIR (inspired by Izuku Midoriya / Deku): Blackwhip, Gearshift, Fa Jin, Smokescreen, LEGACY STRIKE one-hit ult with director camera
-    chimera.js        ROTTEN CHIMERA (original, a stitched corpse — no armor; javelin needs an arm, bile needs a head; ult form is a snail-like meat pile with limbs, mouths and eyes that leaves a red trail; FESTER mode: MAGGOT SWARM/CORPSE GAS, RIB CAGE, GUT ROPE, PUTRID BLOAT, MASS GRAVE): starts as a rolling torso, grafts torn limbs/heads (10 each), ARM JAVELIN pins, SPLIT counter limb-pile trap, BILE, ABSORPTION, permanent AMALGAMATION ult form (half-speed meter), LIMB STORM
+    chimera.js        ROTTEN CHIMERA (original, a stitched corpse — no armor; javelin needs an arm, bile needs a head; ult form is a snail-like meat pile with limbs, mouths and eyes that leaves a red trail; FESTER mode: MAGGOT SWARM/CORPSE GAS, RIB CAGE, GUT ROPE, PUTRID BLOAT, MASS GRAVE; AMALGAMATION moves: ENGULF, BONE ERUPTION, BLOOD TORRENT, HUNDRED HANDS): starts as a rolling torso, grafts torn limbs/heads (10 each), ARM JAVELIN pins, SPLIT counter limb-pile trap, BILE, ABSORPTION, permanent AMALGAMATION ult form (half-speed meter), LIMB STORM
     movefx.js         real rock/ice for ground moves (waves, pillars, slams, bursts) and full-size styled cone attacks (flame torrents, slash storms, fist flurries…)
     customvoice.js    CUSTOM SOUNDS: player-added voice clips per fighter (ult/kill/hurt/win/theme) and music (menu/battle/boss/victory), IndexedDB only; SET.ultSfx gates built-in ult sounds
     clips.js          CLIPS: F8 record, F9 instant replay (two staggered MediaRecorders), auto KO/win highlights, gallery with trim/download/share (IndexedDB)
@@ -42,6 +42,7 @@ js/
     anim.js           spring-smoothed joint blending (fighter.js applyPose) + ultimate animations by what each ult does (punch, beam, slam, barrage, aoe, sky, ground, slash, rush, shot, roar, command)
     arenaping.js      ARENA PING: G reveals every enemy for 5 s (markers through walls, edge arrows, distance), 10 s cooldown
     gore.js           HEAVY GORE on KOs (Settings toggle): blood bursts + mist, big pools, splatter, a limb on every KO, 2-3 + head on big finishers, explosive ult kills blow the body apart into chunks, pulsing stumps, heavy hits bleed
+    bloodfx.js        REALISTIC BLOOD: glossy 3D droplets that stretch and splat, painted splatter/smear/drip textures, all red blood bursts become droplets, liquid-blood stream for Marrow BLOOD ARROW and Chimera BLOOD TORRENT
     dread.js          Marrow's DREAD form (press 5): fear-energy moveset, TERROR status, own look
     hyper.js          hyper armor: ults, charged/heavy specials, slam moves and heavy attacks can't be interrupted (HYPER_SP)
     ultopen.js        themed ultimate openings per fighter (UO table)

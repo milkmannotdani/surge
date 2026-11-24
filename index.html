@@ -6925,13 +6925,16 @@ function chiBlobPose(f,dt){const S=chiS(f),R=f.rig;
   const q=new THREE.Quaternion(),ax=new V3();
   for(const L of B.limbs){const k=L.low?Math.sin(t*9+L.ph)*(.15+mv*.35):Math.sin(t*2.5+L.ph)*.45+(atk?Math.sin(t*16+L.ph)*.6:0);ax.set(Math.cos(L.ph),Math.sin(L.ph),0).normalize();q.setFromAxisAngle(ax,k);L.piv.quaternion.copy(L.base).multiply(q);}
   // the red trail it leaves behind
-  if(f.onGround&&!f.dead){const p=f.pos;if(!f._stainAt)f._stainAt=p.clone();if(Math.hypot(p.x-f._stainAt.x,p.z-f._stainAt.z)>.5){f._stainAt.copy(p);chiStain(p,rand(.85,1.25)*f.hero.scale);}}
+  if(f.onGround&&!f.dead){const p=f.pos;if(!f._stainAt)f._stainAt=p.clone();if(Math.hypot(p.x-f._stainAt.x,p.z-f._stainAt.z)>.7){const d=new V3(p.x-f._stainAt.x,0,p.z-f._stainAt.z).normalize();f._stainAt.copy(p);chiStain(p,rand(1,1.4)*f.hero.scale,d);}}
   if(Math.random()<.2*mv+.05&&nearCam(f.pos,40))burst(SMK,TMP2.set(f.pos.x+rand(-1,1),f.pos.y+rand(.3,1.4),f.pos.z+rand(-1,1)),1,{colors:[0x6a0010,0x8a1a20],speed:.3,life:.7,size:.12,size1:.06,grav:10});}
 const CHI_STAINS=[];const STAIN_MAT=new THREE.MeshStandardMaterial({color:0x4a0008,roughness:.25,metalness:0,transparent:true,opacity:.88,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
-function chiStain(p,r){if(!nearCam(p,90))return;const m=new THREE.Mesh(CHI_DISC,STAIN_MAT.clone());m.scale.set(r,1,r*rand(1,1.4));m.rotation.y=rand(0,6.28);m.position.set(p.x,floorAt(p.x,p.z,p.y+1)+.03,p.z);scene.add(m);CHI_STAINS.push({m,t:0});
-  if(CHI_STAINS.length>180){const o=CHI_STAINS.shift();scene.remove(o.m);o.m.material.dispose();}}
-onEv('tick',dt=>{for(let i=CHI_STAINS.length-1;i>=0;i--){const o=CHI_STAINS[i];o.t+=dt;if(o.t>30){scene.remove(o.m);o.m.material.dispose();CHI_STAINS.splice(i,1);continue;}if(o.t>24)o.m.material.opacity=.88*(30-o.t)/6;}});
-onEv('matchEnd',()=>{CHI_STAINS.forEach(o=>{scene.remove(o.m);o.m.material.dispose();});CHI_STAINS.length=0;});
+function chiStain(p,r,dir){if(!nearCam(p,90))return;let m;
+  if(typeof splatMat==='function'){m=new THREE.Mesh(SPLAT_GEO,splatMat(dir?'smear':'splat',(Math.random()*4)|0));m.rotation.x=-Math.PI/2;m.rotation.z=dir?Math.atan2(-dir.z,dir.x):rand(0,6.28);m.scale.set(r*(dir?1.4:1),r,1);}
+  else{m=new THREE.Mesh(CHI_DISC,STAIN_MAT);m.scale.set(r,1,r);}
+  m.position.set(p.x,floorAt(p.x,p.z,p.y+1)+.03+Math.random()*.004,p.z);m.renderOrder=1;scene.add(m);CHI_STAINS.push({m,t:0});
+  if(CHI_STAINS.length>180){const o=CHI_STAINS.shift();scene.remove(o.m);}}
+onEv('tick',dt=>{for(let i=CHI_STAINS.length-1;i>=0;i--){const o=CHI_STAINS[i];o.t+=dt;if(o.t>30){scene.remove(o.m);CHI_STAINS.splice(i,1);}}});
+onEv('matchEnd',()=>{CHI_STAINS.forEach(o=>scene.remove(o.m));CHI_STAINS.length=0;});
 // when the amalgamation dies it bursts
 onEv('kill',d=>{if(!isChi(d)||!d.chi||!d.chi.amal)return;const c=d.chest(new V3());if(typeof bloodBurst==='function')bloodBurst(c,160,14);if(typeof gibs==='function')gibs(c,new V3(rand(-1,1),0,rand(-1,1)).normalize(),30);
   for(let i=0;i<14;i++)chiStain(new V3(d.pos.x+rand(-3,3),d.pos.y,d.pos.z+rand(-3,3)),rand(.6,1.6));chiBlobKill(d);shake(.6,c);});
@@ -7048,6 +7051,77 @@ const _chiMHIv=setInterval(()=>{if(typeof modeHero!=='function')return;clearInte
       _xm:[Object.assign(ab({name:'GUT ROPE',form:'grab',style:'blood',shape:'ring',fx:[]}),{custom:'gutrope'}),Object.assign(ab({name:'PUTRID BLOAT',form:'burst',style:'poison',shape:'orb',fx:[]}),{custom:'bloat'})]});
     if(H.cab)H.cab=Object.assign({},H.cab);}
   return H;};},5);
+
+/* ---------- AMALGAMATION moves: the meat pile fights differently ----------
+     1  ENGULF          the mass lunges and swallows the first enemy it reaches, digests them inside for 2.5 s, then
+                        spits what's left back out (he grows a limb from it)
+     2  BONE ERUPTION   bones spear out of the mass in every direction, impaling everyone around him
+     3  BLOOD TORRENT   every mouth vomits a heavy torrent of blood in front of him that he can sweep around
+     4  HUNDRED HANDS   every arm in the pile stretches out, grabs everyone nearby and drags them in to be crushed
+     Q  FLESH ERUPTION  (as before) */
+const AMAL_N={sp:'ENGULF',spB:'BONE ERUPTION',x1:'BLOOD TORRENT',x2:'HUNDRED HANDS'};
+function chiAmal(f){return isChi(f)&&chiS(f).amal&&chiBase(f);}
+const ENGULFED=[],ERUPTS=[],HANDS=[];
+function amalEngulf(f,dt){const V=f.vf,t=f.stateT;if(!V.e){V.e=1;V.from=f.pos.clone();const T=tgtOf(f,10);if(T)faceTo(f,T);const fw=f.fwd();V.to=f.pos.clone().addScaledVector(fw,Math.max(0,clearLen(f.pos,fw,6,f.pos.y+1)-1));xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  const k=Math.min(1,t/.32);if(!V.got){f.pos.lerpVectors(V.from,V.to,k*k);f.vel.set(0,f.vel.y,0);
+    for(const o of foes(f,2.6)){if(o.boss||ENGULFED.some(E=>E.T===o))continue;V.got=o;chiSwallow(f,o);if(NET.role!=='client')netEvent({k:'chengulf',a:f.id,d:o.id});break;}}
+  f.poseKey='burstIn';endAt(f,.6);return 10;}
+function chiSwallow(f,T){ENGULFED.push({f,T,t:0,tick:0});if(T.rig)T.rig.root.visible=false;bloodBurst(T.chest(new V3()),60,6);shake(.4,f.pos);xSnd(f.pos,()=>{AU.hit&&AU.hit(true);});}
+onEv('net:chengulf',e=>{const f=FS.find(o=>o.id===e.a),T=FS.find(o=>o.id===e.d);if(f&&T&&!ENGULFED.some(E=>E.T===T))chiSwallow(f,T);});
+onEv('tick',dt=>{for(let i=ENGULFED.length-1;i>=0;i--){const E=ENGULFED[i],f=E.f,T=E.T;E.t+=dt;
+  const out=()=>{ENGULFED.splice(i,1);if(T.rig)T.rig.root.visible=!T.dead||true;};
+  if(!inMatch()){out();continue;}
+  if(T.dead){out();continue;}
+  if(f.dead||E.t>2.5){// spat back out
+    out();const fw=f.fwd();T.pos.copy(f.pos).addScaledVector(fw,2.2);T.pos.y=f.pos.y+.6;bloodBurst(T.chest(new V3()),110,10);bloodDrops(T.chest(new V3()),60,12,fw,.5,2);
+    if(NET.role!=='client'&&!f.dead){_chiAH(f,T,{dmg:8,kb:14,up:6,launch:true,heavy:true,pt:T.chest(new V3())});chiAdd(f,Math.random()<.5?'arm':'leg');}xSnd(f.pos,()=>AU.boom&&AU.boom(false));continue;}
+  T.pos.copy(f.pos);T.pos.y+=.4;T.vel.set(0,0,0);if(NET.role!=='client'&&T.state!=='hit')T.set('hit');if(T.state==='hit')T.stunT=Math.max(T.stunT||0,T.stateT+.3);
+  E.tick-=dt;if(E.tick<=0){E.tick=.4;if(NET.role!=='client')_chiAH(f,T,{dmg:2.4,kb:0,up:0,stun:0,pt:f.chest(new V3())});if(nearCam(f.pos,50))bloodDrops(f.chest(new V3()).add(TMP2.set(rand(-.6,.6),rand(0,.6),rand(-.6,.6))),8,4,null,null,2);}
+  const B=f.chi&&f.chi.blob;if(B)B.g.scale.multiplyScalar(1+Math.sin(E.t*18)*.03);}});
+function amalErupt(f,dt){const V=f.vf,t=f.stateT;f.vel.set(0,f.vel.y,0);f.poseKey=t<.25?'burstIn':'burstOut';
+  atT(f,'er',.25,()=>{const g=new THREE.Group();g.position.copy(f.pos);scene.add(g);const sp=[];for(let i=0;i<18;i++){const a=i/18*6.283+rand(-.1,.1),el=rand(-.05,.55);
+      const m=new THREE.Mesh(new THREE.ConeGeometry(.11,1,6),CHI_BONE);m.geometry.translate(0,.5,0);m.position.set(0,rand(.4,1.1),0);m.quaternion.setFromUnitVectors(new V3(0,1,0),new V3(Math.cos(a),el,Math.sin(a)).normalize());g.add(m);sp.push(m);}
+    ERUPTS.push({g,sp,t:0});
+    if(NET.role!=='client')for(const o of foes(f,6)){hitO(f,o,{dmg:13,kb:12,up:6,launch:true,heavy:true,pt:o.chest(new V3())});}
+    for(const o of foes(f,6))bloodDrops(o.chest(new V3()),40,8,o.pos.clone().sub(f.pos).setY(.3).normalize(),.5,2);
+    bloodBurst(f.chest(new V3()),60,8);shake(.6,f.pos);hitStop(.06);xSnd(f.pos,()=>{AU.hit&&AU.hit(true);AU.boom&&AU.boom(false);});});
+  endAt(f,.85);return 10;}
+onEv('tick',dt=>{for(let i=ERUPTS.length-1;i>=0;i--){const E=ERUPTS[i];E.t+=dt;if(E.t>.9||!inMatch()){E.g.traverse(o=>{if(o.geometry)o.geometry.dispose();});scene.remove(E.g);ERUPTS.splice(i,1);continue;}
+  const k=E.t<.12?E.t/.12:E.t<.55?1:Math.max(0,1-(E.t-.55)/.35);E.sp.forEach((m,j)=>m.scale.set(1,Math.max(.01,k*(4.6+(j%3)*.6)),1));}});
+function amalTorrent(f,dt){const V=f.vf,t=f.stateT;f.vel.x*=.7;f.vel.z*=.7;f.poseKey='roar';
+  if(!V.tr){V.tr=1;V.hit={};const T=tgtOf(f,14);if(T)faceTo(f,T);if(!f._lb2)f._lb2=liquidBeam();xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  // he can sweep it while it pours
+  const T=tgtOf(f,16);if(T){const want=Math.atan2(T.pos.x-f.pos.x,T.pos.z-f.pos.z);let d=want-f.face;d=Math.atan2(Math.sin(d),Math.cos(d));f.face+=clamp(d,-1.6*dt,1.6*dt);}
+  const k=t<.15?t/.15:t<1.35?1:Math.max(0,1-(t-1.35)/.2),fw=f.fwd(),org=f.chest(new V3()).add(TMP2.set(0,.2,0)).addScaledVector(fw,1.1),dir=fw.clone().add(TMP2.set(0,-.12,0)).normalize();
+  const len=Math.max(1,clearLen(f.pos,fw,13,org.y)*k);
+  if(k>0){f._lb2.update(org,dir,len,.55*k+.05,game.time);}else f._lb2.hide();
+  if(t>.15&&t<1.4&&(!V.pt||t-V.pt>.18)){V.pt=t;for(const o of foes(f,len+.5,null,.86)){if(NET.role!=='client'){_chiAH(f,o,{dmg:1.3,kb:2.5,up:0,stun:.2,pt:o.chest(new V3())});o.slowT=Math.max(o.slowT||0,1.5);}}}
+  if(t>1.6){f._lb2.hide();f.set(f.onGround?'idle':'air');}return 10;}
+onEv('tick',()=>{for(const f of FS)if(f._lb2&&(f.state!=='special'||f.dead))f._lb2.hide();});
+function amalHands(f,dt){const V=f.vf,t=f.stateT;f.vel.set(0,f.vel.y,0);f.poseKey='armsUp';
+  if(!V.h){V.h=1;V.L=foes(f,10).slice(0,6);const H={f,L:V.L,t:0,segs:[]};V.L.forEach(()=>{const ss=[];for(let i=0;i<12;i++){const m=new THREE.Mesh(GUT_G,i%2?CHI_MEAT:CHI_MEAT2);m.scale.set(1.2,1.2,1.6);scene.add(m);ss.push(m);}H.segs.push(ss);});HANDS.push(H);V.H=H;
+    if(NET.role!=='client')V.L.forEach(o=>hitO(f,o,{dmg:4,kb:0,up:0,stun:1.2,pt:o.chest(new V3())}));xSnd(f.pos,()=>AU.whoosh&&AU.whoosh(true));}
+  // reel everyone in, then crush
+  if(t<.9){const kk=Math.min(1,t/.9);for(const o of V.L){if(o.dead)continue;const d=f.pos.clone().sub(o.pos).setY(0),L=d.length();if(L>2.2&&t>.25){o.pos.addScaledVector(d.normalize(),Math.min(L-2.2,14*dt));}o.vel.set(0,0,0);}}
+  atT(f,'cr',.95,()=>{if(NET.role!=='client')for(const o of V.L){if(o.dead)continue;hitO(f,o,{dmg:10,kb:10,up:9,launch:true,heavy:true,pt:o.chest(new V3())});}
+    for(const o of V.L)bloodBurst(o.chest(new V3()),50,8);shake(.6,f.pos);xSnd(f.pos,()=>{AU.boom&&AU.boom(true);});});
+  endAt(f,1.25);return 10;}
+onEv('tick',dt=>{for(let i=HANDS.length-1;i>=0;i--){const H=HANDS[i],f=H.f;H.t+=dt;if(H.t>1.25||!inMatch()||f.dead){H.segs.forEach(ss=>ss.forEach(m=>scene.remove(m)));HANDS.splice(i,1);continue;}
+  const c=f.chest(new V3());H.L.forEach((o,j)=>{const ss=H.segs[j];const tip=o.chest(new V3()),ext=Math.min(1,H.t/.2);ss.forEach((m,q)=>{const u=q/(ss.length-1)*ext;m.position.copy(c).lerp(tip,u);m.position.y+=Math.sin(u*Math.PI)*.8;m.visible=!o.dead;});});}});
+// route his moves while he's the amalgamation
+const _chiJav=SPECIALS.chimjav;SPECIALS.chimjav=function(f,dt){if(chiAmal(f))return amalEngulf(f,dt);return _chiJav.apply(this,arguments);};
+const _chiChg=SPECVAR.chimjav.chg[1];SPECVAR.chimjav.chg[1]=function(f,dt,k){if(chiAmal(f))return amalEngulf(f,dt);return _chiChg.apply(this,arguments);};
+const _chiAlt=SPECVAR.chimjav.alt[1];SPECVAR.chimjav.alt[1]=function(f,dt){if(chiAmal(f))return amalErupt(f,dt);return _chiAlt.apply(this,arguments);};
+const _chiBile=XCUSTOM.bile;XCUSTOM.bile=function(f,dt){if(chiAmal(f))return amalTorrent(f,dt);return _chiBile.apply(this,arguments);};
+const _chiAbs=XCUSTOM.absorb;XCUSTOM.absorb=function(f,dt){if(chiAmal(f))return amalHands(f,dt);return _chiAbs.apply(this,arguments);};
+// a split can't happen as a pile of meat
+onEv('tick',()=>{for(const f of FS)if(f._chSplit&&chiS(f).amal&&isChi(f)){f._chSplit=false;}});
+// the ability bar shows the amalgamation's moves
+onEv('tick',()=>{const el=document.getElementById('slots');if(!el||!ME||!isChi(ME))return;const am=chiAmal(ME);
+  for(const d of el.children){const sp=d.querySelector('span');if(!sp)continue;if(!sp.dataset.n)sp.dataset.n=sp.textContent;if(!sp.dataset.base)sp.dataset.base=sp.dataset.n;
+    const want=am&&AMAL_N[d.dataset.k]?AMAL_N[d.dataset.k]:sp.dataset.base;if(sp.dataset.n!==want){sp.dataset.n=want;sp.textContent=want;d.dataset.lock='';}}});
+onEv('matchEnd',()=>{ENGULFED.forEach(E=>{if(E.T.rig)E.T.rig.root.visible=true;});ENGULFED.length=0;ERUPTS.forEach(E=>scene.remove(E.g));ERUPTS.length=0;HANDS.forEach(H=>H.segs.forEach(ss=>ss.forEach(m=>scene.remove(m))));HANDS.length=0;
+  for(const f of FS)if(f._lb2){f._lb2.dispose();f._lb2=null;}});
 /* COSTUME UPGRADE: an extra layer of original costume detail on every fighter, themed to their power.
    Each entry in LOOKS picks: em (chest emblem shape), belt, br (bracers), bt (boot style), sh (shoulders), col (collar)
    and an optional sig(X,h) function for one signature accessory. Colors come from the fighter (so shop skins recolor it).
@@ -10797,6 +10871,114 @@ onEv('tick',dt=>{
 // limbs come back on respawn; everything is cleared at the end of the match
 const _goReset=Fighter.prototype.reset;Fighter.prototype.reset=function(){if(this._goreHid){this._goreHid.forEach(p=>p.visible=true);this._goreHid=null;}return _goReset.apply(this,arguments);};
 onEv('matchEnd',()=>{GORE.decals.forEach(D=>{scene.remove(D.m);D.m.geometry.dispose();});GORE.decals.length=0;GORE.limbs.forEach(L=>scene.remove(L.m));GORE.limbs.length=0;GORE.chunks.forEach(C=>scene.remove(C.m));GORE.chunks.length=0;GORE.spurts.length=0;GORE.lastHit={};});
+/* REALISTIC BLOOD — replaces the flat red dots and circles everywhere blood shows up:
+   • droplets: glossy, wet 3D drops that stretch along their motion, fall with gravity and leave a splat where they land
+   • splatter: painted splat textures (a thick body, satellite drops with tails, smears and drips) with a wet sheen,
+     on the ground and running down walls
+   • every red "blood" particle burst in the game (gore, blood-style moves, bleeding) is turned into droplets
+   • Marrow's BLOOD ARROW (and Rotten Chimera's BLOOD TORRENT) become a heavy, churning stream of liquid blood with
+     an explosive splash at the source, drops shedding off it and a trail of splatter on the ground below. */
+const BFX={drops:[],max:1400,dec:[],decMax:260};
+const BFX_MAT=new THREE.MeshPhysicalMaterial({color:0x6a0008,roughness:.14,metalness:0,clearcoat:1,clearcoatRoughness:.08,emissive:0x1a0002});
+const BFX_GEO=new THREE.SphereGeometry(1,8,6);
+let BFX_IM=null;const _bm=new THREE.Matrix4(),_bq=new THREE.Quaternion(),_bs=new V3(),_bv=new V3(),_bc=new THREE.Color(),_UP=new V3(0,1,0);
+function bfxInit(){if(BFX_IM)return;BFX_IM=new THREE.InstancedMesh(BFX_GEO,BFX_MAT,BFX.max);BFX_IM.count=0;BFX_IM.frustumCulled=false;BFX_IM.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  for(let i=0;i<BFX.max;i++){BFX_IM.setColorAt(i,_bc.setHex(0xffffff));}scene.add(BFX_IM);}
+// spray droplets from p. dir (optional) biases them, spread 0..1
+function bloodDrops(p,n,speed,dir,spread,up){if(!nearCam(p,90)||n<=0)return;bfxInit();if(BFX_IM.parent!==scene)scene.add(BFX_IM);
+  n=Math.min(n,160);for(let k=0;k<n;k++){if(BFX.drops.length>=BFX.max)BFX.drops.shift();
+    let dx=rand(-1,1),dy=rand(-1,1),dz=rand(-1,1);const l=Math.hypot(dx,dy,dz)||1;dx/=l;dy/=l;dz/=l;const sp=(speed||6)*Math.pow(Math.random(),.6);
+    const v=new V3(dx*sp,dy*sp+(up==null?2.5:up)*Math.random(),dz*sp);if(dir){const s=spread==null?.35:spread;v.multiplyScalar(s).addScaledVector(dir,(speed||6)*rand(.5,1.2)*(1-s*.5));}
+    const s=Math.random()<.12?rand(.05,.085):rand(.014,.04);
+    BFX.drops.push({p:p.clone().add(TMP2.set(rand(-.08,.08),rand(-.08,.08),rand(-.08,.08))),v,s,g:floorAt(p.x,p.z,p.y+.5),t:0,c:Math.random()});}}
+onEv('tick',dt=>{if(!BFX_IM)return;let n=0,splats=0;
+  for(let i=BFX.drops.length-1;i>=0;i--){const D=BFX.drops[i];D.t+=dt;D.v.y-=19*dt;D.v.multiplyScalar(1-dt*.35);D.p.addScaledVector(D.v,dt);
+    if(D.p.y<=D.g+.02||D.t>3||!inMatch()){if(D.t<=3&&inMatch()&&splats<14&&(D.s>.03||Math.random()<.18)){splats++;bloodDecal(D.p.x,D.p.z,D.g,D.s*rand(5,9),false,'drop',D.v);}BFX.drops.splice(i,1);}}
+  for(let i=0;i<BFX.drops.length&&n<BFX.max;i++){const D=BFX.drops[i];const sp=D.v.length();_bv.copy(D.v).divideScalar(sp||1);_bq.setFromUnitVectors(_UP,_bv);
+    _bs.set(D.s,D.s*(1+Math.min(sp*.13,3.2)),D.s);_bm.compose(D.p,_bq,_bs);BFX_IM.setMatrixAt(n,_bm);_bc.setRGB(.75+D.c*.35,.75+D.c*.25,.75+D.c*.25);BFX_IM.setColorAt(n,_bc);n++;}
+  BFX_IM.count=n;BFX_IM.instanceMatrix.needsUpdate=true;if(BFX_IM.instanceColor)BFX_IM.instanceColor.needsUpdate=true;});
+onEv('matchEnd',()=>{BFX.drops.length=0;if(BFX_IM)BFX_IM.count=0;});
+
+/* ---------- painted splatter textures ---------- */
+const SPLAT_TEX={};
+function splatTex(kind,v){const key=kind+v;if(SPLAT_TEX[key])return SPLAT_TEX[key];const S=256,cv=document.createElement('canvas');cv.width=cv.height=S;const x=cv.getContext('2d');
+  let seed=v*977+kind.length*131;const R=()=>{seed=(seed*16807)%2147483647;return (seed%10000)/10000;};
+  const col=(a)=>{const r=60+R()*40|0,g=R()*6|0,b=4+R()*8|0;return `rgba(${r},${g},${b},${a})`;};
+  const blob=(cx,cy,r,pts,amp,fill)=>{x.beginPath();for(let i=0;i<=pts;i++){const a=i/pts*6.283,k=r*(1-amp/2+amp*R());const px=cx+Math.cos(a)*k,py=cy+Math.sin(a)*k;i?x.lineTo(px,py):x.moveTo(px,py);}x.closePath();x.fillStyle=fill;x.fill();};
+  const drop=(cx,cy,a,len,w)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.ellipse(0,0,len,w,0,0,6.283);x.fillStyle=col(.95);x.fill();x.restore();};
+  const tail=(x0,y0,x1,y1,w)=>{x.strokeStyle=col(.85);x.lineWidth=w;x.lineCap='round';x.beginPath();x.moveTo(x0,y0);x.quadraticCurveTo((x0+x1)/2+(R()-.5)*14,(y0+y1)/2+(R()-.5)*14,x1,y1);x.stroke();};
+  const c=S/2;
+  if(kind==='splat'||kind==='pool'||kind==='drip'){const r0=kind==='pool'?S*.3:S*.2;
+    for(let i=0;i<(kind==='pool'?7:4);i++)blob(c+(R()-.5)*r0*.7,c+(R()-.5)*r0*.7,r0*(.6+R()*.5),36,.35,col(.96));
+    const nd=kind==='pool'?10:26;for(let i=0;i<nd;i++){const a=R()*6.283,d=r0*(1.05+R()*1.25),px=c+Math.cos(a)*d,py=c+Math.sin(a)*d,w=Math.max(1.2,(1.9-d/r0)*5*R()+1);
+      if(R()<.6)tail(c+Math.cos(a)*r0*.8,c+Math.sin(a)*r0*.8,px,py,w*.7);drop(px,py,a,w*1.8,w);}
+    if(kind==='drip')for(let i=0;i<6;i++){const px=c+(R()-.5)*r0*1.6,len=S*.15+R()*S*.3;tail(px,c,px+(R()-.5)*6,c+len,2+R()*4);drop(px,c+len,Math.PI/2,5,4);}}
+  else if(kind==='smear'){// a dragged smear with streaks, like a body was pulled through it
+    for(let i=0;i<14;i++){const t=i/13,px=S*.12+t*S*.76,w=S*(.2-t*.12)*(.8+R()*.4);blob(px,c+(R()-.5)*10,w,24,.3,col(.75+.2*(1-t)));}
+    for(let i=0;i<10;i++){const y=c+(R()-.5)*S*.3,x0=S*(.1+R()*.2),x1=S*(.6+R()*.35);tail(x0,y,x1,y+(R()-.5)*16,1.5+R()*4);if(R()<.5)drop(x1,y,0,4,3);}
+    for(let i=0;i<14;i++){const a=R()*6.283,px=S*(.15+R()*.75),py=c+(R()-.5)*S*.6;drop(px,py,a,2+R()*4,1.5+R()*2.5);}}
+  else{// a single landed drop, with a crown of tiny specks
+    blob(c,c,S*.22,24,.25,col(.97));for(let i=0;i<9;i++){const a=R()*6.283,d=S*(.26+R()*.18);drop(c+Math.cos(a)*d,c+Math.sin(a)*d,a,4+R()*6,2+R()*3);}}
+  // darker, thicker middle — fresh blood pools darker
+  const gr=x.createRadialGradient(c,c,0,c,c,S*.45);gr.addColorStop(0,'rgba(20,0,2,.55)');gr.addColorStop(1,'rgba(20,0,2,0)');x.globalCompositeOperation='source-atop';x.fillStyle=gr;x.fillRect(0,0,S,S);x.globalCompositeOperation='source-over';
+  const T=new THREE.CanvasTexture(cv);T.anisotropy=4;SPLAT_TEX[key]=T;return T;}
+const SPLAT_MATS={};
+function splatMat(kind,v,wall){const key=kind+v+(wall?'w':'');if(SPLAT_MATS[key])return SPLAT_MATS[key];
+  const m=new THREE.MeshStandardMaterial({map:splatTex(kind,v),transparent:true,roughness:.16,metalness:.08,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2,side:wall?THREE.DoubleSide:THREE.FrontSide});
+  SPLAT_MATS[key]=m;return m;}
+const SPLAT_GEO=new THREE.PlaneGeometry(2,2);
+// realistic replacements for gore.js' ground decals and wall splats (same signatures, plus an optional kind and direction)
+bloodDecal=function(x,z,y,r,grow,kind,dir){if(typeof GORE==='undefined')return;kind=kind||(r>1.2?'pool':Math.random()<.25?'smear':'splat');
+  const m=new THREE.Mesh(SPLAT_GEO,splatMat(kind,(Math.random()*4)|0));m.rotation.x=-Math.PI/2;
+  m.rotation.z=dir?Math.atan2(-dir.z,dir.x):Math.random()*6.28;m.position.set(x,(y==null?floorAt(x,z,4):y)+.03+Math.random()*.004,z);m.scale.setScalar(grow?.05:r);m.renderOrder=1;scene.add(m);
+  GORE.decals.push({m,r,t:0,grow,shared:true});if(GORE.decals.length>BFX.decMax){const o=GORE.decals.shift();scene.remove(o.m);}};
+wallSplat=function(p,n){if(typeof GORE==='undefined')return;const m=new THREE.Mesh(SPLAT_GEO,splatMat('drip',(Math.random()*4)|0,true));m.position.copy(p).addScaledVector(n,.04);m.lookAt(p.clone().add(n));
+  m.rotateZ(Math.PI);m.scale.setScalar(.7+Math.random()*.6);scene.add(m);GORE.decals.push({m,r:1,t:1,grow:false,shared:true});};
+bloodBurst=function(p,n,sp){bloodDrops(p,Math.round(n*.75),(sp||7)*1.05,null,null,3);burst(SMK,p,Math.max(1,Math.round(n/10)),{colors:[0x4a0006,0x6a000c],speed:(sp||7)*.35,up:.6,life:.7,size:.25,size1:.55,grav:1.5,drag:2});};
+// the shared plane must never be disposed when gore clears its decals
+const _bfxDisp=SPLAT_GEO.dispose.bind(SPLAT_GEO);SPLAT_GEO.dispose=function(){};
+// every red "blood" particle burst becomes droplets
+function isBloodCol(h){const r=h>>16&255,g=h>>8&255,b=h&255;return r>=0x48&&r<=0xd0&&g<0x30&&b<0x48;}
+const _bfxBurst=burst;burst=function(pool,pos,n,o){if(pool===SMK&&o&&o.colors&&o.colors.length&&isBloodCol(o.colors[0])&&!o._bfx&&(o.grav||0)>4){
+    bloodDrops(pos,Math.max(1,Math.round(n*.8)),(o.speed||4)+(o.up||0)*.3,o.dir||null,o.dir?.4:null,o.up||1);if(n>6)_bfxBurst(pool,pos,Math.round(n/8),Object.assign({},o,{_bfx:1,size:(o.size||.1)*2.4,size1:(o.size||.1)*3,grav:1.5,colors:[0x4a0006,0x5a0008]}));return;}
+  return _bfxBurst.apply(this,arguments);};
+
+/* ---------- liquid blood stream (Marrow's BLOOD ARROW, Chimera's BLOOD TORRENT) ---------- */
+const LB_MAT=new THREE.MeshPhysicalMaterial({color:0x5c0006,roughness:.1,metalness:0,clearcoat:1,clearcoatRoughness:.05,emissive:0x1c0001,side:THREE.DoubleSide});
+const LB_MAT2=new THREE.MeshPhysicalMaterial({color:0x78000c,roughness:.15,metalness:0,clearcoat:1,transparent:true,opacity:.5,emissive:0x1a0002,side:THREE.DoubleSide,depthWrite:false});
+function liquidBeam(){const g=new THREE.Group();const RS=22,LS=70;
+  const mk=(mat,rr)=>{const geo=new THREE.CylinderGeometry(1,1,1,RS,LS,true);geo.rotateX(Math.PI/2);geo.translate(0,0,.5);const m=new THREE.Mesh(geo,mat);m.frustumCulled=false;g.add(m);
+    return {m,geo,base:Float32Array.from(geo.attributes.position.array),rr};};
+  const core=mk(LB_MAT,1),sheet=mk(LB_MAT2,1.25),sheet2=mk(LB_MAT2,.8);
+  const spikes=[];for(let i=0;i<16;i++){const s=new THREE.Mesh(new THREE.ConeGeometry(.09,1,5),LB_MAT);s.geometry.translate(0,.5,0);g.add(s);spikes.push({s,a:rand(0,6.28),ph:rand(0,9)});}
+  scene.add(g);g.visible=false;
+  const L={g,core,sheet,sheet2,spikes,
+    update(org,dir,len,rad,t){g.visible=true;g.position.copy(org);g.quaternion.setFromUnitVectors(new V3(0,0,1),dir.clone().normalize());
+      [[core,1,6,.3],[sheet,1.15,9,.45],[sheet2,.75,13,.6]].forEach(([P,rr,fl,amp],li)=>{const a=P.geo.attributes.position,B=P.base;
+        for(let i=0;i<a.count;i++){const bx=B[i*3],by=B[i*3+1],bz=B[i*3+2],ang=Math.atan2(by,bx);
+          // thickness bulges travel down the stream; the surface churns; the outer sheets tear into streaks
+          const zz=bz*len,flow=zz-t*fl*6;let r=rad*rr*(.78+.28*Math.sin(flow*.45+li)+.16*Math.sin(flow*1.7+ang*3+li*2)+amp*.25*Math.sin(ang*(5+li*2)+flow*.9));
+          if(li>0)r*=.75+.5*Math.max(0,Math.sin(ang*7+flow*.6+li));const taper=Math.min(1,zz/1.2)*(1-Math.max(0,(zz-len+2)/2)*.4);r*=.35+.65*taper;
+          a.setXYZ(i,Math.cos(ang)*r+Math.sin(flow*.3+li)*.12*rad,Math.sin(ang)*r-Math.pow(zz/Math.max(len,1),2)*.6*rad,zz);}
+        a.needsUpdate=true;P.geo.computeVertexNormals();});
+      // the explosive splash where it leaves the body
+      spikes.forEach((S,i)=>{const l=rad*(.8+1.1*Math.abs(Math.sin(t*13+S.ph)));S.s.scale.set(rad*.7,l,rad*.7);const a=S.a+t*2;S.s.position.set(0,0,.2);
+        S.s.quaternion.setFromUnitVectors(new V3(0,1,0),new V3(Math.cos(a)*.9,Math.sin(a)*.9,.55+.4*Math.sin(t*7+S.ph)).normalize());});
+      // drops shed off the stream, and splatter rains onto the ground beneath it
+      const d=dir.clone().normalize();for(let q=0;q<3;q++){const u=Math.random()*len,p=org.clone().addScaledVector(d,u).add(TMP2.set(rand(-1,1)*rad,rand(-1,1)*rad,rand(-1,1)*rad));bloodDrops(p,2,7,d,.5,0);}
+      bloodDrops(org.clone().addScaledVector(d,.3),4,9,d,.9,1);
+      if(Math.random()<.5){const u=rand(1,len),p=org.clone().addScaledVector(d,u);bloodDecal(p.x+rand(-1,1)*rad,p.z+rand(-1,1)*rad,null,rand(.4,1)*Math.max(1,rad),false,Math.random()<.6?'smear':'splat',d);}},
+    hide(){g.visible=false;},dispose(){scene.remove(g);}};
+  return L;}
+// Marrow's BLOOD ARROW: hide the glowing tubes and draw a liquid stream in their place
+const _bfxUp=Fighter.prototype.update;Fighter.prototype.update=function(dt){const r=_bfxUp.apply(this,arguments);const B=this.rig&&this.rig.beam;
+  if(B&&this.hero&&this.hero.ult==='bloodarrow'){const on=B.group.visible&&this.state==='ult'&&!this.ultAlt&&!this.dead;
+    if(on){if(!this._lb)this._lb=liquidBeam();B.tubes.forEach(m=>m.visible=false);B.rings.forEach(m=>m.visible=false);B.muzzle.visible=false;
+      const dir=this.beamDir||this.fwd(),org=B.group.position.clone(),rad=B.group.scale.x*.5,len=this.beamLen||48;this._lb.update(org,dir,len,rad,game.time);
+      if(Math.random()<.5)bloodDrops(org.clone().addScaledVector(dir,len),8,9,dir.clone().negate(),.9,3);}
+    else if(this._lb)this._lb.hide();}
+  return r;};
+onEv('matchEnd',()=>{for(const f of FS)if(f._lb){f._lb.dispose();f._lb=null;}});
 /* Starts the game. Loaded last, after every other file. */
 buildGfx();if(!GFX.high)lampConeMat.visible=false;initPreview();makePortraits();$('load').style.display='none';showScreen('title');loop();
 })();
