@@ -5,6 +5,7 @@
    slick afro twin bald messy. Extras: beard stubble glasses shades freckles earring. Other players see it online too. */
 const SKIN=[0xf6d7c0,0xe8bea0,0xd2a07a,0xb07850,0x8a5a3a,0x5e3a26];
 const HUMAN={
+  chimera:[5,0x3a2a1a,'bald',0xd8f03a,'stubble'],
   cinder:[2,0xa8401a,'spiky',0xffa040],riptide:[4,0x1a8a9a,'long',0x3ad8ff,'earring'],gale:[0,0xe8e0ff,'pony',0x9a7aff],nitro:[1,0x14141a,'slick',0xff8a1a],
   titan:[2,0x3a2414,'short',0x3a8aff,'stubble'],volta:[1,0xffe03a,'mohawk',0xffe03a],umbra:[0,0x0a0a14,'long',0x8a5aff],drift:[3,0x8a5aff,'bun',0xb07bff],
   bastion:[5,0x6a6a72,'buzz',0x9aa0aa,'beard'],quill:[1,0xff8ab8,'curly',0xff6ab8,'freckles'],void:[3,0x1a2a6a,'curly',0x8ac4ff],ronin:[2,0x14100e,'bun',0xd8b060,'stubble'],
