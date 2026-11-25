@@ -1,4 +1,4 @@
-/* SURGE EVENTS — every so often in a battle royale or arena match, the whole map gets a 20-second twist.
+/* SURGE EVENTS — (OFF: SURGE_RANDOM=false) every so often in a battle royale or arena match, the whole map got a 20-second twist.
    LOW GRAVITY · POWER SWAP · OVERCHARGE · METEOR SHOWER · GOLD RUSH
    The host (or the offline game) picks the event; clients get it through netEvent({k:'surge'}).
    To add an event: add an entry to SURGE_EV with name/col/desc and any of start/tick/end. */
@@ -22,7 +22,9 @@ const SURGE_EV={
     end(){SURGE.orbs.forEach(o=>scene.remove(o.m));SURGE.orbs.length=0;}}};
 const SURGE_KEYS=Object.keys(SURGE_EV);
 
-function surgeOn(){return !game.story&&!game.practice&&game.rules!=='raid'&&!PR.on;}
+// random SURGE EVENTS are switched off (removed by request); the code stays so they could come back as an option
+const SURGE_RANDOM=false;
+function surgeOn(){return SURGE_RANDOM&&!game.story&&!game.practice&&game.rules!=='raid'&&!PR.on;}
 
 /* ---------- meteors ---------- */
 const mtrGeo=new THREE.DodecahedronGeometry(.9,0),mtrMat=new THREE.MeshStandardMaterial({color:0x3a2a20,emissive:0xff5a10,emissiveIntensity:1.4,flatShading:true});

@@ -34,8 +34,8 @@ function setForm(f,dread){if(!f||isDread(f)===!!dread)return;const base=f.hero._
   if(f===ME){announceSmall(dread?'DREAD FORM — FEAR IS ENERGY':'BONE FORM');if(typeof buildSlots==='function')buildSlots();}}
 // recolor the body: dark violet-black with a sickly green glow (originals are restored when switching back)
 function formSkin(f,dread){f.rig.root.traverse(o=>{if(!o.isMesh||!o.material||!o.material.color)return;
-  if(dread){if(!o.userData.drOrig){o.userData.drOrig=o.material;o.material=o.material.clone();}const c=o.userData.drOrig.color,l=(c.r+c.g+c.b)/3;
-    o.material.color.setHex(l>.6?DR_G:l>.3?DR_V:DR_D);if(o.material.emissive){o.material.emissive.setHex(l>.6?DR_G:0x1a0a2a);o.material.emissiveIntensity=l>.6?1.2:.4;}}
+  if(dread){if(!o.userData.drOrig){o.userData.drOrig=o.material;o.material=o.material.clone();}const c=o.userData.drOrig.color.clone().convertLinearToSRGB(),l=(c.r+c.g+c.b)/3;
+    o.material.color.setHex(l>.6?DR_G:l>.3?DR_V:DR_D);o.material.color.convertSRGBToLinear();if(o.material.emissive){o.material.emissive.setHex(l>.6?DR_G:0x1a0a2a);o.material.emissiveIntensity=l>.6?1.2:.4;}}
   else if(o.userData.drOrig){o.material.dispose();o.material=o.userData.drOrig;o.userData.drOrig=null;}});}
 // press 5 (players) — goes through the host online
 // (switching is handled by forms.js — the SWITCH MODE action, 5)

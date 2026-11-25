@@ -65,9 +65,9 @@ let INV={own:{},eq:{card:'none',tag:'none',pet:'none',skins:{}}};
 try{const s=JSON.parse(store.get('surge.inv')||'null');if(s&&s.own&&s.eq)INV={own:s.own,eq:Object.assign({card:'none',tag:'none',pet:'none',skins:{}},s.eq)};}catch(e){}
 function saveInv(){store.set('surge.inv',JSON.stringify(INV));}
 function owns(key){return key.endsWith(':none')||key.endsWith(':default')||!!INV.own[key];}
-function myCos(){const h=heroAt(mySel);return sanitizeCos({human:typeof ARMOR_OFF!=='undefined'&&ARMOR_OFF&&!h.custom,pose:INV.eq.pose,card:INV.eq.card,tag:INV.eq.tag,pet:INV.eq.pet,skin:h.custom?'default':(INV.eq.skins[h.id]||'default')},h.id);}
+function myCos(){const h=heroAt(mySel);return sanitizeCos({human:typeof ARMOR_OFF!=='undefined'&&ARMOR_OFF&&!h.custom,armor:typeof ARMOR_OFF!=='undefined'&&!ARMOR_OFF&&!h.custom,pose:INV.eq.pose,card:INV.eq.card,tag:INV.eq.tag,pet:INV.eq.pet,skin:h.custom?'default':(INV.eq.skins[h.id]||'default')},h.id);}
 function sanitizeCos(c,hid){if(!c||typeof c!=='object')return null;const one=(v,o)=>o[v]?v:'none';const sk=skinList(hid||'').map(x=>x[0]).indexOf(c.skin)>=0?c.skin:'default';
-  return {card:one(c.card,CARDS),tag:one(c.tag,TAGS),pet:one(c.pet,PETS),skin:sk,pose:(typeof VPOSES!=='undefined'&&VPOSES[c.pose])?c.pose:'classic',human:!!c.human};}
+  return {card:one(c.card,CARDS),tag:one(c.tag,TAGS),pet:one(c.pet,PETS),skin:sk,pose:(typeof VPOSES!=='undefined'&&VPOSES[c.pose])?c.pose:'classic',human:!!c.human,armor:!!c.armor};}
 /* ---- calling cards ---- */
 const CARD_CACHE={};
 function drawCard(id,name){const key=id+'|'+name;if(CARD_CACHE[key])return CARD_CACHE[key];const C=CARDS[id]||CARDS.none;const [c,g]=cv(512,112);

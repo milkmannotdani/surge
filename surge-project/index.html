@@ -64,7 +64,7 @@
 <div id="gmodes" class="screen"><h1 style="font-size:52px">GAME MODES</h1><p>PICK HOW YOU WANT TO PLAY</p>
   <div class="gmgrid">
     <div class="gm" id="bOnline"><div class="gmt">PLAY ONLINE</div><div class="gmd">Host or join a room with a code. Battle royale, arena or co-op BOSS RAID. Voice chat included.</div></div>
-    <div class="gm cy" id="bOffline"><div class="gmt">PLAY VS BOTS</div><div class="gmd">Battle royale, arena or BOSS RAID against bots. Solo or duos with a bot partner.</div></div>
+    <div class="gm cy" id="bOffline"><div class="gmt">PLAY VS BOTS</div><div class="gmd">Battle royale, arena, BOSS RAID or PATROL (roam the city and stop villain attacks). Solo or duos with a bot partner.</div></div>
     <div class="gm ms" id="bMissions"><div class="gmt">MISSIONS</div><div class="gmd">Rescue civilians during a villain attack, or take the Hero License Exam.</div></div>
     <div class="gm pr" id="bPractice"><div class="gmt">PRACTICE</div><div class="gmd">Training dummies, free meter and no damage. Try out any fighter.</div></div>
   </div>
@@ -177,6 +177,8 @@
 
 <!-- game code: loaded in this order; new files go before js/main.js -->
 <script src="js/engine/core.js"></script>
+<script src="js/engine/citytex.js"></script>
+<script src="js/engine/mall.js"></script>
 <script src="js/engine/world.js"></script>
 <script src="js/engine/fx.js"></script>
 <script src="js/fighters/roster.js"></script>
@@ -210,6 +212,10 @@
 <script src="js/fighters/chimera.js"></script>
 <script src="js/fighters/looks.js"></script>
 <script src="js/fighters/humans.js"></script>
+<script src="js/fighters/costumes.js"></script>
+<script src="js/fighters/armor2.js"></script>
+<script src="js/fighters/marrowflesh.js"></script>
+<script src="js/fighters/dreadproj.js"></script>
 <script src="js/game/game.js"></script>
 <script src="js/game/rules.js"></script>
 <script src="js/game/net.js"></script>
@@ -229,6 +235,9 @@
 <script src="js/features/netx.js"></script>
 <script src="js/features/raid.js"></script>
 <script src="js/features/worldlife.js"></script>
+<script src="js/features/station.js"></script>
+<script src="js/features/npcs.js"></script>
+<script src="js/features/patrol.js"></script>
 <script src="js/features/social.js"></script>
 <script src="js/features/keybinds.js"></script>
 <script src="js/features/voice.js"></script>
@@ -255,6 +264,9 @@
 <script src="js/features/arenaping.js"></script>
 <script src="js/features/gore.js"></script>
 <script src="js/features/bloodfx.js"></script>
+<script src="js/features/goretex.js"></script>
+<script src="js/features/projfx.js"></script>
+<script src="js/features/anim2.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

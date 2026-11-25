@@ -158,14 +158,14 @@ function updShots(dt){for(let i=XP.length-1;i>=0;i--){const p=XP[i];p.t+=dt;
   if(p.kind==='bullet'){if(nearCam(p.pos,70)&&Math.random()<.7)ADD.spawn(p.pos.x,p.pos.y,p.pos.z,rand(-.3,.3),rand(-.3,.3),rand(-.3,.3),..._rgb(p.col||p.f.hero.accent,1.6),.18,.12,0,0,0);}
   else if(Math.random()<.5)burst(ADD,p.pos,1,{colors:[p.col||p.f.hero.accent,0xffffff],speed:.6,life:.3,size:.2,size1:0,bright:1.8});
   let dead=false;
-  if(p.kind==='big'&&(p.pos.y<=.5||p.t>p.life)){p.onLand&&p.onLand(p);dead=true;}
+  if(p.kind==='big'&&(p.pos.y<=gndY(p.pos)+.5||p.t>p.life)){p.onLand&&p.onLand(p);dead=true;}
   if(!dead)for(const o of FS){if(ally(o,p.f)||o.dead||p.hitSet[o.id])continue;if(o.chest(TMP).distanceTo(p.pos)>p.r+.5)continue;if(o.invuln>0&&o.state!=='framed')continue;
     p.hitSet[o.id]=1;const res=applyHit(p.f,o,{dmg:p.dmg,kb:p.kb,up:p.up,stun:p.stun,launch:p.up>5,heavy:p.heavy!==false,pt:o.chest(new V3()),noSpark:p.kind!=='bullet'});
     if(p.onHit)p.onHit(p,o,res);if(p.kind==='bullet')burst(ADD,o.chest(TMP),14,{colors:[0xffffff,p.col||p.f.hero.accent],speed:7,life:.25,size:.2,size1:0,bright:2.4});
     if(p.bounce>0){const N=nextFoe(p,o.pos,15);if(N){p.bounce--;p.tgt=N;p.pos.copy(o.chest(new V3()));p.vel.copy(N.chest(new V3()).sub(p.pos).normalize().multiplyScalar(p.vel.length()));p.t=0;
       xLine(p.col||p.f.hero.accent,.03,.25,p.pos,N.chest(new V3()));continue;}}
     if(!p.pierce){dead=true;break;}}
-  if(!dead&&(p.t>p.life||p.pos.y<0||Math.abs(p.pos.x)>BOUND+2||Math.abs(p.pos.z)>BOUND+2||insideBld(p.pos.x,p.pos.z,0,p.pos.y))){dead=true;
+  if(!dead&&(p.t>p.life||p.pos.y<gndY(p.pos)||Math.abs(p.pos.x)>BOUND+2||Math.abs(p.pos.z)>BOUND+2||insideBld(p.pos.x,p.pos.z,0,p.pos.y))){dead=true;
     if(p.kind==='bullet'){burst(ADD,p.pos,8,{colors:[0xffffff,0xffd08a],speed:5,life:.25,size:.15,size1:0,grav:10,bright:2.2});}
     else if(p.kind==='big')p.onLand&&p.onLand(p);else{burst(ADD,p.pos,16,{colors:[0xeaf8ff,0xffffff],speed:5,life:.3,size:.18,size1:0,grav:10,bright:2});}}
   if(!dead)for(const pp of props){if(pp.broken)continue;if(Math.abs(pp.x-p.pos.x)<pp.r+.4&&Math.abs(pp.z-p.pos.z)<pp.r+.4){breakProp(pp);if(!p.pierce&&p.kind!=='big'){dead=true;}break;}}

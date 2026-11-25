@@ -12,7 +12,6 @@ const SET_ROWS=[
   ['WORLD (OFFLINE MATCHES)'],
   ['tod','TIME OF DAY','choice',[['random','RANDOM'],['dusk','DUSK'],['day','DAY'],['night','NIGHT']]],['weather','WEATHER','choice',[['random','RANDOM'],['clear','CLEAR'],['rain','RAIN'],['storm','STORM']]],
   ['crowds','CIVILIAN CROWDS','toggle'],
-  ['surgeEv','SURGE EVENTS','toggle'],
   ['decreeVoice','DECREE: SPOKEN ORDERS (MIC)','toggle'],
   ['CAMERA & CONTROLS'],
   ['cursorLock','LOCK CURSOR WHEN YOU CLICK INTO THE GAME','toggle'],['sens','MOUSE SENSITIVITY','range',10,150],['invertY','INVERT CAMERA Y','toggle'],['shake','SCREEN SHAKE','range',0,150],

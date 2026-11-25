@@ -29,8 +29,9 @@ function initPreview(){
   S.add(ped);PV.ped=ped;
 }
 // armor on/off (the fighter-select toggle): 'h'-prefixed keys hold the unarmored preview rigs
-let ARMOR_OFF=store.get('surge.armor')==='off';function pvKey(i,hm){return (hm===undefined?ARMOR_OFF:hm)?'h'+i:i;}
-function pvRig(i,hm){if(hm===undefined)hm=false;const k=pvKey(i,hm);if(PV.rigs[k])return PV.rigs[k];let h=i<CUST0?skinHero(heroAt(i),(INV.eq.skins||{})[HEROES[i].id]):heroAt(i);if(hm)h=Object.assign({},h,{human:true});
+let ARMOR_OFF=store.get('surge.armor')==='off';   // armored suits are the default; ARMOR OFF switches to the costume outfits
+function pvKey(i,hm){return (hm===undefined?ARMOR_OFF:hm)?'h'+i:i;}
+function pvRig(i,hm){if(hm===undefined)hm=ARMOR_OFF;const k=pvKey(i,hm);if(PV.rigs[k])return PV.rigs[k];let h=i<CUST0?skinHero(heroAt(i),(INV.eq.skins||{})[HEROES[i].id]):heroAt(i);h=hm?Object.assign({},h,{human:true}):Object.assign({},h,{armor:true});
   const R=buildRig(h,PV.scene);PV.scene.add(R.root);R.root.visible=false;R.P=Object.assign({},POSES.showcase);PV.rigs[k]=R;return R;}
 function poseRig(R,P,t){
   R.hips.position.y=(R.hipY||.95)+P.hy+Math.sin(t*2.2)*.012;R.hips.rotation.x=P.hx;R.spine.rotation.set(P.sx+Math.sin(t*2.2)*.02,P.sy,P.sz);R.head.rotation.x=P.hd;
@@ -81,7 +82,7 @@ function buildCards(){
     t.onclick=()=>{mySel=i;store.set('surge.hero',i);AU.init();AU.ui();buildCards();previewHero(i);};g.appendChild(t);});
   const dd=$('diffs');dd.innerHTML='';['ROOKIE','PRO','LEGEND'].forEach((n,i)=>{const b=document.createElement('div');b.className='chip'+(game.diff===i?' sel':'');b.textContent=n;b.onclick=()=>{game.diff=i;AU.ui();buildCards();};dd.appendChild(b);});
   const md=$('modes');md.innerHTML='';[['solo','SOLO'],['duos','DUOS']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(game.mode===k?' sel':'');b.textContent=n;b.onclick=()=>{game.mode=k;store.set('surge.mode',k);AU.ui();buildCards();};md.appendChild(b);});
-  rulesChips('rules',game.rules,k=>{game.rules=k;store.set('surge.rules',k);buildCards();});$('modeTab').textContent=game.rules==='arena'?'ARENA':game.rules==='raid'?'BOSS RAID':'BATTLE ROYALE';
+  rulesChips('rules',game.rules,k=>{game.rules=k;store.set('surge.rules',k);buildCards();});$('modeTab').textContent=game.rules==='arena'?'ARENA':game.rules==='raid'?'BOSS RAID':game.rules==='patrol'?'PATROL':'BATTLE ROYALE';
   $('botLbl').textContent=game.mode==='duos'?'RIVAL TEAMS':'BOTS';$('botN').textContent=game.mode==='duos'?Math.min(3,Math.max(1,game.teamN)):game.botN;
 }
 function openSetup(mode){setupMode=mode;game.phase='menu';$('setupTitle').textContent=mode==='off'?'VS BOTS':mode==='prac'?'PRACTICE':'ONLINE';

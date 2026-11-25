@@ -133,8 +133,8 @@ function setMode(f,on){if(!f||inMode(f)===!!on)return;const b=baseHero(f);
   if(f===ME&&on)emitEv('modeMe',f);}
 // recolor: bright parts → accent glow, mid → mode color, dark → deep tint (originals restored on switching back)
 function modeSkin(f,F){f.rig.root.traverse(o=>{if(!o.isMesh||!o.material||!o.material.color||o.userData.noTint)return;
-  if(F){if(!o.userData.fmOrig){o.userData.fmOrig=o.material;o.material=o.material.clone();}const c=o.userData.fmOrig.color,l=(c.r+c.g+c.b)/3;
-    const mid=new THREE.Color(F.c),acc=new THREE.Color(F.a);
+  if(F){if(!o.userData.fmOrig){o.userData.fmOrig=o.material;o.material=o.material.clone();}const c=o.userData.fmOrig.color.clone().convertLinearToSRGB(),l=(c.r+c.g+c.b)/3;
+    const mid=new THREE.Color(F.c).convertSRGBToLinear(),acc=new THREE.Color(F.a).convertSRGBToLinear();
     if(l>.6)o.material.color.copy(acc);else if(l>.3)o.material.color.copy(mid);else o.material.color.copy(mid).multiplyScalar(.25);
     if(o.material.emissive){o.material.emissive.copy(l>.6?acc:mid);o.material.emissiveIntensity=l>.6?.9:.15;}}
   else if(o.userData.fmOrig){o.material.dispose();o.material=o.userData.fmOrig;o.userData.fmOrig=null;}});}

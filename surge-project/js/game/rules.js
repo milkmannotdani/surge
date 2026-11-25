@@ -30,6 +30,6 @@ game.onElim=function(v,k){if(NET.role==='client')return;if(!isArena())return _on
 function arenaHUD(F){const L=arenaLead(),left=Math.max(0,ARENA_TIME-game.matchT),m=Math.floor(left/60),s=Math.floor(left%60);
   const mine=F?teamScore(F.team):0;$('alive').textContent=`${game.mode==='duos'?'TEAM':'YOU'} ${mine} · LEAD ${L.score} / ${ARENA_KILLS}`;
   $('zinfo').textContent=game.phase==='countdown'?'DROPPING IN…':(F&&F.dead?`RESPAWNING IN ${Math.max(1,Math.ceil(F.respT!=null?F.respT:RESPAWN_T))}`:`ARENA · ${m}:${String(s).padStart(2,'0')} LEFT`);}
-function rulesChips(id,cur,on){const el=$(id);if(!el)return;el.innerHTML='';[['br','BATTLE ROYALE'],['arena','ARENA · RESPAWNS'],['raid','BOSS RAID · CO-OP']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(cur===k?' sel':'');b.textContent=n;
-  b.title=k==='arena'?'No storm. Respawn after 3 s. First to 25 kills wins.':k==='raid'?'Everyone teams up against one giant boss. 6 shared lives.':'Shrinking storm. Last one standing wins.';b.onclick=()=>{AU.ui();on(k);};el.appendChild(b);});}
+function rulesChips(id,cur,on){const el=$(id);if(!el)return;el.innerHTML='';[['br','BATTLE ROYALE'],['arena','ARENA · RESPAWNS'],['raid','BOSS RAID · CO-OP'],['patrol','PATROL · FREE ROAM']].forEach(([k,n])=>{const b=document.createElement('div');b.className='chip'+(cur===k?' sel':'');b.textContent=n;
+  b.title=k==='patrol'?'Roam the whole city as a hero. Villain attacks break out at random spots: get there, stop them, save the people.':k==='arena'?'No storm. Respawn after 3 s. First to 25 kills wins.':k==='raid'?'Everyone teams up against one giant boss. 6 shared lives.':'Shrinking storm. Last one standing wins.';b.onclick=()=>{AU.ui();on(k);};el.appendChild(b);});}
 renderPoints();

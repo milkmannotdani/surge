@@ -86,7 +86,7 @@ function updateCab(dt){
     if(ud.spin)p.g.rotateX(p.t*16);if(ud.spinY)p.g.rotateY(p.t*16);if(ud.spinZ)p.g.rotateZ(p.t*16);if(ud.flutter)p.g.rotateZ(Math.sin(p.t*12)*.7);if(ud.flick)p.g.scale.setScalar(p.sc0*(1+Math.sin(p.t*40)*.08));if(p.A.shape==='ring'||p.A.shape==='star'||p.A.shape==='shard')p.g.rotateZ(p.t*8);
     if(Math.random()<.85)burst(ADD,p.pos,1,{colors:[p.A.c1,p.A.c2],speed:.5,life:.3,size:.4*p.A.size,size1:0,bright:2});
     let dead=p.t>p.life||insideBld(p.pos.x,p.pos.z,0,p.pos.y)||Math.abs(p.pos.x)>BOUND+4||Math.abs(p.pos.z)>BOUND+4,land=false;
-    if(p.pos.y<=.25&&p.vel.y<=0){dead=true;land=true;}
+    if(p.pos.y<=gndY(p.pos)+.25&&p.vel.y<=0){dead=true;land=true;}
     if(!dead)for(const o of FS){if(o.dead||o.downed||ally(o,p.f)||p.hit[o.id])continue;const dx=o.pos.x-p.pos.x,dy=o.pos.y+1-p.pos.y,dz=o.pos.z-p.pos.z;
       if(dx*dx+dz*dz<(p.r+.55)*(p.r+.55)&&Math.abs(dy)<1.4+p.r){p.hit[o.id]=1;if(p.boom){dead=true;break;}cabHit(p.f,o,p.A,p.mul,p.share,p.pos.clone());if(!p.pierce){dead=true;break;}}}
     if(dead){if(p.boom||land&&p.grav){const c=p.pos.clone();c.y=Math.max(.6,c.y);explosion(c,1.6*p.A.size*(p.boom||1),[p.A.c1,p.A.c2,0xffffff]);cabAoE(p.f,p.A,p.mul,p.share,c,2.3*p.A.size*(p.boom||1));}

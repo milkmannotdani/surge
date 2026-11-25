@@ -106,13 +106,13 @@ function spawnProj(f,type,ang,opt){
     const m2=new THREE.Mesh(new THREE.TorusGeometry(.85,.035,6,40,Math.PI),addMat(0xffffff,3));m2.rotation.x=Math.PI/2;m2.rotation.y=.25;g.add(m2);}
   if(type==='cyclone'){p.vel=fw.clone().multiplyScalar(12);p.r=1.1;p.life=2;p.dmg=3;p.multi=4;p.pos.y=.1;
     for(let i=0;i<4;i++){const m=new THREE.Mesh(new THREE.TorusGeometry(.35+i*.28,.04,6,32),addMat(0xb57bff,2.2,.8));m.rotation.x=Math.PI/2;m.position.y=.3+i*.65;g.add(m);}}
-  if(type==='fault'){p.vel=fw.clone().multiplyScalar(20);p.r=1;p.life=1.2;p.dmg=10;p.kb=3;p.up=13;p.launch=true;p.pos.y=0;p.lastSp=0;p.ground=true;}
-  if(type==='erode'){p.vel=fw.clone().multiplyScalar(16);p.r=1.3;p.life=1.4;p.dmg=8;p.kb=4;p.up=10;p.launch=true;p.pos.y=0;p.lastSp=0;p.ground=true;
+  if(type==='fault'){p.vel=fw.clone().multiplyScalar(20);p.r=1;p.life=1.2;p.dmg=10;p.kb=3;p.up=13;p.launch=true;p.pos.y=gndY(f.pos);p.lastSp=0;p.ground=true;}
+  if(type==='erode'){p.vel=fw.clone().multiplyScalar(16);p.r=1.3;p.life=1.4;p.dmg=8;p.kb=4;p.up=10;p.launch=true;p.pos.y=gndY(f.pos);p.lastSp=0;p.ground=true;
     }
   if(type==='siphon'){p.vel=fw.clone().multiplyScalar(28);p.r=.5;p.life=1.2;p.dmg=5;p.kb=3;p.up=0;p.stun=.5;
     g.add(new THREE.Mesh(new THREE.SphereGeometry(.26,16,12),new THREE.MeshBasicMaterial({color:0x05000a})),new THREE.Mesh(new THREE.SphereGeometry(.42,16,12),addMat(0x8a3cff,2,.55)),new THREE.Mesh(new THREE.TorusGeometry(.55,.03,6,32),addMat(0xe0c8ff,2.5)));
     }
-  if(type==='wave'){p.vel=fw.clone().multiplyScalar(20);p.r=2.2;p.life=2.4;p.dmg=24;p.kb=13;p.up=11;p.launch=true;p.pos.copy(f.pos).addScaledVector(fw,1.5);p.pos.y=0;p.big=true;
+  if(type==='wave'){p.vel=fw.clone().multiplyScalar(20);p.r=2.2;p.life=2.4;p.dmg=24;p.kb=13;p.up=11;p.launch=true;p.pos.copy(f.pos).addScaledVector(fw,1.5);p.pos.y=gndY(f.pos);p.big=true;
     const geo=new THREE.PlaneGeometry(11,4.5,24,10);const pa=geo.attributes.position;for(let i=0;i<pa.count;i++){const y=pa.getY(i),v=(y+2.25)/4.5;pa.setZ(i,v*v*2.2-Math.abs(pa.getX(i))*.12);pa.setY(i,y+2.25);}geo.computeVertexNormals();
     g.add(new THREE.Mesh(geo,addMat(0x1fb8ff,1.6,.55)));const m2=new THREE.Mesh(geo,addMat(0x9af0ff,1.2,.35));m2.scale.set(.96,.9,.9);m2.position.z=-.4;g.add(m2);}
   if(!p.vel){p.vel=fw.clone().multiplyScalar(24);p.r=p.r||.6;p.life=p.life||1;p.dmg=p.dmg||8;p.kb=p.kb||4;p.up=p.up||0;}  // unknown type: fly straight
@@ -157,14 +157,14 @@ function updateProjs(dt){
     if(p.meteor&&p.pos.y<=.4&&!p.dead){p.dead=true;const ep=new V3(p.pos.x,.6,p.pos.z);explosion(ep,2.6,[0xff8a3a,0xffd04a,0xff3010]);debris(ep,6,1,9,.3);AU.boom(false);
       for(const o of FS){if(ally(o,own)||o.dead)continue;if(Math.hypot(o.pos.x-ep.x,o.pos.z-ep.z)<3.2&&o.pos.y<6)applyHit(own,o,{dmg:7,kb:8,up:9,launch:true,heavy:true,pt:o.chest(new V3()),noSpark:true,chip:.25});}
       props.forEach(pp=>{if(Math.hypot(pp.x-ep.x,pp.z-ep.z)<3)breakProp(pp);});}
-    if(p.air&&!p.meteor&&p.pos.y<.08&&!p.dead){p.dead=true;dust(p.pos,3,.5);}
+    if(p.air&&!p.meteor&&p.pos.y<gndY(p.pos)+.08&&!p.dead){p.dead=true;dust(p.pos,3,.5);}
     // hits
     for(const o of FS){if(ally(o,own)||o.dead||p.dead||p.meteor)continue;
       if(p.multi&&p.cap&&p.cap!==o)continue;
       if(o.invuln>0&&!(p.multi&&p.cap===o))continue;
       let hit=false;
       if(p.big){const rx=o.pos.x-p.pos.x,rz=o.pos.z-p.pos.z,al=rx*p.dir.x+rz*p.dir.z,lt=Math.abs(rx*p.dir.z-rz*p.dir.x);if(Math.abs(al)<1.4&&lt<5.5&&o.pos.y<4.5)hit=true;}
-      else if(p.ground){if(Math.hypot(o.pos.x-p.pos.x,o.pos.z-p.pos.z)<p.r+.4&&o.pos.y<1.2)hit=true;}
+      else if(p.ground){if(Math.hypot(o.pos.x-p.pos.x,o.pos.z-p.pos.z)<p.r+.4&&o.pos.y-p.pos.y<1.2&&o.pos.y-p.pos.y>-.8)hit=true;}
       else if(p.type==='cyclone'){if(Math.hypot(o.pos.x-p.pos.x,o.pos.z-p.pos.z)<p.r+.4&&o.pos.y<3)hit=true;}
       else if(o.chest(TMP).distanceTo(p.pos)<p.r+.55)hit=true;
       if(!hit)continue;

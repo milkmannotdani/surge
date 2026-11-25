@@ -7,7 +7,7 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 function angLerp(a,b,t){let d=b-a;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return a+d*t;}
 function angDiff(a,b){let d=b-a;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return d;}
 const TMP=new V3(), TMP2=new V3(), TMP3=new V3(), UP=new V3(0,1,0);
-const BOUND=186;   // play area half-size (was 138: the city is now an 8x8 grid of blocks, ~1.8x the area)
+const BOUND=378;   // play area half-size: a 16x16 grid of blocks (was 186 / 8x8, and 138 before that)
 // seeded RNG for the shared map (identical for every player)
 let _s=0x5eed7;function srnd(){_s|=0;_s=_s+0x6D2B79F5|0;let t=Math.imul(_s^_s>>>15,1|_s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 const sr=(a,b)=>a+srnd()*(b-a);
@@ -20,7 +20,7 @@ const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},
 // events: input(dt) before player controls are read, tick(dt) each sim step in a match, frame(dt) every frame,
 // hit(att,def,dmg,o), kill(def,att), ult(f), matchStart(), matchEnd(), win(w)
 const EVH={};
-function normRules(r){return r==='arena'||r==='raid'?r:'br';}function onEv(n,fn){(EVH[n]||(EVH[n]=[])).push(fn);}
+function normRules(r){return r==='arena'||r==='raid'||r==='patrol'?r:'br';}function onEv(n,fn){(EVH[n]||(EVH[n]=[])).push(fn);}
 function emitEv(n,a,b,c,d){const L=EVH[n];if(!L)return;for(const fn of L){try{fn(a,b,c,d);}catch(e){console.error('['+n+']',e);}}}
 function KIT(h,slot){return h.as?(h.as[slot]||h.as.elem||h.id):h.id;}
 function HAS(h,x){return h.id===x||(!!h.as&&(h.as.look===x||(h.as.parts||[]).indexOf(x)>=0));}

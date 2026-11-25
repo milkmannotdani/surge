@@ -133,4 +133,4 @@ function looksBuild(h,X){const L=LOOKS[h.id]||(h.as&&LOOKS[h.as.look]);if(!L)ret
   if(L.col==='hood'){const c=M(new THREE.SphereGeometry(.21,20,12,Math.PI*.35,Math.PI*1.3,0,Math.PI*.55),new THREE.MeshStandardMaterial({color:0x14121a,roughness:.9,side:THREE.DoubleSide}));c.position.set(0,.1,-.03);c.scale.set(1,1.05,1.1);head.add(c);}
   if(L.sig)L.sig(X,h);}
 const _mhaPartsL=mhaParts;
-mhaParts=function(h,X){const out=_mhaPartsL(h,X);try{looksBuild(h,X);}catch(e){console.warn('looks',h.id,e);}return out;};
+mhaParts=function(h,X){const out=_mhaPartsL(h,X);try{if(!h.human)looksBuild(h,X);}catch(e){console.warn('looks',h.id,e);}return out;};

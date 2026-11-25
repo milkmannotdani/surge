@@ -193,10 +193,10 @@ class Fighter{
     if(hb&&hb.ceil){if(this.vel.y>0)this.vel.y=0;}
     else if(hb){this.wallT=game.time;this.wallN=hb.ax==='x'?new V3(hb.s,0,0):new V3(0,0,hb.s);this.wallB=hb.b;}
     if(hb&&!hb.ceil){if(this.state==='fly'&&sp>7){wallHit(this);this.vel[hb.ax]=-this.vel[hb.ax]*.3;}else if(this.state==='dash'){this.vel[hb.ax]=0;}}
-    for(const s of solids){const dx=this.pos.x-s.x,dz=this.pos.z-s.z,d=Math.hypot(dx,dz),r=s.r+.4;if(d<r&&d>.001&&this.pos.y<2.5){this.pos.x=s.x+dx/d*r;this.pos.z=s.z+dz/d*r;}}
+    for(const s of solidsNear(this.pos.x,this.pos.z)){const dx=this.pos.x-s.x,dz=this.pos.z-s.z,d=Math.hypot(dx,dz),r=s.r+.4;if(d<r&&d>.001&&this.pos.y<2.5&&this.pos.y>-1){this.pos.x=s.x+dx/d*r;this.pos.z=s.z+dz/d*r;}}
     for(const p of props){if(p.broken)continue;const dx=this.pos.x-p.x,dz=this.pos.z-p.z;if(Math.abs(dx)>3||Math.abs(dz)>3)continue;const d=Math.hypot(dx,dz),r=p.r+.4;
       if(d<r){if((this.state==='fly'&&sp>4)||this.state==='dash'||this.state==='ult'){breakProp(p);continue;}
-        if(this.pos.y<(p.kind==='car'?1.6:p.kind==='cone'?.7:1.25)&&d>.001){this.pos.x=p.x+dx/d*r;this.pos.z=p.z+dz/d*r;}}}
+        if(this.pos.y<(p.kind==='car'?1.6:p.kind==='cone'?.7:1.25)&&this.pos.y>-1&&d>.001){this.pos.x=p.x+dx/d*r;this.pos.z=p.z+dz/d*r;}}}
     if(!this.dead&&this.state!=='down')for(const o of FS){if(o===this||o.dead||o.state==='down')continue;const dx=o.pos.x-this.pos.x,dz=o.pos.z-this.pos.z;const d=Math.hypot(dx,dz);
       if(d<.95&&d>.001&&Math.abs(this.pos.y-o.pos.y)<1.6){const p=(.95-d)/2;this.pos.x-=dx/d*p;this.pos.z-=dz/d*p;}}
   }

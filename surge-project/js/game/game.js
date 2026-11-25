@@ -1,13 +1,14 @@
 /* Match flow, controls (MOVE_SLOTS / ULT_KEYS), camera, HUD */
 /* ================= ZONE / ORBS ================= */
-const ZONE={cx:0,cz:0,r:270,fx:0,fz:0,fr:185,tx:0,tz:0,tr:110,pi:0,st:'wait',t:0,dps:2};
-const ZPH=[{w:30,s:26,r:170,d:2},{w:26,s:22,r:110,d:2},{w:20,s:18,r:66,d:4},{w:17,s:16,r:40,d:5},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
-function zoneReset(){Object.assign(ZONE,{cx:0,cz:0,r:270,pi:0,st:'wait',t:0,dps:2});zonePick();}
+const ZSC=BOUND/186;   // the storm scales with the city
+const ZONE={cx:0,cz:0,r:270*ZSC,fx:0,fz:0,fr:185,tx:0,tz:0,tr:110,pi:0,st:'wait',t:0,dps:2};
+const ZPH=[{w:40,s:40,r:170*ZSC,d:2},{w:30,s:30,r:110*ZSC,d:2},{w:24,s:22,r:66*Math.sqrt(ZSC),d:4},{w:17,s:16,r:40,d:5},{w:15,s:15,r:26,d:7},{w:12,s:12,r:10,d:11},{w:10,s:10,r:2,d:16},{w:999,s:1,r:2,d:20}];
+function zoneReset(){Object.assign(ZONE,{cx:0,cz:0,r:270*ZSC,pi:0,st:'wait',t:0,dps:2});zonePick();}
 function zonePick(){const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.fx=ZONE.cx;ZONE.fz=ZONE.cz;ZONE.fr=ZONE.r;
   let tx=0,tz=0;for(let k=0;k<30;k++){const a=rand(0,6.28),m=rand(0,Math.max(0,Math.min(ZONE.r,BOUND+10)-ph.r)*.8);tx=ZONE.cx+Math.cos(a)*m;tz=ZONE.cz+Math.sin(a)*m;
     if(Math.abs(tx)+ph.r*.3<BOUND&&Math.abs(tz)+ph.r*.3<BOUND&&!insideBld(tx,tz,2))break;}
   ZONE.tx=clamp(tx,-BOUND+ph.r*.3,BOUND-ph.r*.3);ZONE.tz=clamp(tz,-BOUND+ph.r*.3,BOUND-ph.r*.3);ZONE.tr=ph.r;ZONE.dps=ph.d;}
-function noStorm(){return game.rules==='arena'||game.rules==='raid'||!!game.story;}
+function noStorm(){return game.rules==='arena'||game.rules==='raid'||game.rules==='patrol'||!!game.story;}
 function zoneUpdate(dt){if(noStorm())return;const ph=ZPH[Math.min(ZONE.pi,ZPH.length-1)];ZONE.t+=dt;
   if(ZONE.st==='wait'){if(ZONE.t>=ph.w){ZONE.st='shrink';ZONE.t=0;if(NET.role!=='client')netEvent({k:'zone'});zoneMsg();}}
   else{const k=Math.min(1,ZONE.t/ph.s);ZONE.cx=lerp(ZONE.fx,ZONE.tx,k);ZONE.cz=lerp(ZONE.fz,ZONE.tz,k);ZONE.r=lerp(ZONE.fr,ZONE.tr,k);
@@ -39,7 +40,7 @@ const game={mode:'solo',phase:'menu',time:0,matchT:0,cine:null,slowT:0,timeScale
 let AIS=[];
 function aliveList(){return FS.filter(f=>!f.dead&&!f.evt);}
 function aliveTeams(){const s=new Set();FS.forEach(f=>{if(!f.dead&&!f.downed&&!f.evt)s.add(f.team);});FS.forEach(f=>{if(!f.dead&&f.downed&&mates(f).some(m=>!m.dead))s.add(f.team);});return s;}
-function spawnPoints(n){const base=[];INNER.forEach(a=>INNER.forEach(b=>base.push([a,b])));PLAZAS.forEach(p=>base.push([p[0]+(p[0]>0?-12:12),p[1]]));
+function spawnPoints(n,R){R=R||(game.rules==='arena'||game.rules==='raid'?200:1e9);const base=[];INNER.forEach(a=>INNER.forEach(b=>{if(Math.abs(a)<=R&&Math.abs(b)<=R)base.push([a,b]);}));PLAZAS.forEach(p=>{if(Math.abs(p[0])<=R&&Math.abs(p[1])<=R)base.push([p[0]+(p[0]>0?-12:12),p[1]]);});
   base.sort(()=>Math.random()-.5);const out=[];for(let i=0;i<n;i++){const b=base[i%base.length];out.push([b[0]+rand(-4,4),b[1]+rand(-4,4)]);}return out;}
 function startMatch(roster,spawns,diff,mode,rules){
   game.story=game._storyNext||null;game._storyNext=null;
@@ -88,10 +89,12 @@ function handleElim(v,k,pl){
   feed(`${kn} eliminated <b style="--c:${v.hero.css}">${tagName(v,v.name)}</b>`);
   if(v===ME&&k&&k!==ME&&!ally(k,v))showCard(k,'ELIMINATED BY');
   if(k===ME&&v!==ME&&!ally(k,v))addPoints(5,'KILL');
-  if(v===ME&&(game.rules==='arena'||(game.rules==='raid'&&!v.raidOut))){v.respT=game.rules==='raid'?6:RESPAWN_T;announce('ELIMINATED','#ff4a3f');AU.scale=1;AU.ko();announceSmall(game.rules==='raid'?'RESPAWNING IN 6…':'RESPAWNING IN 3…');}
+  if(v===ME&&game.rules==='patrol'){v.respT=5;announce('KNOCKED OUT','#ff4a3f');AU.scale=1;AU.ko();announceSmall('BACK ON PATROL IN 5…');}
+  else if(v===ME&&(game.rules==='arena'||(game.rules==='raid'&&!v.raidOut))){v.respT=game.rules==='raid'?6:RESPAWN_T;announce('ELIMINATED','#ff4a3f');AU.scale=1;AU.ko();announceSmall(game.rules==='raid'?'RESPAWNING IN 6…':'RESPAWNING IN 3…');}
   else if(v===ME){const mt=mates(ME).find(m=>!m.dead);game.specF=mt||(k&&!k.dead?k:null);announce('ELIMINATED','#ff4a3f');AU.scale=1;AU.ko();showSpec(true);}
   else if(game.rules==='arena')v.respT=RESPAWN_T;
   else if(game.rules==='raid')v.respT=6;
+  else if(game.rules==='patrol'&&!v.patV)v.respT=5;
   else if(k===ME){announceSmall('ELIMINATED '+v.name.toUpperCase());}
 }
 function endMatch(w){
@@ -211,7 +214,7 @@ function updateCamera(dt){
       const dist=(F.sprinting?7.6:6.6),cp=Math.cos(camPitch),sp=Math.sin(camPitch);
       const hx=F.pos.x,hy=F.pos.y+1.75,hz=F.pos.z;
       camT.set(hx-Math.sin(camYaw)*cp*dist,hy+sp*dist,hz-Math.cos(camYaw)*cp*dist);
-      if(camT.y<.4)camT.y=.4;
+      if(typeof camClampY==='function')camClampY(F,camT);else if(camT.y<.4)camT.y=.4;
       const head=TMP2.set(hx,hy,hz);const k=rayBld(head,camT,16);if(k<1)camT.lerpVectors(head,camT,Math.max(.12,k*.92));
       lookT.set(hx+Math.sin(camYaw)*2.2,hy-.2,hz+Math.cos(camYaw)*2.2);
       if(F.hardLock&&F.tgt&&!F.tgt.dead){lookT.lerp(TMP.set(F.tgt.pos.x,F.tgt.pos.y+1.2,F.tgt.pos.z),.25);}
@@ -227,6 +230,7 @@ function updateCamera(dt){
 
 /* ================= HUD ================= */
 const mmCtx=$('mini').getContext('2d');let hudT=0;
+const MAP_MARKS=[];   // extra minimap dots: {x,z,col,r,label,pulse,ring,edge,on()}
 function updateHUD(dt){
   if(!inMatch())return;
   const F=ME;
@@ -246,19 +250,23 @@ function updateHUD(dt){
   const T=F&&!F.dead?F.tgt:null;
   if(T&&!T.dead&&T.pos.distanceTo(F.pos)<32){$('tgt').style.display='block';$('tgN').innerHTML=`<span style="color:${T.hero.css}">${T.hero.name}</span> · ${esc(T.name)}`;$('tgH').style.width=Math.max(0,T.hp)+'%';}
   else $('tgt').style.display='none';
-  if(game.story){const SS=game.story.S;$('alive').textContent=SS&&SS.hud?SS.hud():FS.filter(f=>f.team===1&&!f.dead).length+' ENEMIES LEFT';$('zoneT')&&($('zoneT').textContent='');}else if(game.rules==='arena')arenaHUD(F);else if(game.rules==='raid'&&typeof raidHUD==='function')raidHUD(F);else{$('alive').textContent=(game.mode==='duos'?aliveTeams().size+' TEAMS':aliveList().length+' ALIVE')+(F?' · '+F.kills+' KO':'');
+  if(game.story){const SS=game.story.S;$('alive').textContent=SS&&SS.hud?SS.hud():FS.filter(f=>f.team===1&&!f.dead).length+' ENEMIES LEFT';$('zoneT')&&($('zoneT').textContent='');}else if(game.rules==='arena')arenaHUD(F);else if(game.rules==='raid'&&typeof raidHUD==='function')raidHUD(F);else if(game.rules==='patrol'&&typeof patHUD==='function')patHUD(F);else{$('alive').textContent=(game.mode==='duos'?aliveTeams().size+' TEAMS':aliveList().length+' ALIVE')+(F?' · '+F.kills+' KO':'');
   $('zinfo').textContent=game.phase==='countdown'?'DROPPING IN…':zoneLabel();}updateMarks();
   if(comboT>0){comboT-=dt;if(comboT<=0)$('combo').style.opacity=0;}
-  if(F&&F.dead&&game.phase!=='over'&&game.rules!=='arena'&&game.rules!=='raid'&&!game.story){const s=specTarget();$('specT').textContent=`ELIMINATED · #${F.place} — SPECTATING ${s?s.name.toUpperCase():''}`;}
+  if(F&&F.dead&&game.phase!=='over'&&game.rules!=='arena'&&game.rules!=='raid'&&game.rules!=='patrol'&&!game.story){const s=specTarget();$('specT').textContent=`ELIMINATED · #${F.place} — SPECTATING ${s?s.name.toUpperCase():''}`;}
   hudT-=dt;if(hudT>0)return;hudT=.08;
-  const g=mmCtx,P=x=>(x+MAPH)*MS;g.drawImage(mmBase,0,0);
-  if(!noStorm()){g.save();g.fillStyle='rgba(120,40,200,.35)';g.beginPath();g.rect(0,0,MM,MM);g.arc(P(ZONE.cx),P(ZONE.cz),ZONE.r*MS,0,7,true);g.fill('evenodd');g.restore();
-  g.strokeStyle='#c58bff';g.lineWidth=3;g.beginPath();g.arc(P(ZONE.cx),P(ZONE.cz),ZONE.r*MS,0,7);g.stroke();
-  g.strokeStyle='rgba(255,255,255,.8)';g.lineWidth=2;g.setLineDash([6,5]);g.beginPath();g.arc(P(ZONE.tx),P(ZONE.tz),ZONE.tr*MS,0,7);g.stroke();g.setLineDash([]);}
-  ORBS.forEach(o=>{g.fillStyle=o.type==='hp'?'#3dff8a':'#ffd23f';g.fillRect(P(o.x)-3,P(o.z)-3,6,6);});
-  const C=F&&!F.dead?F:specTarget();
-  FS.forEach(o=>{if(o.dead||o===C)return;const fr=C&&ally(o,C);if(!fr&&C&&o.pos.distanceTo(C.pos)>45)return;g.fillStyle=fr?'#4fd2ff':(o===(C&&C.tgt)?'#ffd23f':'#ff4a5a');g.beginPath();g.arc(P(o.pos.x),P(o.pos.z),fr?7:5,0,7);g.fill();if(fr){g.strokeStyle='#fff';g.lineWidth=2;g.stroke();}});
-  if(C){g.save();g.translate(P(C.pos.x),P(C.pos.z));g.rotate(-camYaw+Math.PI);g.fillStyle='#fff';g.beginPath();g.moveTo(0,-11);g.lineTo(7,8);g.lineTo(0,4);g.lineTo(-7,8);g.closePath();g.fill();g.restore();}
+  // minimap: a window of the city around you (the city is too big to show whole), plus marks (station, incidents) that stick to the edge
+  const C=F&&!F.dead?F:specTarget(),VIEW=300,K=MM/VIEW,ox=(C?C.pos.x:0)-VIEW/2,oz=(C?C.pos.z:0)-VIEW/2,P=x=>(x-ox)*K,Q=z=>(z-oz)*K;
+  const g=mmCtx;g.fillStyle='#141519';g.fillRect(0,0,MM,MM);g.drawImage(mmBase,(ox+MAPH)*MS,(oz+MAPH)*MS,VIEW*MS,VIEW*MS,0,0,MM,MM);
+  if(!noStorm()){g.save();g.fillStyle='rgba(120,40,200,.35)';g.beginPath();g.rect(0,0,MM,MM);g.arc(P(ZONE.cx),Q(ZONE.cz),ZONE.r*K,0,7,true);g.fill('evenodd');g.restore();
+  g.strokeStyle='#c58bff';g.lineWidth=3;g.beginPath();g.arc(P(ZONE.cx),Q(ZONE.cz),ZONE.r*K,0,7);g.stroke();
+  g.strokeStyle='rgba(255,255,255,.8)';g.lineWidth=2;g.setLineDash([6,5]);g.beginPath();g.arc(P(ZONE.tx),Q(ZONE.tz),ZONE.tr*K,0,7);g.stroke();g.setLineDash([]);}
+  ORBS.forEach(o=>{g.fillStyle=o.type==='hp'?'#3dff8a':'#ffd23f';g.fillRect(P(o.x)-3,Q(o.z)-3,6,6);});
+  FS.forEach(o=>{if(o.dead||o===C||o.dormant)return;const fr=C&&ally(o,C);if(!fr&&C&&o.pos.distanceTo(C.pos)>45&&!o.patV)return;g.fillStyle=fr?'#4fd2ff':(o===(C&&C.tgt)?'#ffd23f':'#ff4a5a');g.beginPath();g.arc(P(o.pos.x),Q(o.pos.z),fr?7:5,0,7);g.fill();if(fr){g.strokeStyle='#fff';g.lineWidth=2;g.stroke();}});
+  for(const m of MAP_MARKS){if(m.on&&!m.on())continue;let px=P(m.x),pz=Q(m.z);const out=px<10||px>MM-10||pz<10||pz>MM-10;if(out&&!m.edge)continue;px=clamp(px,10,MM-10);pz=clamp(pz,10,MM-10);
+    const r=(m.r||7)*(m.pulse?1+.25*Math.sin(game.time*8):1);if(m.ring){g.strokeStyle=m.col;g.lineWidth=3;g.beginPath();g.arc(px,pz,r+5,0,7);g.stroke();}
+    g.fillStyle=m.col;g.beginPath();g.arc(px,pz,out?r*.75:r,0,7);g.fill();g.strokeStyle='#000';g.lineWidth=2;g.stroke();if(m.label){g.fillStyle=m.tcol||'#000';g.font='bold 11px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(m.label,px,pz+.5);}}
+  if(C){g.save();g.translate(P(C.pos.x),Q(C.pos.z));g.rotate(-camYaw+Math.PI);g.fillStyle='#fff';g.beginPath();g.moveTo(0,-11);g.lineTo(7,8);g.lineTo(0,4);g.lineTo(-7,8);g.closePath();g.fill();g.restore();}
 }
 
 /* ---- teammate markers ---- */

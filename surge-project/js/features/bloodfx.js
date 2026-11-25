@@ -16,7 +16,7 @@ function bloodDrops(p,n,speed,dir,spread,up){if(!nearCam(p,90)||n<=0)return;bfxI
   n=Math.min(n,160);for(let k=0;k<n;k++){if(BFX.drops.length>=BFX.max)BFX.drops.shift();
     let dx=rand(-1,1),dy=rand(-1,1),dz=rand(-1,1);const l=Math.hypot(dx,dy,dz)||1;dx/=l;dy/=l;dz/=l;const sp=(speed||6)*Math.pow(Math.random(),.6);
     const v=new V3(dx*sp,dy*sp+(up==null?2.5:up)*Math.random(),dz*sp);if(dir){const s=spread==null?.35:spread;v.multiplyScalar(s).addScaledVector(dir,(speed||6)*rand(.5,1.2)*(1-s*.5));}
-    const s=Math.random()<.12?rand(.05,.085):rand(.014,.04);
+    const s=Math.random()<.1?rand(.034,.05):rand(.012,.03);
     BFX.drops.push({p:p.clone().add(TMP2.set(rand(-.08,.08),rand(-.08,.08),rand(-.08,.08))),v,s,g:floorAt(p.x,p.z,p.y+.5),t:0,c:Math.random()});}}
 onEv('tick',dt=>{if(!BFX_IM)return;let n=0,splats=0;
   for(let i=BFX.drops.length-1;i>=0;i--){const D=BFX.drops[i];D.t+=dt;D.v.y-=19*dt;D.v.multiplyScalar(1-dt*.35);D.p.addScaledVector(D.v,dt);
